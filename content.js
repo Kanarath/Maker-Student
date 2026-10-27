@@ -463,8 +463,113 @@ F('trinq_predice', 'Predice: giras la rueda de un trinquete en su sentido libre 
 F('ginebra_cine', 'En un proyector de cine antiguo, ¿para qué se usa una cruz de Malta?', 'Para que la película avance un fotograma y se pare un instante delante de la lente', ['Para girar el carrete más deprisa', 'Para enfocar la imagen', 'Para rebobinar la película'], 'La imagen solo se ve bien si el fotograma está quieto mientras se proyecta. El mecanismo repite «avanzar y parar» unas 24 veces por segundo, y el ojo ve movimiento continuo.', 'm5');
 F('ginebra_reloj', '¿De dónde viene el nombre «Ginebra» de este mecanismo?', 'De la relojería suiza, donde se usó como tope para que el muelle no se tensara ni se destensara del todo', ['De un inventor llamado Ginebra', 'De los primeros cines de esa ciudad', 'De la forma de una cruz suiza'], 'Su primera aplicación fue en relojes mecánicos suizos, como tope del muelle. Después se usó en proyectores de cine, y por eso se conoce también como cruz de Malta.', 'm5');
 
+// =====================================================================
+// UNIDAD «FUERZA, PESO Y MOVIMIENTO»  (la base que explica el porqué de palancas, poleas y engranajes)
+// =====================================================================
+// Rozamiento (animada): hace falta más tirón para arrancar que para mantener el movimiento
+ANIMS.friction = (s, t) => {
+  const c = t % 7, Fs = 100, Fk = 60, k = 0.95, x0 = 118, y = 92; let F, dx = 0, msg;
+  if (c < 3.5) { F = Fs * c / 3.5; msg = 'Aún no se mueve: el rozamiento iguala tu tirón'; }
+  else if (c < 6) { F = Fk; dx = (c - 3.5) * 26; msg = 'Ya se mueve: ¡cuesta menos mantenerlo!'; }
+  else { F = 0; dx = 65; msg = 'Sueltas: el rozamiento lo frena'; }
+  const bx = x0 + dx, arrow = (xa, xb) => Math.abs(xb - xa) < 3 ? 'M0 0' : `M${xa.toFixed(1)} ${y}H${xb.toFixed(1)}M${xb.toFixed(1)} ${y}l${xb > xa ? -7 : 7} -5M${xb.toFixed(1)} ${y}l${xb > xa ? -7 : 7} 5`;
+  _a(_q(s, 'block'), { x: bx });
+  _q(s, 'farrow').setAttribute('d', arrow(bx + 70, bx + 70 + F * k));
+  _q(s, 'rarrow').setAttribute('d', arrow(bx, bx - (F || (c < 6 ? 0 : 20)) * k));
+  _q(s, 'msg').textContent = msg;
+};
+function frictionSVG() {
+  return SV.wrap('0 0 320 156',
+    `<path d="M10 112H310" ${SV.ink} fill="none"/><path d="M20 116l-8 8M60 116l-8 8M100 116l-8 8M140 116l-8 8M180 116l-8 8M220 116l-8 8M260 116l-8 8M300 116l-8 8" stroke="var(--muted)" stroke-width="1" fill="none"/>` +
+    `<rect data-r="block" x="118" y="72" width="70" height="40" rx="5" ${SV.fill} ${SV.ink}/>` +
+    `<path data-r="farrow" d="M0 0" fill="none" ${SV.key} style="stroke-width:4"/><path data-r="rarrow" d="M0 0" fill="none" stroke="var(--teal)" stroke-width="4" stroke-linecap="round"/>` +
+    `<path d="M12 14h18" ${SV.key} fill="none"/>` + SV.txt(36, 18, 'tu tirón', 11, 'start') + `<path d="M120 14h18" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" fill="none"/>` + SV.txt(144, 18, 'rozamiento', 11, 'start') +
+    `<text data-r="msg" x="160" y="148" font-size="11.5" font-weight="600" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,Consolas,monospace">Aún no se mueve</text>`,
+    'Rozamiento animado: hace falta más tirón para arrancar que para mantener el movimiento', ' data-anim="friction"');
+}
+// Dos fuerzas en sentidos opuestos sobre una caja: F1 a la izquierda, F2 a la derecha
+function forcesSVG(F1, F2) {
+  const k = 1.7, y = 62, head = (x, d) => `M${x} ${y}l${d * 8} -6M${x} ${y}l${d * 8} 6`;
+  return SV.wrap('0 0 320 120',
+    `<rect x="124" y="${y - 22}" width="72" height="44" rx="6" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M124 ${y}H${124 - F1 * k}${head(124 - F1 * k, 1)}" fill="none" ${SV.key} style="stroke-width:4"/>` + SV.txt(124 - F1 * k / 2, y - 12, F1 + ' N', 13) +
+    `<path d="M196 ${y}H${196 + F2 * k}${head(196 + F2 * k, -1)}" fill="none" ${SV.key} style="stroke-width:4"/>` + SV.txt(196 + F2 * k / 2, y - 12, F2 + ' N', 13) +
+    SV.txt(160, y + 4, 'caja', 11) + SV.txt(160, 108, 'dos fuerzas en sentidos opuestos', 11, 'middle', 500),
+    `Una caja con una fuerza de ${F1} newtons hacia la izquierda y otra de ${F2} newtons hacia la derecha`);
+}
+// Masa y peso: un objeto colgado de un muelle
+function pesoSVG() {
+  return SV.wrap('0 0 320 190',
+    `<rect x="50" y="10" width="110" height="8" rx="3" ${SV.fill} ${SV.ink}/><path d="M105 18V34l-14 7 28 12-28 12 28 12-28 12 14 7V132" fill="none" ${SV.ink}/>` +
+    `<rect x="78" y="132" width="54" height="36" rx="6" ${SV.fill} ${SV.key}/>` + SV.txt(105, 155, 'masa', 12) + SV.arrowDown(168, 100, 176) + SV.txt(178, 150, 'peso', 12, 'start') +
+    SV.txt(204, 36, 'masa: kg', 12, 'start') + SV.txt(204, 52, 'no cambia', 11, 'start', 500) + SV.txt(204, 84, 'peso: N', 12, 'start') + SV.txt(204, 100, '= masa × 9,8', 11, 'start', 500) + SV.txt(204, 116, 'depende de la', 11, 'start', 500) + SV.txt(204, 130, 'gravedad', 11, 'start', 500),
+    'Un objeto colgado de un muelle: su masa se mide en kilogramos y su peso, la fuerza hacia abajo, en newtons');
+}
+
+// ---- Lección 1 · Fuerza y peso ----
+T('fuerza', 'Fuerza', 'Lo que cambia el movimiento de algo o lo deforma: un empuje, un tirón o una atracción. Se mide en newtons (N).', 'f1', 'Si algo cambia su movimiento, hay una fuerza.', 'Empuje o tirón (N)');
+T('masa', 'Masa', 'Cantidad de materia de un objeto. Se mide en kilogramos (kg) y no cambia de un lugar a otro.', 'f1', 'Es «cuánto hay», no «cuánto pesa».', 'Cantidad de materia (kg)');
+T('peso', 'Peso', 'Atracción con la que la Tierra tira de un objeto hacia abajo: peso = masa × 9,8. Se mide en newtons (N).', 'f1', 'Cambia con la gravedad: en la Luna pesas menos.', 'Atracción de la Tierra (N)');
+C('peso_calc', '¿Cuánto pesa, en newtons, un objeto de 3 kg de masa? Usa 9,8 N por cada kilogramo.', '29,4 N', ['3 N', '0,3 N', '294 N'], 'Peso = masa × 9,8 = 3 × 9,8 = 29,4 N.', 'f1', () => {
+  const m = pick([0.5, 1, 2, 3, 4, 5, 10]), w = m * 9.8;
+  return { q: `¿Cuánto pesa, en newtons, un objeto de ${fmt(m)} kg de masa? Usa 9,8 N por cada kilogramo.`, a: fmt(w) + ' N', wrong: uniq([fmt(m) + ' N', fmt(m / 9.8, 2) + ' N', fmt(w * 10) + ' N'], fmt(w) + ' N'), explain: `Peso = masa × 9,8 = ${fmt(m)} × 9,8 = ${fmt(w)} N.`, fig: pesoSVG() };
+}, pesoSVG());
+F('masa_luna', 'Un astronauta viaja a la Luna, donde la gravedad es unas 6 veces menor. ¿Qué les pasa a su masa y a su peso?', 'Su masa no cambia y su peso baja a casi la sexta parte', ['Su masa baja a la sexta parte y su peso no cambia', 'Las dos bajan a la sexta parte', 'Las dos se quedan igual'], 'La masa es la cantidad de materia: la misma en cualquier sitio. El peso es la fuerza de atracción, y en la Luna es unas 6 veces menor.', 'f1');
+F('kg_n', '¿Cuánto pesa aproximadamente, en la Tierra, un objeto de 1 kg de masa?', 'Unos 10 newtons (9,8 N)', ['1 newton', '100 newtons', '0,1 newtons'], 'Un kilogramo de masa pesa 9,8 N: por eso, para cálculos rápidos, se redondea a 10 N por cada kg. Sirve para pasar de «kilos» a newtons.', 'f1');
+
+// ---- Lección 2 · Fuerzas que se suman ----
+T('resultante', 'Resultante', 'El efecto único que equivale a todas las fuerzas que actúan sobre algo. Si van en la misma línea, se suman o se restan según su sentido.', 'f2', 'Es el «balance final» de empujes y tirones.', 'Suma de todas las fuerzas');
+T('equilibrio', 'Equilibrio', 'Situación en la que la fuerza resultante es cero: el objeto sigue quieto o sigue a velocidad constante.', 'f2', 'Las fuerzas se cancelan entre sí.', 'Resultante cero');
+T('inercia', 'Inercia', 'Tendencia de un objeto a seguir como está (quieto o en movimiento) mientras no actúe una fuerza. Cuanta más masa, más inercia.', 'f2', 'Por eso cuesta empujar un coche parado.', 'Se resiste a cambiar');
+C('resultante_calc', 'Dos personas tiran de una caja en sentidos opuestos: una con 40 N hacia la izquierda y otra con 25 N hacia la derecha. ¿Cuál es la fuerza resultante?', '15 N hacia la izquierda', ['65 N hacia la izquierda', '15 N hacia la derecha', '0 N (equilibrio)'], 'Van en sentidos opuestos, así que se restan: 40 − 25 = 15 N. Gana la mayor, así que la caja tiende a ir hacia la izquierda.', 'f2', () => {
+  let f1, f2; do { f1 = pick([10, 15, 20, 25, 30, 40, 50, 60]); f2 = pick([10, 15, 20, 25, 30, 40, 50, 60]); } while (f1 === f2);
+  const d = Math.abs(f1 - f2), lado = f1 > f2 ? 'izquierda' : 'derecha', otro = f1 > f2 ? 'derecha' : 'izquierda', a = `${d} N hacia la ${lado}`;
+  return { q: `Dos personas tiran de una caja en sentidos opuestos: una con ${f1} N hacia la izquierda y otra con ${f2} N hacia la derecha. ¿Cuál es la fuerza resultante?`, a, wrong: uniq([`${f1 + f2} N hacia la ${lado}`, `${d} N hacia la ${otro}`, '0 N (equilibrio)'], a),
+    explain: `Van en sentidos opuestos, así que se restan: ${Math.max(f1, f2)} − ${Math.min(f1, f2)} = ${d} N. Gana la mayor, así que la caja tiende a ir hacia la ${lado}.`, fig: forcesSVG(f1, f2) };
+}, forcesSVG(40, 25));
+F('equil_cuerda', 'Dos equipos tiran de una cuerda con 500 N cada uno y la cuerda no se mueve. ¿Qué podemos decir?', 'Está en equilibrio: la fuerza resultante es cero', ['Gana el equipo de la izquierda', 'No hay fuerzas actuando', 'La cuerda tiene que romperse'], 'Hay fuerzas, y grandes, pero son iguales y opuestas: se cancelan y la resultante es 0 N. Estar en equilibrio no es «no haber fuerzas», es que se compensan.', 'f2');
+F('inercia_bus', 'Un autobús frena de golpe y los pasajeros de pie se «van hacia delante». ¿Por qué?', 'Por inercia: su cuerpo tiende a seguir moviéndose a la velocidad que llevaba', ['Porque una fuerza los empuja hacia delante', 'Porque el aire los empuja', 'Porque pesan más al frenar'], 'Nadie los empuja hacia delante: es el autobús el que se frena, y sus cuerpos siguen como iban, por inercia. Por eso se usa el cinturón.', 'f2');
+F('inercia_bola', 'Predice: ¿qué cuesta más poner en marcha de un empujón, una bola de bolos o una pelota de tenis?', 'La bola de bolos: tiene más masa y, por tanto, más inercia', ['La pelota de tenis: es más pequeña', 'Cuestan lo mismo', 'Depende del color'], 'Cuanta más masa, más inercia: la bola de bolos se resiste más a cambiar su estado de reposo. Mismo empujón, menos cambio de velocidad.', 'f2');
+
+// ---- Lección 3 · Rozamiento ----
+T('rozamiento', 'Rozamiento', 'Resistencia que aparece entre dos superficies en contacto y se opone a que se deslicen una sobre otra.', 'f3', 'Es el «freno» natural de todo lo que roza.', 'Se opone a deslizar');
+T('normal', 'Reacción normal', 'Lo que hace el suelo (o cualquier apoyo) hacia arriba sobre un objeto apoyado; sobre un suelo horizontal vale lo mismo que el peso.', 'f3', 'Cuanto más aprietas, más rozamiento.', 'Empuje de la superficie');
+T('mu', 'Coeficiente de rozamiento (μ)', 'Número sin unidades que indica cuánto «agarran» dos materiales: rozamiento = μ × reacción normal.', 'f3', 'Hielo sobre hielo: μ muy pequeño. Goma sobre asfalto: grande.', 'Cuánto agarran dos materiales');
+C('roz_calc', 'Una caja de 50 N de peso está sobre un suelo horizontal. El coeficiente de rozamiento es 0,4. ¿Qué fuerza de rozamiento hay que vencer?', '20 N', ['50 N', '125 N', '10 N'], 'Rozamiento = μ × reacción normal. En suelo horizontal la normal es igual al peso: 0,4 × 50 = 20 N.', 'f3', () => {
+  const n = pick([20, 30, 40, 50, 60, 80, 100]), mu = pick([0.2, 0.3, 0.4, 0.5]), r = n * mu;
+  return { q: `Una caja de ${n} N de peso está sobre un suelo horizontal. El coeficiente de rozamiento es ${fmt(mu)}. ¿Qué fuerza de rozamiento hay que vencer?`, a: fmt(r) + ' N', wrong: uniq([n + ' N', fmt(n / mu) + ' N', fmt(r / 2) + ' N'], fmt(r) + ' N'), explain: `Rozamiento = μ × reacción normal. En suelo horizontal la normal es igual al peso: ${fmt(mu)} × ${n} = ${fmt(r)} N.`, fig: frictionSVG() };
+}, frictionSVG());
+F('roz_arranque', 'Para empezar a mover un armario pesado hace falta más fuerza que para mantenerlo en movimiento. ¿Por qué?', 'Porque el rozamiento al arrancar suele ser mayor que el que hay una vez deslizando', ['Porque el armario pesa menos cuando se mueve', 'Porque el suelo se vuelve más duro', 'Porque el rozamiento desaparece al moverse'], 'Antes de moverse, las superficies «se agarran» más (rozamiento estático); una vez deslizando el rozamiento es algo menor. Mira la animación: el tirón sube hasta soltarse y luego baja.', 'f3', frictionSVG());
+F('roz_area', 'Predice: arrastras un ladrillo apoyado de plano o de canto. En el modelo básico del rozamiento, ¿qué cambia?', 'Casi nada: depende sobre todo de los materiales y de cuánto aprietan, no del área', ['Es el doble si está de plano', 'Es el doble si está de canto', 'El rozamiento desaparece de canto'], 'En el modelo básico, el rozamiento depende de μ y de la reacción normal, no del área de contacto. (En casos reales, como neumáticos o superficies pegajosas, pueden aparecer diferencias.)', 'f3');
+F('roz_engranajes', 'En un tren de engranajes real, el esfuerzo es algo mayor que el que calculaste. ¿Por qué?', 'Porque parte del esfuerzo se pierde en rozamiento, en los dientes y en los ejes', ['Porque los engranajes pesan', 'Porque la relación de transmisión cambia al girar', 'Porque la fuerza se crea sola'], 'Los cálculos de «caso ideal» no cuentan el rozamiento. En la realidad se pierde algo en forma de calor, y por eso se lubrican los engranajes.', 'f3');
+
+// ---- Lección 4 · Trabajo y energía ----
+T('trabajo', 'Trabajo', 'Lo que se hace al aplicar una fuerza a lo largo de una distancia en su dirección: trabajo = fuerza × distancia. Se mide en julios (J).', 'f4', 'Empujar una pared sin moverla no es «trabajo» para la física.', 'Fuerza × distancia (J)');
+T('energia', 'Energía', 'Capacidad de realizar trabajo. No se crea ni se destruye, solo se transforma. Se mide en julios (J).', 'f4', 'Es la «moneda» con la que se paga el trabajo.', 'Capacidad de hacer trabajo');
+T('potencia', 'Potencia', 'Rapidez con que se hace trabajo: potencia = trabajo ÷ tiempo. Se mide en vatios (W).', 'f4', 'Mismo trabajo en menos tiempo = más potencia.', 'Trabajo por segundo (W)');
+C('trabajo_calc', 'Levantas una caja con una fuerza de 20 N a lo largo de 3 m. ¿Qué trabajo haces?', '60 J', ['23 J', '30 J', '120 J'], 'Trabajo = fuerza × distancia = 20 N × 3 m = 60 J.', 'f4', () => {
+  const f = pick([5, 10, 15, 20, 25, 30, 40]), d = pick([1, 2, 3, 4, 5]), w = f * d;
+  return { q: `Levantas una caja con una fuerza de ${f} N a lo largo de ${d} m. ¿Qué trabajo haces?`, a: w + ' J', wrong: uniq([(f + d) + ' J', fmt(w / 2) + ' J', (w * 2) + ' J'], w + ' J'), explain: `Trabajo = fuerza × distancia = ${f} N × ${d} m = ${w} J.` };
+});
+C('potencia_calc', 'Un motor hace 600 J de trabajo en 5 s. ¿Qué potencia tiene?', '120 W', ['3000 W', '605 W', '240 W'], 'Potencia = trabajo ÷ tiempo = 600 J ÷ 5 s = 120 W.', 'f4', () => {
+  const w = pick([200, 300, 400, 600, 800, 1200]), t = pick([2, 4, 5, 10]), p = w / t;
+  return { q: `Un motor hace ${w} J de trabajo en ${t} s. ¿Qué potencia tiene?`, a: fmt(p) + ' W', wrong: uniq([(w * t) + ' W', (w + t) + ' W', fmt(p * 2) + ' W'], fmt(p) + ' W'), explain: `Potencia = trabajo ÷ tiempo = ${w} J ÷ ${t} s = ${fmt(p)} W.` };
+});
+F('palanca_energia', 'Con una palanca levantas una carga de 100 N a 0,2 m de altura (20 J) empujando con 25 N. ¿Cuánto tiene que bajar tu mano?', '0,8 m', ['0,2 m', '0,05 m', '4 m'], 'El trabajo que haces es el mismo (20 J, sin rozamiento): 25 N × 0,8 m = 20 J. Cuatro veces menos fuerza, cuatro veces más recorrido. Así se explica con números el «nada es gratis» de las palancas.', 'f4');
+F('conserv', '¿Qué significa que la energía «se conserva»?', 'Que no se crea ni se destruye: solo se transforma (por ejemplo, en movimiento o en calor)', ['Que siempre se guarda en una pila', 'Que una máquina puede dar más energía de la que recibe', 'Que la energía solo existe en los motores'], 'Una máquina nunca entrega más energía de la que recibe; parte se «pierde» como calor por rozamiento. Por eso no existen las máquinas que se mueven solas sin parar.', 'f4');
+
 // Unidades y lecciones (≤ 7 items por lección, ≈ 2-4 min)
 const UNITS = [
+  { id: 'u_fuerza', title: 'Fuerza, peso y movimiento', sub: 'La base que explica por qué funcionan las máquinas', lessons: [
+    { id: 'l_fuerza', title: 'Fuerza y peso', sub: 'Newtons, kilos y la Luna', icon: '💪', items: ['t_fuerza', 't_masa', 't_peso', 'c_peso_calc', 'f_masa_luna', 'f_kg_n'],
+      note: { title: 'Masa y peso no son lo mismo', fig: pesoSVG(), body: 'La **masa** es cuánta materia hay (en **kg**) y no cambia de sitio. El **peso** es la **fuerza** con que la Tierra atrae esa masa (en **newtons**) y depende de la gravedad.\n\nEn la Tierra: **peso = masa × 9,8**. Un objeto de 1 kg pesa unos 10 N.' } },
+    { id: 'l_suma', title: 'Fuerzas que se suman', sub: 'Resultante, equilibrio e inercia', icon: '↔️', items: ['t_resultante', 't_equilibrio', 't_inercia', 'c_resultante_calc', 'f_equil_cuerda', 'f_inercia_bus', 'f_inercia_bola'],
+      note: { title: 'El balance de fuerzas', fig: forcesSVG(40, 25), body: 'Si varias fuerzas van en la **misma línea**: las que van en el mismo sentido se **suman** y las que van en sentidos opuestos se **restan**. Lo que queda es la **resultante**.\n\nSi la resultante es cero hay **equilibrio**: no hay cambio de movimiento. Y cuanto más masa, más **inercia**.' } },
+    { id: 'l_roz', title: 'Rozamiento', sub: 'El freno que está en todas partes', icon: '❄️', items: ['t_rozamiento', 't_normal', 't_mu', 'c_roz_calc', 'f_roz_arranque', 'f_roz_area', 'f_roz_engranajes'],
+      note: { title: 'Cuesta más empezar que seguir', fig: frictionSVG(), body: 'El **rozamiento** se opone a que dos superficies deslicen. Vale **μ × reacción normal**.\n\nMira la animación: el tirón sube hasta que el objeto «se suelta» y, una vez moviéndose, hace falta **menos** fuerza.\n\nEs la razón de que en la vida real los mecanismos pierdan algo de fuerza respecto al caso ideal.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_trabajo', title: 'Trabajo y energía', sub: 'Por qué nada es gratis', icon: '🔋', items: ['t_trabajo', 't_energia', 't_potencia', 'c_trabajo_calc', 'c_potencia_calc', 'f_palanca_energia', 'f_conserv'],
+      note: { title: 'La moneda de las máquinas', body: '**Trabajo** = fuerza × distancia (en **julios**). **Potencia** = trabajo ÷ tiempo (en **vatios**).\n\nLa **energía** no se crea ni se destruye. Una máquina no puede darte más trabajo del que recibe: solo cambia **fuerza** por **recorrido**, justo lo que viste en las palancas y los engranajes.' } }
+  ]},
   { id: 'u_vm', title: 'Ventaja mecánica', sub: 'Palancas, poleas y engranajes: ganar fuerza', lessons: [
     { id: 'l_palanca', title: 'La palanca', sub: 'Apoyo, brazo y ventaja', icon: '⚖️', items: ['t_palanca', 't_apoyo', 't_brazo', 't_ventaja', 'f_balancin', 'f_gratis'],
       note: { title: 'Nada es gratis', body: 'Una palanca **no crea fuerza**: la cambia por recorrido.\n\nSi empujas con la mitad de fuerza, tu mano tiene que moverse el doble.\n\nMira el balancín: el que está lejos del centro sube y baja mucho; el que está cerca, poco.' } },
@@ -517,11 +622,32 @@ const CURIOS = {
   l_biela: { title: 'Sabías que… el mecanismo de los motores', body: 'Los motores de pistón de los coches y las máquinas de vapor usan una **biela-manivela**: el pistón empuja y tira, y la manivela (el cigüeñal) convierte ese vaivén en el giro que mueve las ruedas.\n\nEs el mismo dibujo que acabas de ver, pero en grande y con fuego dentro.' },
   l_leva: { title: 'Sabías que… la forma de la leva es un «programa»', body: 'En muchos motores de coche, un **árbol de levas** abre cada válvula con la forma justa: la forma de cada leva decide **cuándo** se abre, **cuánto** y **durante cuánto tiempo**.\n\nNo hay electrónica: la «instrucción» está tallada en el metal.' },
   l_sinfin: { title: 'Sabías que… una etapa vale por varias', body: 'Con un tornillo sin fin de una entrada, una rueda de 40 dientes da una reducción de **40 : 1 en un solo paso**. Con engranajes rectos necesitarías varias etapas.\n\nEso sí: que el tornillo se **autobloquee** (que la rueda no pueda moverlo) depende del rozamiento y del ángulo de la rosca; no lo des por seguro.' },
+  l_fuerza: { title: 'Sabías que… en la Luna pesarías un sexto', body: 'La gravedad de la Luna es unas **6 veces menor** que la de la Tierra. Un objeto de 60 kg de masa pesa allí lo que pesaría un objeto de unos 10 kg en la Tierra.\n\nSu **masa** (la cantidad de materia) es exactamente la misma. Lo único que cambia es la atracción: el **peso**.' },
+  l_suma: { title: 'Sabías que… el truco del mantel', body: 'Hay un truco clásico de física: tirar de un mantel **muy rápido y seco** y dejar casi inmóviles los objetos que había encima. Los objetos, por **inercia**, tienden a quedarse donde estaban.\n\nFunciona mejor con mantel liso, objetos pesados y un tirón rápido. ¡No lo pruebes con tu vajilla buena!' },
+  l_roz: { title: 'Sabías que… rodar roza mucho menos', body: 'Los **rodamientos de bolas** (en patines, ruedas de bici o ejes de máquinas) cambian el deslizamiento por **rodadura**, que roza mucho menos. Por eso es mucho más fácil rodar un objeto que arrastrarlo.\n\nTambién se usa aceite o grasa en engranajes y ejes: reduce el rozamiento y la pérdida de fuerza que viste en la lección.' },
+  l_trabajo: { title: 'Sabías que… el «caballo de vapor»', body: 'James Watt inventó el **caballo de vapor** (horsepower) para explicar a sus clientes cuánto trabajo hacían sus máquinas de vapor comparadas con los caballos. Un caballo de vapor equivale a unos **746 vatios**.\n\nCómo calculó exactamente ese valor se cuenta de formas distintas, y no hay una fuente histórica clara: es un buen ejemplo de que una unidad puede nacer de una necesidad práctica.' },
   l_trinquete: { title: 'Sabías que… el «clic-clic» de la carraca', body: 'El «clic-clic» de una llave de carraca es la **uña** de un trinquete saltando de diente en diente.\n\nGracias a él puedes apretar un tornillo moviendo la llave de ida y vuelta, sin sacarla cada vez.' }
 };
 Object.entries(CURIOS).forEach(([id, c]) => { LESSON_BY_ID[id].curio = c; });
 
 const MISIONES = {
+  u_fuerza: { id: 'm_fuerza', icon: '🧪', title: 'Mide el rozamiento con una goma elástica',
+    why: 'Con una **goma elástica** puedes hacer un «medidor de fuerza» casero: cuanto más se estira, más fuerza haces. Vas a **ver** que cuesta más arrancar que seguir, y que más peso significa más rozamiento.',
+    think: 'Antes de cada prueba, **predice** si la goma se estirará más o menos. Fíjate sobre todo en el instante en que el objeto «se suelta»: la goma se estira al máximo y luego se encoge un poco. Esa diferencia es la que viste en la animación.',
+    safety: 'Usa gomas en buen estado y no las estires cerca de la cara: si se sueltan, pueden dar un latigazo. Tira despacio.',
+    versions: {
+      goma: { label: 'Con goma elástica', intro: 'Una goma elástica, un libro, una regla y una mesa lisa (valen objetos de casa).', steps: [
+        'Ata o engancha la goma a un libro apoyado en la mesa.',
+        'Tira muy despacio y apunta cuánto se estira la goma (con la regla) justo antes de que el libro empiece a moverse.',
+        'Sigue tirando con el libro ya en movimiento a velocidad constante y apunta cuánto se estira ahora: debería ser menos.',
+        'Pon otro libro encima y repite: ¿se estira más? (el peso aumenta, y con él el rozamiento).',
+        'Pon unos lápices redondos debajo del libro como rodillos y repite: ¿cuánto se estira ahora?',
+        'Apunta qué has visto y qué predecías: ¿coincide?'] },
+      papel: { label: 'Sin material', intro: 'Un experimento mental con papel y lápiz.', steps: [
+        'Dibuja un bloque sobre una mesa y las fuerzas: tu tirón, el rozamiento, el peso y la reacción normal.',
+        'Dibuja cómo cambian las flechas del tirón y del rozamiento al arrancar y cuando ya se mueve.',
+        'Dibuja el mismo bloque con el doble de peso y predice si el rozamiento cambia.',
+        'Dibuja el bloque sobre rodillos y predice qué ocurre con el rozamiento.'] } } },
   u_vm: { id: 'm_vm', icon: '🛠️', title: 'Tren de engranajes con manivela',
     why: 'Hasta ahora lo has **calculado**. Ahora lo vas a **sentir**: montar un tren de engranajes y girar la manivela te enseña, con los dedos, lo que significa una relación 3 : 1.',
     think: 'Antes de girar, **predice**. Después compara con lo que ves. Si no coincide: ¿hay un eje flojo y el engrane salta, o has contado mal las vueltas? Ese es el mejor momento para aprender.',

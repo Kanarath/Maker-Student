@@ -56,7 +56,12 @@
     c_carrera: (n, a) => near(a[0], 2 * n[0]),                      // carrera = 2 × radio
     c_leva_lev: (n, a) => near(a[0], 2 * n[0]),                     // elevación = 2 × excentricidad
     c_rack_avance: (n, a) => near(a[0], n[0] * n[1]),               // avance = dientes × paso
-    c_sinfin_rel: (n, a) => near(a[0], n[0])                        // vueltas del tornillo = dientes (1 entrada)
+    c_sinfin_rel: (n, a) => near(a[0], n[0]),                       // vueltas del tornillo = dientes (1 entrada)
+    c_peso_calc: (n, a) => near(a[0], n[0] * n[1]),                 // peso = masa × 9,8
+    c_resultante_calc: (n, a, s) => near(a[0], Math.abs(n[0] - n[1])) && (n[0] > n[1]) === /izquierda/.test(s.a),   // se restan; gana la mayor
+    c_roz_calc: (n, a) => near(a[0], n[0] * n[1]),                  // μ × normal
+    c_trabajo_calc: (n, a) => near(a[0], n[0] * n[1]),              // fuerza × distancia
+    c_potencia_calc: (n, a) => near(a[0], n[0] / n[1])              // trabajo ÷ tiempo
   };
   Object.entries(VER).forEach(([id, f]) => { const it = ITEMS[id]; if (!it) return add(`${id}: no existe`); for (let k = 0; k < 200; k++) { const s = it.gen(); const n = num(s.q), a = num(s.a); if (!f(n, a, s)) { add(`${id}: cálculo incorrecto → «${s.q}» = «${s.a}»`); break; } if (s.wrong.some(w => w === s.a)) { add(`${id}: distractor igual a la respuesta`); break; } } });
   // figuras animadas: cada una debe tener su animación y no producir NaN en ningún instante (se prueba fuera de pantalla)
