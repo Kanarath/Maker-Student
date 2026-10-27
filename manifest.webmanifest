@@ -1,9 +1,9 @@
 {
-  "name": "Taller de Inventor",
-  "short_name": "Inventor",
+  "name": "Maker Student",
+  "short_name": "Maker Student",
   "description": "Aprende mecánica y mecatrónica inventando, sin vidas, sin energía y sin rachas.",
   "lang": "es",
-  "id": "./index.html",
+  "id": "/Maker-Student/",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

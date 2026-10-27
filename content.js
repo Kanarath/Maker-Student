@@ -4,7 +4,7 @@
 // =====================================================================
 const APP = {
   key: 'tallerinventor',                 // clave de localStorage (única por app)
-  name: 'Taller de Inventor',
+  name: 'Maker Student',
   greetings: ['Sin presión: cualquier ejercicio suma.', 'Dos minutos bastan. Cada sesión cuenta.', 'Aquí no se pierde nada. Solo se avanza.', 'Todo invento empieza con: «¿cómo funciona esto?»'],
   good: ['¡Bien!', '¡Eso es!', '¡Excelente!', '¡Perfecto!', '¡Funciona!', '¡Bien montado!'],
   ranks: [
