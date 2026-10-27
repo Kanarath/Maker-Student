@@ -78,7 +78,7 @@ function maybeCameo(ok) {
   if (pose) { SS.lastCameo = SS.done; cameo(pose, text); }
 }
 function confetti(n = 36) {
-  const box = h('div', { class: 'confetti' }), cols = ['#c4600f', '#e7b83c', '#2b64b8', '#f4efe6', '#3aa76d'];
+  const box = h('div', { class: 'confetti' }), cols = ['#2dd4bf', '#f5b83d', '#eaf6f7', '#0f8f82', '#ffd98a'];
   for (let i = 0; i < n; i++) box.append(h('i', { style: `--x:${Math.random() * 100}vw;--r:${Math.random() * 720 - 360}deg;--d:${1.4 + Math.random() * 1.2}s;--dl:${Math.random() * .3}s;background:${pick(cols)}` }));
   document.body.append(box); setTimeout(() => box.remove(), 3000);
 }

@@ -38,52 +38,55 @@ const fmt = (n, d = 1) => (Math.round(n * 10 ** d) / 10 ** d).toString().replace
 const uniq = (arr, correct) => [...new Set(arr)].filter(x => x !== correct);
 
 // =====================================================================
-// FIGURAS SVG PROPIAS (sin derechos de autor). Usan variables CSS: se adaptan al modo oscuro.
+// FIGURAS SVG PROPIAS (sin derechos de autor): dibujos técnicos de línea. Usan variables CSS (teal, dorado, blancos).
 // =====================================================================
 const SV = {
-  ink: 'stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"',
+  ink: 'stroke="var(--teal)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"',      // contorno de piezas
+  key: 'stroke="var(--gold)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"',      // lo que importa (apoyo, carga, fuerza)
+  wire: 'stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round"',                              // cuerdas
+  fill: 'fill="var(--fillt)"',
   wrap: (vb, inner, label) => `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label}" style="width:100%;height:auto;max-height:210px">${inner}</svg>`,
-  txt: (x, y, s, size = 13, anchor = 'middle', w = 600) => `<text x="${x}" y="${y}" font-size="${size}" font-weight="${w}" text-anchor="${anchor}" fill="var(--ink)" font-family="system-ui,sans-serif">${s}</text>`,
-  arrowDown: (x, y1, y2) => `<path d="M${x} ${y1}V${y2}M${x - 7} ${y2 - 10}L${x} ${y2}L${x + 7} ${y2 - 10}" fill="none" stroke="var(--pink)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`
+  txt: (x, y, s, size = 12, anchor = 'middle', w = 600) => `<text x="${x}" y="${y}" font-size="${size}" font-weight="${w}" text-anchor="${anchor}" fill="var(--ink)" font-family="ui-monospace,Consolas,monospace">${s}</text>`,
+  arrowDown: (x, y1, y2) => `<path d="M${x} ${y1}V${y2}M${x - 7} ${y2 - 10}L${x} ${y2}L${x + 7} ${y2 - 10}" fill="none" stroke="var(--gold)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`,
+  // cota de dibujo técnico: línea con topes y rótulo
+  dim: (x1, x2, y, label) => `<path d="M${x1} ${y - 5}V${y + 5}M${x2} ${y - 5}V${y + 5}M${x1} ${y}H${x2}" stroke="var(--muted)" stroke-width="1.3" fill="none"/>` + SV.txt((x1 + x2) / 2, y + 17, label, 12)
 };
 // Palanca con la carga a la izquierda y tu mano a la derecha. dc / de = distancias al apoyo (cm).
 function leverSVG(dc, de, loadLabel) {
-  const x0 = 24, x1 = 296, fx = x0 + (x1 - x0) * dc / (dc + de), y = 84;
+  const x0 = 32, x1 = 296, fx = x0 + (x1 - x0) * dc / (dc + de), y = 84;
   return SV.wrap('0 0 320 166',
-    `<rect x="${x0}" y="${y - 5}" width="${x1 - x0}" height="10" rx="4" fill="var(--indigo)" ${SV.ink}/>` +
-    `<path d="M${fx} ${y + 5}L${fx - 16} ${y + 38}H${fx + 16}Z" fill="var(--gold)" ${SV.ink}/>` +
-    `<rect x="${x0 - 14}" y="${y - 40}" width="44" height="35" rx="6" fill="var(--line)" ${SV.ink}/>` + SV.txt(x0 + 8, y - 17, loadLabel, 12) +
-    SV.arrowDown(x1 - 6, y - 52, y - 8) + SV.txt(x1 - 6, y - 58, 'tu mano', 12) +
-    `<path d="M${x0 + 8} ${y + 52}H${fx}M${fx} ${y + 52}H${x1 - 6}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>` +
-    SV.txt((x0 + 8 + fx) / 2, y + 68, dc + ' cm', 12) + SV.txt((fx + x1 - 6) / 2, y + 68, de + ' cm', 12) +
-    '', 'Palanca con la carga a la izquierda y tu mano a la derecha');
+    `<rect x="${x0 - 8}" y="${y - 5}" width="${x1 - x0 + 16}" height="10" rx="4" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M${fx} ${y + 5}L${fx - 17} ${y + 38}H${fx + 17}Z" ${SV.fill} ${SV.key}/>` +
+    `<rect x="${x0 - 22}" y="${y - 42}" width="48" height="36" rx="6" ${SV.fill} ${SV.ink}/>` + SV.txt(x0 + 2, y - 19, loadLabel, 12) +
+    SV.arrowDown(x1 - 6, y - 54, y - 8) + SV.txt(x1 - 6, y - 60, 'tu mano', 12) +
+    `<path d="M${x0 + 2} ${y + 8}V${y + 52}M${fx} ${y + 40}V${y + 52}M${x1 - 6} ${y + 8}V${y + 52}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>` +
+    SV.dim(x0 + 2, fx, y + 56, dc + ' cm') + SV.dim(fx, x1 - 6, y + 56, de + ' cm'), 'Palanca con la carga a la izquierda y tu mano a la derecha');
 }
 // Balancín: niño pesado cerca del centro, niño ligero lejos.
 function seesawSVG() {
   return SV.wrap('0 0 320 150',
-    `<rect x="24" y="86" width="272" height="10" rx="4" fill="var(--indigo)" ${SV.ink}/>` +
-    `<path d="M160 96L144 128H176Z" fill="var(--gold)" ${SV.ink}/>` +
-    `<circle cx="112" cy="62" r="20" fill="var(--pink)" ${SV.ink}/>` + SV.txt(112, 34, 'pesado', 11) +
-    `<circle cx="276" cy="68" r="12" fill="var(--green)" ${SV.ink}/>` + SV.txt(276, 52, 'ligero', 11) +
-    `<path d="M112 138H160" stroke="var(--muted)" stroke-dasharray="4 3"/>` + SV.txt(136, 148, 'cerca', 11) +
-    `<path d="M160 138H276" stroke="var(--muted)" stroke-dasharray="4 3"/>` + SV.txt(218, 148, 'lejos', 11), 'Balancín en equilibrio: uno pesado cerca del centro y uno ligero lejos');
+    `<rect x="24" y="86" width="272" height="10" rx="4" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M160 96L144 128H176Z" ${SV.fill} ${SV.key}/>` +
+    `<circle cx="112" cy="62" r="20" ${SV.fill} ${SV.key}/>` + SV.txt(112, 34, 'pesado', 11) +
+    `<circle cx="276" cy="70" r="11" ${SV.fill} ${SV.ink}/>` + SV.txt(276, 50, 'ligero', 11) +
+    SV.dim(112, 160, 128, 'cerca') +SV.dim(160, 276, 128, 'lejos'), 'Balancín en equilibrio: uno pesado cerca del centro y uno ligero lejos');
 }
 // Polea fija: solo cambia la dirección.
 function fixedPulleySVG() {
   return SV.wrap('0 0 320 190',
-    `<rect x="100" y="10" width="120" height="10" rx="3" fill="var(--line)" ${SV.ink}/>` +
-    `<path d="M160 20V34" ${SV.ink}/><circle cx="160" cy="56" r="22" fill="var(--card)" ${SV.ink}/><circle cx="160" cy="56" r="4" fill="var(--ink)"/>` +
-    `<path d="M138 56V150M182 56V120" fill="none" ${SV.ink}/>` +
-    `<rect x="116" y="150" width="44" height="30" rx="6" fill="var(--line)" ${SV.ink}/>` + SV.txt(138, 170, 'carga', 12) +
-    SV.arrowDown(182, 100, 150) + SV.txt(226, 140, 'tiras ↓', 13, 'start') + SV.txt(108, 168, 'sube ↑', 13, 'end'), 'Polea fija: tiras hacia abajo y la carga sube');
+    `<rect x="100" y="10" width="120" height="10" rx="3" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M160 20V34" ${SV.ink} fill="none"/><circle cx="160" cy="56" r="22" ${SV.fill} ${SV.ink}/><circle cx="160" cy="56" r="3.5" fill="var(--ink)"/>` +
+    `<path d="M138 56V150M182 56V120" fill="none" ${SV.wire}/>` +
+    `<rect x="116" y="150" width="44" height="30" rx="6" ${SV.fill} ${SV.key}/>` + SV.txt(138, 170, 'carga', 12) +
+    SV.arrowDown(182, 100, 150) + SV.txt(198, 140, 'tiras ↓', 13, 'start') + SV.txt(108, 168, 'sube ↑', 13, 'end'), 'Polea fija: tiras hacia abajo y la carga sube');
 }
 // n tramos de cuerda sujetan la carga (polea móvil / polipasto simplificado).
 function ropesSVG(n) {
   const w = 150, x0 = 160 - w / 2, xs = Array.from({ length: n }, (_, i) => x0 + 10 + (w - 20) * (n === 1 ? .5 : i / (n - 1)));
   return SV.wrap('0 0 320 190',
-    `<rect x="${x0 - 20}" y="10" width="${w + 40}" height="10" rx="3" fill="var(--line)" ${SV.ink}/>` +
-    xs.map(x => `<path d="M${x} 20V104" fill="none" ${SV.ink}/>`).join('') +
-    `<rect x="${x0}" y="104" width="${w}" height="40" rx="8" fill="var(--indigo)" ${SV.ink}/>` + SV.txt(160, 129, 'carga', 14).replace('fill="var(--ink)"', 'fill="#fff"') +
+    `<rect x="${x0 - 20}" y="10" width="${w + 40}" height="10" rx="3" ${SV.fill} ${SV.ink}/>` +
+    xs.map(x => `<path d="M${x} 20V104" fill="none" ${SV.wire}/>`).join('') +
+    `<rect x="${x0}" y="104" width="${w}" height="40" rx="8" ${SV.fill} ${SV.key}/>` + SV.txt(160, 129, 'carga', 14) +
     SV.txt(160, 168, n + (n === 1 ? ' tramo sujeta' : ' tramos sujetan') + ' la carga', 13), n + ' tramos de cuerda sujetan la carga');
 }
 // Dos engranajes engranados. z1 = piñón (motriz, a la izquierda), z2 = rueda conducida.
@@ -91,14 +94,14 @@ function gearsSVG(z1, z2) {
   const th = 2.4, ro1 = z1 + th / 2, ro2 = z2 + th / 2;           // radio de paso = nº de dientes (módulo 2)
   const m = 6, W0 = 2 * ro1 + 2 * ro2 - th + 2 * m, H0 = 2 * Math.max(ro1, ro2) + 2 * m, s = 300 / W0, sw = (2.4 / s).toFixed(2);   // escala a 300 px de ancho; trazo constante
   const c1 = m + ro1, c2 = c1 + z1 + z2, cy = m + Math.max(ro1, ro2);
-  const gear = (cx, z, off, fill) => {
+  const gear = (cx, z, off, stroke) => {
     const a = 2 * Math.PI / z, p = [];
     for (let i = 0; i < z; i++) { const t = off + i * a; [[-.5, z - th / 2], [-.2, z + th / 2], [.2, z + th / 2], [.5, z - th / 2]].forEach(([d, r]) => p.push((cx + r * Math.cos(t + d * a)).toFixed(1) + ',' + (cy + r * Math.sin(t + d * a)).toFixed(1))); }
-    return `<polygon points="${p.join(' ')}" fill="${fill}" stroke="var(--ink)" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy}" r="${Math.max(2.5, z * .14)}" fill="var(--ink)"/>`;
+    return `<polygon points="${p.join(' ')}" fill="var(--fillt)" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy}" r="${Math.max(2.5, z * .14)}" fill="var(--ink)"/>`;
   };
   const H = H0 * s + 30;
   return SV.wrap(`0 0 320 ${H.toFixed(0)}`,
-    `<g transform="translate(10 0) scale(${s.toFixed(3)})">${gear(c1, z1, 0, 'var(--pink)')}${gear(c2, z2, Math.PI + Math.PI / z2, 'var(--indigo)')}</g>` +
+    `<g transform="translate(10 0) scale(${s.toFixed(3)})">${gear(c1, z1, 0, 'var(--gold)')}${gear(c2, z2, Math.PI + Math.PI / z2, 'var(--teal)')}</g>` +
     SV.txt(10, H - 8, 'piñón: ' + z1 + ' dientes', 13, 'start') + SV.txt(310, H - 8, 'rueda: ' + z2 + ' dientes', 13, 'end'), `Dos engranajes: piñón de ${z1} dientes y rueda de ${z2} dientes`);
 }
 
