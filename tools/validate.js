@@ -48,8 +48,12 @@
     c_polea_f: (n, a) => near(a[0] * n[1], n[0]),            // F·tramos = W
     c_relacion: (n, a) => near(a[0], n[1] / n[0]),
     c_velocidad: (n, a) => near(a[0] * n[2], n[1] * n[0]),         // n2·z2 = n1·z1
-    c_tren: (n, a) => near(a[0], n[0] * n[2])
+    c_tren: (n, a) => near(a[0], n[0] * n[2]),
+    c_dist_huecos: (n, a) => near(a[0], (n[1] - n[0]) * 8),                       // saltos × 8 mm
+    c_palanca_viga: (n, a) => near(a[0], (n[3] - n[1]) / (n[1] - n[2])),          // [15, apoyo, carga, mano]
+    c_engr_technic: (n, a) => near(a[0], n[1] / n[0]),
+    c_precio_kg: (n, a, s) => { const ka = n[0] / n[1], kb = n[2] / n[3], m = /lote (A|B)/.exec(s.a); if (!m) return false; const w = m[1], kw = Math.min(ka, kb); return (w === 'A') === (ka < kb) && near(num(s.a)[0], Math.round(kw * 10) / 10); }
   };
-  Object.entries(VER).forEach(([id, f]) => { const it = ITEMS[id]; if (!it) return add(`${id}: no existe`); for (let k = 0; k < 200; k++) { const s = it.gen(); const n = num(s.q), a = num(s.a); if (!f(n, a)) { add(`${id}: cálculo incorrecto → «${s.q}» = «${s.a}»`); break; } if (s.wrong.some(w => w === s.a)) { add(`${id}: distractor igual a la respuesta`); break; } } });
+  Object.entries(VER).forEach(([id, f]) => { const it = ITEMS[id]; if (!it) return add(`${id}: no existe`); for (let k = 0; k < 200; k++) { const s = it.gen(); const n = num(s.q), a = num(s.a); if (!f(n, a, s)) { add(`${id}: cálculo incorrecto → «${s.q}» = «${s.a}»`); break; } if (s.wrong.some(w => w === s.a)) { add(`${id}: distractor igual a la respuesta`); break; } } });
   return { items: ids.length, lecciones: seenLesson.size, n: P.length, problemas: P };
 })();

@@ -194,6 +194,99 @@ X('atasco', 'El tren que salta', [
   ['¿Qué haces primero?', ['Acercar los ejes hasta que engranen bien y repetir la prueba con poca carga', 'Cambiar el piñón por uno más grande sin mirar nada más', 'Añadir más peso para ver si se arregla', 'Tirar el montaje'], 0, 'Diagnóstico: cambia una sola cosa a la vez, empezando por lo más simple y barato.']
 ], 'p5');
 
+// =====================================================================
+// UNIDAD «GUÍA DE COMPRAS TECHNIC»
+// Fuentes consultadas en octubre de 2026 (foros de aficionados como Eurobricks, tiendas de piezas sueltas y reseñas de marcas compatibles).
+// NO incluye precios: cambian y no se han podido verificar. Todo lo que dependa de un vendedor o modelo es orientativo.
+// =====================================================================
+// Catálogo de piezas básicas: A viga · B pin · C eje · D tope (buje) · E engranaje
+function partsSVG() {
+  const badge = (x, y, l) => `<circle cx="${x}" cy="${y}" r="10" fill="var(--gold)"/><text x="${x}" y="${y + 4.5}" font-size="13" font-weight="800" text-anchor="middle" fill="var(--on-gold)" font-family="ui-monospace,Consolas,monospace">${l}</text>`;
+  const holes = [40, 67, 94, 121, 148].map(x => `<circle cx="${x}" cy="40" r="5.5" fill="var(--bg)" ${SV.ink}/>`).join('');
+  const gearPts = Array.from({ length: 12 }, (_, i) => { const a = 2 * Math.PI / 12, t = i * a; return [[-.5, 16], [-.2, 22], [.2, 22], [.5, 16]].map(([d, r]) => (258 + r * Math.cos(t + d * a)).toFixed(1) + ',' + (136 + r * Math.sin(t + d * a)).toFixed(1)).join(' '); }).join(' ');
+  return SV.wrap('0 0 320 190',
+    `<rect x="20" y="28" width="150" height="24" rx="12" ${SV.fill} ${SV.ink}/>${holes}` + badge(14, 20, 'A') +
+    `<rect x="214" y="36" width="64" height="10" rx="4" ${SV.fill} ${SV.ink}/><rect x="206" y="30" width="12" height="22" rx="3" ${SV.fill} ${SV.ink}/><path d="M238 36v10M246 36v10M254 36v10" ${SV.ink} fill="none"/>` + badge(196, 22, 'B') +
+    `<rect x="20" y="124" width="100" height="8" rx="2" ${SV.fill} ${SV.ink}/>` + badge(14, 108, 'C') + `<g transform="translate(138 128)"><rect x="-8" y="-2.4" width="16" height="4.8" rx="1.5" ${SV.fill} ${SV.ink}/><rect x="-2.4" y="-8" width="4.8" height="16" rx="1.5" ${SV.fill} ${SV.ink}/></g>` +
+    `<rect x="170" y="118" width="26" height="28" rx="5" ${SV.fill} ${SV.ink}/><path d="M176 132h14M183 125v14" ${SV.ink} fill="none"/>` + badge(168, 112, 'D') +
+    `<polygon points="${gearPts}" ${SV.fill} ${SV.ink}/><circle cx="258" cy="136" r="5" fill="var(--ink)"/>` + badge(232, 112, 'E') +
+    SV.txt(160, 182, 'catálogo de piezas básicas (no está a escala)', 11, 'middle', 500), 'Cinco piezas Technic marcadas con las letras A a E: viga, pin, eje, tope y engranaje');
+}
+// Viga con n agujeros numerados: apoyo en el agujero a, carga en el c y tu mano en el h.
+function beamSVG(n, a, c, h) {
+  const x0 = 24, st = (300 - 2 * x0) / (n - 1), X = i => x0 + (i - 1) * st, y = 70;
+  const holes = Array.from({ length: n }, (_, i) => `<circle cx="${X(i + 1)}" cy="${y}" r="4.6" fill="var(--bg)" ${SV.ink}/>` + SV.txt(X(i + 1), y - 16, i + 1, 9, 'middle', 500)).join('');
+  return SV.wrap('0 0 320 190',
+    `<rect x="${x0 - 14}" y="${y - 12}" width="${300 - 2 * x0 + 28}" height="24" rx="12" ${SV.fill} ${SV.ink}/>${holes}` +
+    SV.arrowDown(X(h), 14, y - 28) + SV.txt(X(h), 11, 'tu mano', 11, X(h) > 250 ? 'end' : 'middle') +
+    `<path d="M${X(a)} ${y + 12}L${X(a) - 12} ${y + 36}H${X(a) + 12}Z" ${SV.fill} ${SV.key}/>` + SV.txt(X(a), y + 52, 'apoyo', 11) +
+    `<path d="M${X(c)} ${y + 12}V148" fill="none" ${SV.wire}/><rect x="${X(c) - 24}" y="148" width="48" height="26" rx="6" ${SV.fill} ${SV.key}/>` + SV.txt(X(c), 166, 'carga', 11),
+    `Viga de ${n} agujeros: apoyo en el ${a}, carga en el ${c} y la mano en el ${h}`);
+}
+
+// ---- Lección 1 · Las piezas ----
+T('viga', 'Viga (beam)', 'Barra con agujeros en línea. Se nombra por su número de agujeros: una viga «5» tiene 5.', 'q1', 'Es el «hueso» de cualquier montaje.', 'Barra con agujeros');
+T('pin', 'Pin (clavija)', 'Pieza que une dos vigas metiéndose por sus agujeros. Los hay que agarran fuerte y los hay que dejan girar.', 'q1', 'Sin pines, todo se cae a trozos.', 'Une vigas por sus agujeros');
+T('eje', 'Eje (cruceta)', 'Varilla en forma de cruz que atraviesa agujeros en cruz y transmite el giro.', 'q1', 'Su sección es una «+».', 'Varilla en cruz que gira');
+T('tope', 'Tope (buje)', 'Pieza pequeña que se coloca en un eje para que no se deslice ni se escape.', 'q1', 'Como el tope de una cortina.', 'Evita que el eje se escape');
+F('ident_eje', 'En el dibujo, ¿qué letra es el eje (cruceta)?', 'C', ['A', 'B', 'D'], 'El eje es la varilla larga y fina, y su sección es una cruz «+» (se ve su extremo al lado). La A es una viga, la B un pin y la D un tope.', 'q1', partsSVG());
+F('ident_pin', 'En el dibujo, ¿qué letra es el pin?', 'B', ['A', 'C', 'E'], 'El pin es la pieza con cabeza y estrías que se mete en los agujeros de las vigas para unirlas. La A es una viga, la C un eje y la E un engranaje.', 'q1', partsSVG());
+
+// ---- Lección 2 · Medir en Technic ----
+F('paso', '¿Qué distancia hay entre los centros de dos agujeros contiguos de una viga Technic?', '8 mm', ['5 mm', '10 mm', '16 mm'], 'Todo el sistema va de 8 en 8 mm. Una viga «5» mide unos 40 mm (5 × 8). Es tu regla para calcular brazos de palanca contando agujeros.', 'q2');
+C('dist_huecos', 'En una viga, ¿qué distancia hay entre el centro del agujero 2 y el del agujero 9?', '56 mm', ['64 mm', '7 mm', '88 mm'], 'Entre el 2 y el 9 hay 7 saltos de 8 mm: 7 × 8 = 56 mm. Se cuentan los saltos, no los agujeros.', 'q2', () => {
+  const i = pick([1, 2, 3, 4]), j = i + pick([3, 4, 5, 6, 7]), d = (j - i) * 8;
+  return { q: `En una viga, ¿qué distancia hay entre el centro del agujero ${i} y el del agujero ${j}?`, a: d + ' mm', wrong: uniq([(d + 8) + ' mm', (j - i) + ' mm', (i + j) * 8 + ' mm'], d + ' mm'), explain: `Entre el ${i} y el ${j} hay ${j - i} saltos de 8 mm: ${j - i} × 8 = ${d} mm. Se cuentan los saltos, no los agujeros.` };
+});
+C('palanca_viga', 'Palanca con una viga de 15 agujeros: apoyo en el agujero 4, carga en el 2 y tu mano en el 14. ¿Cuántas veces multiplica tu fuerza?', '5 veces', ['6 veces', '7 veces', 'La divide entre 5'], 'Brazo de la carga: 4 − 2 = 2 saltos. Brazo de tu mano: 14 − 4 = 10 saltos. 10 ÷ 2 = 5. Se pueden contar saltos en vez de milímetros porque el factor 8 mm se cancela.', 'q2', () => {
+  const dc = pick([1, 2]), k = pick([2, 3, 4, 5]), de = dc * k, ap = pick([3, 4]), ca = ap - dc, ma = ap + de;
+  return { q: `Palanca con una viga de 15 agujeros: apoyo en el agujero ${ap}, carga en el ${ca} y tu mano en el ${ma}. ¿Cuántas veces multiplica tu fuerza?`, a: k + ' veces', wrong: uniq([(k + 1) + ' veces', (k + 2) + ' veces', 'La divide entre ' + k], k + ' veces'),
+    explain: `Brazo de la carga: ${ap} − ${ca} = ${dc} ${dc === 1 ? 'salto' : 'saltos'}. Brazo de tu mano: ${ma} − ${ap} = ${de} saltos. ${de} ÷ ${dc} = ${k}. Se pueden contar saltos en vez de milímetros porque el factor 8 mm se cancela.`, fig: beamSVG(15, ap, ca, ma) };
+}, beamSVG(15, 4, 2, 14));
+C('engr_technic', 'Un piñón de 8 dientes mueve una rueda de 24 dientes. ¿Qué relación de transmisión tiene?', '3 : 1', ['1 : 3', '4 : 1', '6 : 1'], 'Dientes de la conducida ÷ dientes del piñón: 24 ÷ 8 = 3. Los engranajes rectos más habituales en Technic son de 8, 16, 24 y 40 dientes.', 'q2', () => {
+  const [z1, z2] = pick([[8, 16], [8, 24], [8, 40], [16, 24], [16, 40]]), r = z2 / z1, a = fmt(r) + ' : 1';
+  return { q: `Un piñón de ${z1} dientes mueve una rueda de ${z2} dientes. ¿Qué relación de transmisión tiene?`, a, wrong: uniq(['1 : ' + fmt(r), fmt(r + 1) + ' : 1', fmt(r * 2) + ' : 1'], a), explain: `Dientes de la conducida ÷ dientes del piñón: ${z2} ÷ ${z1} = ${fmt(r)}. Los engranajes rectos más habituales en Technic son de 8, 16, 24 y 40 dientes.`, fig: gearsSVG(z1, z2) };
+});
+F('pin_agarre', 'Quieres que dos vigas puedan girar una respecto a la otra, como una bisagra. ¿Qué pin conviene?', 'Uno con poco agarre (liso)', ['Uno con mucho agarre', 'Da igual cuál', 'Ninguno: las vigas se sujetan solas'], 'Los pines con estrías agarran fuerte y dejan la unión rígida; los lisos dejan girar. Por color, suele ser: negros y azules con agarre, grises o tostados lisos. Es una regla práctica, no oficial: comprueba la pieza real.', 'q2');
+
+// ---- Lección 3 · Dónde comprar ----
+F('comprar_sets', 'Quieres muchas piezas variadas gastando poco. ¿Qué suele recomendarse en los foros de aficionados?', 'Comprar sets usados completos, reutilizar sus piezas y completar lo que falte', ['Comprar solo piezas sueltas nuevas, una a una', 'Comprar el set más caro y nuevo', 'Esperar a que todo baje de precio'], 'En los foros se repite que, para sumar piezas, suele salir más barato comprar sets (sobre todo usados) y rellenar huecos con piezas sueltas. Es una opinión de aficionados, no una garantía de precio.', 'q3');
+F('comprar_suelta', 'Te faltan varios engranajes concretos de 24 dientes. ¿Dónde es más fácil encontrarlos sueltos?', 'En mercados de piezas sueltas como BrickLink o Brick Owl', ['En cualquier juguetería, sueltos', 'Solo en una tienda física oficial', 'No se venden sueltos'], 'Esos mercados venden piezas sueltas por referencia, de muchos vendedores. Mira envío y mínimos de pedido de cada vendedor: a veces el envío cuesta más que las piezas.', 'q3');
+F('comprar_lote', 'Vas a comprar un lote usado «por peso». ¿Qué conviene comprobar antes?', 'Que haya fotos o lista de lo que trae, y si son piezas originales o compatibles', ['Solo el precio', 'Que el color te guste', 'Nada: todos los lotes son parecidos'], 'Un lote «por peso» puede ser mayormente ladrillos normales. Sin fotos ni lista, no sabes si trae vigas, ejes y engranajes. En segunda mano a veces mezclan piezas originales y de otras marcas.', 'q3');
+F('comprar_compat', 'Una marca dice «compatible con Technic». ¿Qué es lo más prudente?', 'Mirar reseñas de ese modelo: el encaje puede variar entre modelos', ['Asumir que todo encaja perfecto', 'Asumir que es peor y no usarla', 'Pensar que sus motores servirán con la electrónica de LEGO'], 'Las reseñas de CaDA o Mould King dicen que muchas piezas mecánicas son combinables, pero que el ajuste de los pines no es uniforme y que su electrónica es un sistema propio. fischertechnik, en cambio, no es compatible.', 'q3');
+O('compra', 'Ordena los pasos de una compra segura', ['Haz la lista de piezas que necesita tu misión', 'Compara el precio por pieza en 2 o 3 sitios', 'Mira el envío y la opinión del vendedor', 'Compra poco al principio', 'Comprueba que encajan antes de pedir más'], 'Se empieza por la necesidad (la misión), se compara, y se compra poco para probar el encaje antes de gastar más. Así un fallo de compra cuesta poco.', 'q3');
+X('primera_compra', 'Tu primera compra', [
+  'Tienes unos 30 € y ningún Technic.',
+  'Quieres montar una palanca con una viga larga y un tren de engranajes con manivela.',
+  'En una web de segunda mano hay un lote «piezas Technic, 2 kg» con fotos y lista del contenido.',
+  'Otro lote, «piezas compatibles, 1 kg», no tiene fotos ni lista.'
+], [
+  ['¿Cuál miras primero?', ['El lote con fotos y lista: puedes comprobar que trae vigas largas, pines, ejes y engranajes', 'El lote sin fotos: seguro que es mejor sorpresa', 'El más barato, sea cual sea', 'Ninguno: compras un set nuevo grande'], 0, 'Con fotos y lista puedes ver si trae lo que tu misión necesita. Sin ellas, es una lotería.'],
+  ['¿Qué haces con el lote sin fotos?', ['Pides fotos o la lista antes de decidir', 'Lo compras sin más', 'Lo compras si es más barato por kilo', 'Lo compras dos veces para asegurar'], 0, 'Un buen vendedor enseña lo que vende. Si no te lo enseña, mejor no comprarlo.'],
+  ['Cuando llegue el lote, ¿qué completas en una tienda de piezas sueltas?', ['Solo lo que falte tras mirar lo que trae (p. ej. engranajes de 8 y 24 dientes)', 'Todo lo de la lista, por si acaso', 'Nada: ya lo tienes todo seguro', 'Un motor y una batería'], 0, 'Primero se mira lo que ya tienes; luego se compra solo lo que falta. Menos gasto y menos piezas repetidas.']
+], 'q3');
+
+// ---- Lección 4 · Tu kit de 30 € ----
+C('precio_kg', 'Lote A: 12 € por 2 kg. Lote B: 15 € por 2,5 kg. ¿Cuál sale más barato por kilo?', 'Salen igual (6 € por kilo)', ['El lote A (6,5 € por kilo)', 'El lote B (5 € por kilo)', 'No se puede saber'], 'Se divide el precio entre el peso: A = 12 ÷ 2 = 6 €/kg; B = 15 ÷ 2,5 = 6 €/kg. Ojo: el precio por kilo no dice cuántas piezas útiles trae.', 'q4', () => {
+  const pa = pick([9, 12, 15, 18]), wa = pick([1, 1.5, 2, 2.5]), pb = pick([10, 14, 16, 20]), wb = pick([1, 1.5, 2, 3]), ka = pa / wa, kb = pb / wb;
+  if (Math.abs(ka - kb) < 0.3) return ITEMS.c_precio_kg.gen();
+  const win = ka < kb ? 'A' : 'B', kw = Math.min(ka, kb), kl = Math.max(ka, kb), other = win === 'A' ? 'B' : 'A';
+  return { q: `Lote A: ${pa} € por ${fmt(wa)} kg. Lote B: ${pb} € por ${fmt(wb)} kg. ¿Cuál sale más barato por kilo?`, a: `El lote ${win} (${fmt(kw)} € por kilo)`, wrong: uniq([`El lote ${other} (${fmt(kl)} € por kilo)`, 'Salen igual', 'No se puede saber'], `El lote ${win} (${fmt(kw)} € por kilo)`),
+    explain: `Se divide el precio entre el peso: A = ${pa} ÷ ${fmt(wa)} = ${fmt(ka)} €/kg; B = ${pb} ÷ ${fmt(wb)} = ${fmt(kb)} €/kg. Ojo: el precio por kilo no dice cuántas piezas útiles trae.` };
+});
+F('prioridad', 'Para empezar con palancas y engranajes, ¿qué conviene tener antes que un motor?', 'Vigas largas, pines, ejes, topes y engranajes', ['Un motor y una batería', 'Ruedas grandes', 'Piezas decorativas'], 'Con vigas, ejes y engranajes ya haces todas las lecciones de ventaja mecánica moviendo con la mano. El motor llega más tarde, con sus normas de seguridad.', 'q4');
+F('manivela', '¿Para qué sirve una manivela en tus primeros montajes sin motor?', 'Para girar los ejes a mano y notar el esfuerzo de cada relación de transmisión', ['Para ahorrar piezas', 'Para que el montaje sea más rápido que con motor', 'No sirve para nada útil'], 'Girar a mano te deja sentir en los dedos lo que dicen los cálculos: con una reducción grande cuesta menos girar, pero das más vueltas.', 'q4');
+F('bateria', 'Más adelante usarás motores con batería. ¿Qué regla de seguridad es correcta?', 'No usar ni cargar una batería hinchada, caliente o dañada, y usar solo el cargador indicado', ['Cualquier cargador vale si encaja el conector', 'Dejarla cargando tapada con una tela', 'Si está hinchada, basta con usarla poco'], 'Las baterías de litio dañadas o hinchadas pueden calentarse e incendiarse. Se retiran, no se usan ni se cargan, y se llevan a un punto de reciclaje.', 'q4');
+X('kit30', 'Tu kit de unos 30 €', [
+  'Tu objetivo: montar una palanca y un tren de engranajes con manivela, sin motor.',
+  'Ya tienes algunas piezas de Lego normal y ruedas, pero ningún Technic.',
+  'Has conseguido un lote usado con vigas largas, pines y ejes, pero casi sin engranajes ni topes.'
+], [
+  ['¿Qué te falta comprar primero?', ['Engranajes (8, 16, 24 y 40 dientes) y unos topes', 'Un motor y una batería', 'Más vigas largas, aunque ya tienes', 'Piezas de colores'], 0, 'Compra solo lo que falta para tu misión. Con engranajes y topes ya montas el tren con manivela.'],
+  ['Compras engranajes de otra marca «compatible». ¿Qué haces al recibirlos?', ['Pruebas el encaje con tus ejes y pines antes de pedir más', 'Los montas todos a la vez y fuerzas el encaje', 'Los tiras si no encajan a la primera, sin mirar nada', 'Los usas también como piezas de motor'], 0, 'El encaje puede variar entre marcas y modelos. Probar una unidad antes de pedir más ahorra dinero.'],
+  ['¿Cuándo pasas a pensar en motores y baterías?', ['Cuando ya domines las lecciones de mecánica con la manivela y sepas qué necesitas', 'Antes de montar nada', 'Nunca: no hacen falta', 'El primer día'], 0, 'El motor añade coste y seguridad. Primero se entiende el mecanismo a mano; después se automatiza.']
+], 'q4');
+
 // Unidades y lecciones (≤ 7 items por lección, ≈ 2-4 min)
 const UNITS = [
   { id: 'u_vm', title: 'Ventaja mecánica', sub: 'Palancas, poleas y engranajes: ganar fuerza', lessons: [
@@ -207,6 +300,16 @@ const UNITS = [
       note: { title: 'Contar dientes', body: 'Dos engranajes engranan sus dientes. Para saber qué hacen basta **contar dientes**:\n\n• relación = dientes de la conducida ÷ dientes del piñón\n• pequeño mueve a grande → **lento y fuerte**\n• grande mueve a pequeño → **rápido y flojo**' } },
     { id: 'l_tren', title: 'Engranajes en acción', sub: 'Par, trenes y diagnóstico', icon: '🔧', items: ['t_par', 'f_par_vel', 'c_tren', 'o_tren', 'x_atasco'],
       note: { title: '⚠️ Seguridad primero', body: 'Los engranajes en marcha **pellizcan** dedos, pelo y ropa.\n\n• Para el motor o suelta la manivela antes de tocar nada.\n• Empieza siempre con poca carga.\n• Con piezas pequeñas, trabaja en una bandeja para que no se pierdan.' } }
+  ]},
+  { id: 'u_compras', title: 'Guía de compras Technic', sub: 'Qué piezas necesitas y cómo comprar poco y bien', lessons: [
+    { id: 'l_piezas', title: 'Las piezas Technic', sub: 'Viga, pin, eje y tope', icon: '🧩', items: ['t_viga', 't_pin', 't_eje', 't_tope', 'f_ident_eje', 'f_ident_pin'],
+      note: { title: 'El alfabeto del Technic', body: 'Casi todo lo que montarás con Technic sale de pocas piezas:\n\n• **vigas**: el esqueleto\n• **pines**: unen las vigas\n• **ejes**: transmiten el giro\n• **topes**: sujetan los ejes\n• **engranajes**: ya los conoces\n\nCon eso ya puedes hacer palancas y trenes de engranajes.' } },
+    { id: 'l_medir', title: 'Medir en Technic', sub: 'Todo va de 8 en 8 mm', icon: '📏', items: ['f_paso', 'c_dist_huecos', 'c_palanca_viga', 'c_engr_technic', 'f_pin_agarre'],
+      note: { title: 'Contar agujeros es medir', body: 'La distancia entre agujeros contiguos es de **8 mm**.\n\nAsí puedes calcular una palanca **contando agujeros** (saltos) en vez de medir con regla. Es la misma regla de tres de antes.\n\nLos engranajes rectos más habituales tienen **8, 16, 24 y 40 dientes**.' } },
+    { id: 'l_donde', title: 'Dónde comprar', sub: 'Sets, lotes y piezas sueltas', icon: '🛒', items: ['f_comprar_sets', 'f_comprar_suelta', 'f_comprar_lote', 'f_comprar_compat', 'o_compra', 'x_primera_compra'],
+      note: { title: 'Orientativo, no oficial', body: 'Esto resume foros de aficionados, tiendas de piezas sueltas y reseñas de marcas compatibles (consultado en octubre de 2026).\n\n**No hay precios** porque cambian: compruébalos tú el día de comprar.\n\nCompra poco al principio y prueba el encaje antes de pedir más.' } },
+    { id: 'l_kit30', title: 'Tu kit de unos 30 €', sub: 'Qué comprar primero', icon: '🧰', items: ['c_precio_kg', 'f_prioridad', 'f_manivela', 'f_bateria', 'x_kit30'],
+      note: { title: 'Primero la mano, luego el motor', body: 'Para las lecciones de ventaja mecánica no necesitas motor: te basta una **manivela** para girar los ejes con la mano.\n\nLista mínima útil: vigas largas, pines, ejes, topes y engranajes de 8, 16, 24 y 40 dientes.\n\n⚠️ Más adelante, con baterías: nada de cargar baterías hinchadas, calientes o dañadas.' } }
   ]}
 ];
 const LESSON_BY_ID = {};
