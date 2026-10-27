@@ -105,9 +105,15 @@ function viewHome() {
   const nextL = UNITS.flatMap(u => u.lessons).find(l => !S.done[l.id]);
   if (nextL) wrap.append(h('button', { class: 'card next-card', onclick: () => { sfx.tap(); startLesson(nextL); } },
     h('span', { class: 'circle sm' }, nextL.icon), h('div', {}, h('small', {}, 'Siguiente lección'), h('b', {}, nextL.title)), h('span', { class: 'go' }, 'Ir ›')));
+  // acceso directo a las unidades «transversales» (p. ej. la guía de compras), para que no queden escondidas al final del camino
+  UNITS.filter(u => u.shortcut).forEach(u => {
+    const n = u.lessons.filter(l => S.done[l.id]).length;
+    wrap.append(h('button', { class: 'card review-card', onclick: () => { sfx.tap(); S.ui.collapsed[u.id] = false; save(); viewHome(); const el = document.getElementById('u-' + u.id); if (el) el.scrollIntoView({ block: 'start' }); } },
+      h('span', { class: 'big-emoji' }, u.icon || '📌'), h('div', {}, h('b', {}, u.title), h('small', {}, `${n}/${u.lessons.length} lecciones · ${u.sub}`)), h('span', { class: 'chev' }, '›')));
+  });
   UNITS.forEach(u => {
     const doneN = u.lessons.filter(l => S.done[l.id]).length, shut = S.ui.collapsed[u.id] ?? !u.lessons.includes(nextL);
-    wrap.append(h('button', { class: 'unit', 'aria-expanded': !shut, onclick: () => { S.ui.collapsed[u.id] = !shut; save(); viewHome(); } },
+    wrap.append(h('button', { class: 'unit', id: 'u-' + u.id, 'aria-expanded': !shut, onclick: () => { S.ui.collapsed[u.id] = !shut; save(); viewHome(); } },
       h('span', { class: 'uhead' }, h('span', {}, u.title), h('span', { class: 'ucount' }, `${doneN}/${u.lessons.length} ${shut ? '▸' : '▾'}`)), h('small', {}, u.sub)));
     if (shut) return;
     const path = h('div', { class: 'path' });

@@ -301,7 +301,7 @@ const UNITS = [
     { id: 'l_tren', title: 'Engranajes en acción', sub: 'Par, trenes y diagnóstico', icon: '🔧', items: ['t_par', 'f_par_vel', 'c_tren', 'o_tren', 'x_atasco'],
       note: { title: '⚠️ Seguridad primero', body: 'Los engranajes en marcha **pellizcan** dedos, pelo y ropa.\n\n• Para el motor o suelta la manivela antes de tocar nada.\n• Empieza siempre con poca carga.\n• Con piezas pequeñas, trabaja en una bandeja para que no se pierdan.' } }
   ]},
-  { id: 'u_compras', title: 'Guía de compras Technic', sub: 'Qué piezas necesitas y cómo comprar poco y bien', lessons: [
+  { id: 'u_compras', shortcut: true, icon: '🛒', title: 'Guía de compras Technic', sub: 'Qué piezas necesitas y cómo comprar poco y bien', lessons: [
     { id: 'l_piezas', title: 'Las piezas Technic', sub: 'Viga, pin, eje y tope', icon: '🧩', items: ['t_viga', 't_pin', 't_eje', 't_tope', 'f_ident_eje', 'f_ident_pin'],
       note: { title: 'El alfabeto del Technic', body: 'Casi todo lo que montarás con Technic sale de pocas piezas:\n\n• **vigas**: el esqueleto\n• **pines**: unen las vigas\n• **ejes**: transmiten el giro\n• **topes**: sujetan los ejes\n• **engranajes**: ya los conoces\n\nCon eso ya puedes hacer palancas y trenes de engranajes.' } },
     { id: 'l_medir', title: 'Medir en Technic', sub: 'Todo va de 8 en 8 mm', icon: '📏', items: ['f_paso', 'c_dist_huecos', 'c_palanca_viga', 'c_engr_technic', 'f_pin_agarre'],
