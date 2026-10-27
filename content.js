@@ -45,7 +45,7 @@ const SV = {
   key: 'stroke="var(--gold)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"',      // lo que importa (apoyo, carga, fuerza)
   wire: 'stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round"',                              // cuerdas
   fill: 'fill="var(--fillt)"',
-  wrap: (vb, inner, label) => `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label}" style="width:100%;height:auto;max-height:210px">${inner}</svg>`,
+  wrap: (vb, inner, label, extra = '') => `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label}" style="width:100%;height:auto;max-height:210px"${extra}>${inner}</svg>`,
   txt: (x, y, s, size = 12, anchor = 'middle', w = 600) => `<text x="${x}" y="${y}" font-size="${size}" font-weight="${w}" text-anchor="${anchor}" fill="var(--ink)" font-family="ui-monospace,Consolas,monospace">${s}</text>`,
   arrowDown: (x, y1, y2) => `<path d="M${x} ${y1}V${y2}M${x - 7} ${y2 - 10}L${x} ${y2}L${x + 7} ${y2 - 10}" fill="none" stroke="var(--gold)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`,
   // cota de dibujo técnico: línea con topes y rótulo
@@ -94,15 +94,15 @@ function gearsSVG(z1, z2) {
   const th = 2.4, ro1 = z1 + th / 2, ro2 = z2 + th / 2;           // radio de paso = nº de dientes (módulo 2)
   const m = 6, W0 = 2 * ro1 + 2 * ro2 - th + 2 * m, H0 = 2 * Math.max(ro1, ro2) + 2 * m, s = 300 / W0, sw = (2.4 / s).toFixed(2);   // escala a 300 px de ancho; trazo constante
   const c1 = m + ro1, c2 = c1 + z1 + z2, cy = m + Math.max(ro1, ro2);
-  const gear = (cx, z, off, stroke) => {
+  const gear = (cx, z, off, stroke, role) => {
     const a = 2 * Math.PI / z, p = [];
     for (let i = 0; i < z; i++) { const t = off + i * a; [[-.5, z - th / 2], [-.2, z + th / 2], [.2, z + th / 2], [.5, z - th / 2]].forEach(([d, r]) => p.push((cx + r * Math.cos(t + d * a)).toFixed(1) + ',' + (cy + r * Math.sin(t + d * a)).toFixed(1))); }
-    return `<polygon points="${p.join(' ')}" fill="var(--fillt)" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy}" r="${Math.max(2.5, z * .14)}" fill="var(--ink)"/>`;
+    return `<g data-r="${role}" data-cx="${cx}" data-cy="${cy}"><polygon points="${p.join(' ')}" fill="var(--fillt)" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy}" r="${Math.max(2.5, z * .14)}" fill="var(--ink)"/><circle cx="${cx}" cy="${cy - z * .62}" r="${Math.max(2, z * .09)}" fill="var(--gold)"/></g>`;
   };
   const H = H0 * s + 30;
   return SV.wrap(`0 0 320 ${H.toFixed(0)}`,
-    `<g transform="translate(10 0) scale(${s.toFixed(3)})">${gear(c1, z1, 0, 'var(--gold)')}${gear(c2, z2, Math.PI + Math.PI / z2, 'var(--teal)')}</g>` +
-    SV.txt(10, H - 8, 'piñón: ' + z1 + ' dientes', 13, 'start') + SV.txt(310, H - 8, 'rueda: ' + z2 + ' dientes', 13, 'end'), `Dos engranajes: piñón de ${z1} dientes y rueda de ${z2} dientes`);
+    `<g transform="translate(10 0) scale(${s.toFixed(3)})">${gear(c1, z1, 0, 'var(--gold)', 'g1')}${gear(c2, z2, Math.PI + Math.PI / z2, 'var(--teal)', 'g2')}</g>` +
+    SV.txt(10, H - 8, 'piñón: ' + z1 + ' dientes', 13, 'start') + SV.txt(310, H - 8, 'rueda: ' + z2 + ' dientes', 13, 'end'), `Dos engranajes: piñón de ${z1} dientes y rueda de ${z2} dientes`, ` data-anim="gears" data-z1="${z1}" data-z2="${z2}"`);
 }
 
 // =====================================================================
@@ -287,6 +287,182 @@ X('kit30', 'Tu kit de unos 30 €', [
   ['¿Cuándo pasas a pensar en motores y baterías?', ['Cuando ya domines las lecciones de mecánica con la manivela y sepas qué necesitas', 'Antes de montar nada', 'Nunca: no hacen falta', 'El primer día'], 0, 'El motor añade coste y seguridad. Primero se entiende el mecanismo a mano; después se automatiza.']
 ], 'q4');
 
+// =====================================================================
+// UNIDAD «MECANISMOS QUE MUEVEN»
+// Anécdotas y datos reales comprobados en octubre de 2026 (Antikythera, Ginebra/Cruz de Malta, autobloqueo del tornillo sin fin, frase atribuida a Arquímedes).
+// =====================================================================
+let _cid = 0;   // ids únicos para los recortes (clipPath) de las figuras
+// Rueda dentada «de dibujo»: z dientes, radio de paso rp, altura de diente th, fase off (rad). Devuelve los puntos de un polígono.
+function toothPts(cx, cy, z, rp, th, off) {
+  const a = 2 * Math.PI / z, p = [];
+  for (let i = 0; i < z; i++) { const t = off + i * a; [[-.38, rp - th / 2], [-.16, rp + th / 2], [.16, rp + th / 2], [.38, rp - th / 2]].forEach(([d, r]) => p.push((cx + r * Math.cos(t + d * a)).toFixed(1) + ',' + (cy + r * Math.sin(t + d * a)).toFixed(1))); }
+  return p.join(' ');
+}
+
+// ---- Animaciones: app.js las llama con (svg, t) y t en segundos ----
+const ANIMS = {};
+const _q = (s, r) => s.querySelector(`[data-r="${r}"]`);
+const _a = (el, o) => { for (const k in o) el.setAttribute(k, (+o[k]).toFixed(2)); };
+const _rot = (el, deg) => el.setAttribute('transform', `rotate(${deg.toFixed(2)} ${el.dataset.cx} ${el.dataset.cy})`);
+ANIMS.gears = (s, t) => { const z1 = +s.dataset.z1, z2 = +s.dataset.z2, a = t * 45; _rot(_q(s, 'g1'), a); _rot(_q(s, 'g2'), -a * z1 / z2); };   // ω2 = −ω1 · z1/z2
+ANIMS.crank = (s, t) => {
+  const cx = +s.dataset.cx, cy = +s.dataset.cy, r = +s.dataset.r, L = +s.dataset.l, a = t * 1.7;
+  const px = cx + r * Math.cos(a), py = cy + r * Math.sin(a), sx = px + Math.sqrt(L * L - (py - cy) ** 2);
+  _a(_q(s, 'arm'), { x2: px, y2: py }); _a(_q(s, 'pin'), { cx: px, cy: py }); _a(_q(s, 'rod'), { x1: px, y1: py, x2: sx, y2: cy }); _a(_q(s, 'wrist'), { cx: sx, cy }); _a(_q(s, 'piston'), { x: sx - 15 });
+};
+ANIMS.cam = (s, t) => {
+  const cx = +s.dataset.cx, cy = +s.dataset.cy, R = +s.dataset.rr, e = +s.dataset.e, a = t * 1.6;
+  const Cx = cx + e * Math.cos(a), Cy = cy + e * Math.sin(a), yc = Cy - Math.sqrt(R * R - (e * Math.cos(a)) ** 2);   // punto de contacto bajo el seguidor
+  _a(_q(s, 'disc'), { cx: Cx, cy: Cy }); _a(_q(s, 'link'), { x2: Cx, y2: Cy }); _a(_q(s, 'rod'), { y: 22, height: yc - 22 }); _a(_q(s, 'tip'), { cy: yc });
+};
+ANIMS.rack = (s, t) => {
+  const rp = +s.dataset.rp, p = +s.dataset.p, a = 1.5 * Math.sin(t * 0.9);   // el piñón oscila para que la cremallera no se salga
+  _rot(_q(s, 'pin'), a * 180 / Math.PI);
+  _q(s, 'rack').setAttribute('transform', `translate(${(((-rp * a) % p) + p) % p} 0)`);          // dientes: solo importa el desplazamiento módulo el paso
+  _q(s, 'mark').setAttribute('transform', `translate(${(-rp * a).toFixed(2)} 0)`);               // marca dorada: desplazamiento real
+};
+ANIMS.worm = (s, t) => {
+  const z = +s.dataset.z, pw = +s.dataset.pw, revs = t * 0.5;   // 0,5 vueltas del tornillo por segundo
+  _rot(_q(s, 'wheel'), -revs * 360 / z);                         // un diente de la rueda por cada vuelta del tornillo
+  _q(s, 'thread').setAttribute('transform', `translate(${((revs * pw) % pw).toFixed(2)} 0)`);
+};
+
+// ---- Figuras ----
+// Los cuatro movimientos básicos
+function movimientosSVG() {
+  const P = (i, inner, label) => `<g transform="translate(${i * 80} 0)">${inner}${SV.txt(40, 104, label, 11)}</g>`;
+  const head = (x, y, dx1, dy1, dx2, dy2) => `<path d="M${x + dx1} ${y + dy1}L${x} ${y}L${x + dx2} ${y + dy2}" fill="none" ${SV.key}/>`;
+  return SV.wrap('0 0 320 112',
+    P(0, `<circle cx="40" cy="56" r="20" ${SV.fill} ${SV.ink}/><circle cx="40" cy="56" r="3" fill="var(--ink)"/><path d="M57 25A34 34 0 1 1 8 44" fill="none" ${SV.key}/><path d="M3 38L8 44L15 41" fill="none" ${SV.key}/>`, 'rotativo') +
+    P(1, `<rect x="6" y="44" width="26" height="24" rx="4" ${SV.fill} ${SV.ink}/><path d="M38 56H72" fill="none" ${SV.key}/>${head(72, 56, -7, -6, -7, 6)}`, 'lineal') +
+    P(2, `<path d="M6 78H74" ${SV.wire} fill="none"/><rect x="27" y="52" width="26" height="24" rx="4" ${SV.fill} ${SV.ink}/><path d="M12 38H68" fill="none" ${SV.key}/>${head(68, 38, -7, -6, -7, 6)}${head(12, 38, 7, -6, 7, 6)}`, 'alternativo') +
+    P(3, `<circle cx="40" cy="24" r="3.5" fill="var(--ink)"/><path d="M40 24V72" ${SV.wire} fill="none"/><circle cx="40" cy="78" r="8" ${SV.fill} ${SV.ink}/><path d="M20 76A52 52 0 0 0 60 76" fill="none" ${SV.key}/>${head(20, 76, -5, -9, 4, -9)}${head(60, 76, 5, -9, -4, -9)}`, 'oscilante'),
+    'Cuatro movimientos: rotativo, lineal, alternativo y oscilante', ' data-fig="mov"');
+}
+// Biela-manivela (animada): la manivela gira y la biela mueve el pistón
+function crankSVG() {
+  const cx = 70, cy = 100, r = 34, L = 120;
+  return SV.wrap('0 0 320 190',
+    `<rect x="132" y="${cy - 25}" width="120" height="50" rx="4" fill="none" ${SV.ink}/>` +
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 4"/>` +
+    `<rect data-r="piston" x="${cx + r + L - 15}" y="${cy - 18}" width="30" height="36" rx="3" ${SV.fill} ${SV.key}/>` +
+    `<line data-r="rod" x1="${cx + r}" y1="${cy}" x2="${cx + r + L}" y2="${cy}" ${SV.wire} style="stroke-width:3.2"/>` +
+    `<line data-r="arm" x1="${cx}" y1="${cy}" x2="${cx + r}" y2="${cy}" ${SV.key} style="stroke-width:4"/>` +
+    `<circle cx="${cx}" cy="${cy}" r="5" fill="var(--ink)"/><circle data-r="pin" cx="${cx + r}" cy="${cy}" r="4.5" fill="var(--gold)"/><circle data-r="wrist" cx="${cx + r + L}" cy="${cy}" r="3.5" fill="var(--ink)"/>` +
+    SV.txt(cx, cy + r + 24, 'manivela', 12) + SV.txt(cx + 70, cy - 40, 'biela', 12) + SV.txt(192, cy + 44, 'pistón en su cilindro', 12) +
+    SV.dim(cx - r + L + 0, cx + r + L, 170, 'carrera = 2 × radio'),
+    'Biela-manivela animada: la manivela gira y el pistón va y viene', ` data-anim="crank" data-cx="${cx}" data-cy="${cy}" data-r="${r}" data-l="${L}"`);
+}
+// Leva excéntrica (animada): el seguidor sube y baja 2 × la excentricidad
+function camSVG() {
+  const cx = 90, cy = 128, R = 40, e = 14;
+  return SV.wrap('0 0 320 190',
+    `<rect x="${cx - 22}" y="40" width="8" height="30" ${SV.fill} ${SV.ink}/><rect x="${cx + 14}" y="40" width="8" height="30" ${SV.fill} ${SV.ink}/>` +
+    `<circle data-r="disc" cx="${cx}" cy="${cy}" r="${R}" ${SV.fill} ${SV.ink}/>` +
+    `<line data-r="link" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="${cx}" cy="${cy}" r="4.5" fill="var(--ink)"/>` +
+    `<rect data-r="rod" x="${cx - 6}" y="22" width="12" height="${cy - R - e - 22}" rx="2" ${SV.fill} ${SV.key}/><circle data-r="tip" cx="${cx}" cy="${cy - R - e}" r="4" fill="var(--gold)"/>` +
+    `<path d="M${cx + 52} ${cy - R - e}H${cx + 90}M${cx + 52} ${cy - R + e}H${cx + 90}M${cx + 84} ${cy - R - e}V${cy - R + e}" stroke="var(--muted)" stroke-width="1.3" fill="none"/>` +
+    SV.txt(cx + 96, cy - R + 4, 'sube y baja', 11, 'start') + SV.txt(cx + 96, cy - R + 20, '2 × excentricidad', 11, 'start') +
+    SV.txt(cx, 182, 'leva excéntrica y seguidor', 12),
+    'Leva excéntrica animada: el seguidor sube y baja', ` data-anim="cam" data-cx="${cx}" data-cy="${cy}" data-rr="${R}" data-e="${e}"`);
+}
+// Piñón y cremallera (animados): el giro del piñón mueve la cremallera en línea recta
+function rackSVG() {
+  const cx = 160, cy = 70, z = 12, rp = 30, th = 5, p = 2 * Math.PI * rp / z, yr = cy + rp + th / 2, yt = cy + rp - th / 2;
+  let d = `M-80 ${yr + 22}V${yr}`;
+  for (let k = -17; k < 20; k++) { const c = cx + p / 2 + k * p; d += `L${(c - .38 * p).toFixed(1)} ${yr}L${(c - .16 * p).toFixed(1)} ${yt}L${(c + .16 * p).toFixed(1)} ${yt}L${(c + .38 * p).toFixed(1)} ${yr}`; }
+  d += `L420 ${yr}V${yr + 22}Z`;
+  return SV.wrap('0 0 320 170',
+    `<g data-r="rack"><path d="${d}" ${SV.fill} ${SV.ink}/></g>` +
+    `<g data-r="mark"><circle cx="${cx + 2.5 * p}" cy="${yr + 11}" r="4" fill="var(--gold)"/></g>` +
+    `<g data-r="pin" data-cx="${cx}" data-cy="${cy}"><polygon points="${toothPts(cx, cy, z, rp, th, Math.PI / 2)}" ${SV.fill} ${SV.ink}/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/><circle cx="${cx}" cy="${cy - 20}" r="4" fill="var(--gold)"/></g>` +
+    SV.txt(cx, 16, 'piñón (gira)', 12) + SV.txt(cx, 160, 'cremallera (avanza en línea recta)', 12),
+    'Piñón y cremallera animados', ` data-anim="rack" data-cx="${cx}" data-cy="${cy}" data-rp="${rp}" data-p="${p.toFixed(3)}"`);
+}
+// Tornillo sin fin y rueda (animados): una vuelta del tornillo = un diente de la rueda
+function wormSVG(z = 14) {
+  const cx = 160, cy = 66, Rw = 44, th = 6, pw = 2 * Math.PI * Rw / z, ty = cy + Rw + 2, id = 'wc' + (++_cid);
+  const threads = Array.from({ length: Math.ceil(260 / pw) + 4 }, (_, i) => { const x = 40 - 2 * pw + i * pw; return `<path d="M${x.toFixed(1)} ${ty + 30}L${(x + pw * .6).toFixed(1)} ${ty}" fill="none" ${SV.ink}/>`; }).join('');
+  return SV.wrap('0 0 320 190',
+    `<g data-r="wheel" data-cx="${cx}" data-cy="${cy}"><polygon points="${toothPts(cx, cy, z, Rw, th, Math.PI / 2)}" ${SV.fill} ${SV.key}/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/><circle cx="${cx}" cy="${cy - 24}" r="4" fill="var(--gold)"/></g>` +
+    `<clipPath id="${id}"><rect x="40" y="${ty}" width="240" height="30" rx="8"/></clipPath><rect x="40" y="${ty}" width="240" height="30" rx="8" ${SV.fill} ${SV.ink}/>` +
+    `<g clip-path="url(#${id})"><g data-r="thread">${threads}</g></g>` +
+    SV.txt(310, 14, 'rueda de ' + z + ' dientes', 11, 'end') + SV.txt(160, 184, 'tornillo sin fin: 1 vuelta = 1 diente de la rueda', 11),
+    'Tornillo sin fin animado engranando con una rueda dentada', ` data-anim="worm" data-z="${z}" data-pw="${pw.toFixed(3)}"`);
+}
+// Trinquete: gira libre en un sentido y se bloquea en el otro
+function ratchetSVG() {
+  const cx = 160, cy = 100, z = 12, ri = 40, ro = 54, a = 2 * Math.PI / z;
+  const pts = Array.from({ length: z }, (_, i) => [[0, ri], [.8, ro], [.82, ri]].map(([d, r]) => (cx + r * Math.cos(i * a + d * a - Math.PI / 2 - .2)).toFixed(1) + ',' + (cy + r * Math.sin(i * a + d * a - Math.PI / 2 - .2)).toFixed(1)).join(' ')).join(' ');
+  return SV.wrap('0 0 320 190',
+    `<polygon points="${pts}" ${SV.fill} ${SV.ink}/><circle cx="${cx}" cy="${cy}" r="5" fill="var(--ink)"/>` +
+    `<path d="M${cx + 46} ${cy - ro - 14}L${cx + 4} ${cy - ri - 2}" ${SV.key} style="stroke-width:4" fill="none"/><circle cx="${cx + 50}" cy="${cy - ro - 16}" r="5" fill="var(--bg)" ${SV.key}/>` +
+    `<path d="M${cx - 66} ${cy - 18}A68 68 0 0 0 ${cx - 40} ${cy + 54}" fill="none" ${SV.ink}/><path d="M${cx - 46} ${cy + 58}L${cx - 40} ${cy + 54}L${cx - 40} ${cy + 46}" fill="none" ${SV.ink}/>` +
+    SV.txt(cx - 78, cy + 32, '↺ gira libre', 11, 'end') + SV.txt(cx + 80, cy + 60, '↻ bloqueado', 11, 'start') + SV.txt(cx + 52, cy - ro - 28, 'uña', 12) + SV.txt(160, 184, 'rueda de trinquete', 12),
+    'Rueda de trinquete con su uña: gira libre en un sentido y se bloquea en el otro');
+}
+
+// ---- Lección 1 · Tipos de movimiento ----
+T('rotativo', 'Movimiento rotativo', 'El de una pieza que da vueltas alrededor de un eje, como una rueda o una manivela.', 'm1', 'Gira sin cambiar de sitio.', 'Da vueltas alrededor de un eje');
+T('lineal', 'Movimiento lineal', 'El de una pieza que avanza en línea recta y en un solo sentido, como un tren por una vía recta.', 'm1', 'Va de A a B sin volver.', 'Avanza recto, sin volver');
+T('alternativo', 'Movimiento alternativo', 'El de una pieza que va y viene en línea recta, como la aguja de una máquina de coser.', 'm1', 'Ida y vuelta por el mismo camino recto.', 'Ida y vuelta en línea recta');
+T('oscilante', 'Movimiento oscilante', 'El de una pieza que se balancea en arco de ida y vuelta sin dar la vuelta entera, como un columpio.', 'm1', 'Se balancea como un péndulo.', 'Balanceo en arco');
+T('mecanismo', 'Mecanismo', 'Conjunto de piezas que transforma un movimiento o una fuerza en otro distinto.', 'm1', 'Es el «traductor» entre un movimiento y otro.', 'Transforma movimientos');
+F('mov_limpia', 'El brazo de un limpiaparabrisas barre el cristal yendo y viniendo en arco, sin dar la vuelta entera. ¿Qué movimiento hace?', 'Oscilante', ['Rotativo (da vueltas completas)', 'Lineal (avanza recto en un solo sentido)', 'Alternativo (ida y vuelta en línea recta)'], 'Se balancea en arco: ese es el movimiento oscilante. Si diera vueltas completas sería rotativo, y si fuera y viniera en línea recta, alternativo.', 'm1');
+F('mov_aguja', 'La aguja de una máquina de coser sube y baja en línea recta, una y otra vez. ¿Qué movimiento hace?', 'Alternativo', ['Rotativo (da vueltas completas)', 'Oscilante (se balancea en arco)', 'Lineal (avanza recto en un solo sentido)'], 'Va y viene por el mismo camino recto: movimiento alternativo. Lo mueve un motor que gira, así que hay un mecanismo en medio que traduce giro en vaivén.', 'm1');
+
+// ---- Lección 2 · Biela-manivela ----
+T('manivela', 'Manivela', 'Brazo que gira alrededor de un eje y al que se une la biela; su longitud es el radio de giro.', 'm2', 'Como el pedal de una bicicleta.', 'Brazo que gira');
+T('biela', 'Biela', 'Barra que une la manivela con la pieza que va y viene (el pistón).', 'm2', 'Es el puente entre el giro y el vaivén.', 'Une giro y vaivén');
+T('carrera', 'Carrera', 'Distancia total que recorre la pieza que va y viene, de un extremo al otro.', 'm2', 'Se mide de punta a punta.', 'Recorrido de punta a punta');
+C('carrera', 'Una manivela de 20 mm de radio mueve un pistón con una biela. ¿Qué carrera tiene el pistón?', '40 mm', ['20 mm', '80 mm', '10 mm'], 'El pistón recorre de un extremo al otro el diámetro del círculo de la manivela: carrera = 2 × radio = 2 × 20 = 40 mm.', 'm2', () => {
+  const r = pick([10, 12, 15, 20, 25, 30, 40]);
+  return { q: `Una manivela de ${r} mm de radio mueve un pistón con una biela. ¿Qué carrera tiene el pistón?`, a: 2 * r + ' mm', wrong: uniq([r + ' mm', 4 * r + ' mm', fmt(r / 2) + ' mm'], 2 * r + ' mm'),
+    explain: `El pistón recorre de un extremo al otro el diámetro del círculo de la manivela: carrera = 2 × radio = 2 × ${r} = ${2 * r} mm.`, fig: crankSVG() };
+}, crankSVG());
+F('bm_conv', '¿Qué transforma un mecanismo de biela-manivela?', 'Giro en vaivén en línea recta (y al revés)', ['Vaivén en un giro más lento por reducción', 'Giro en otro giro más rápido', 'Fuerza en calor'], 'La manivela gira, la biela empuja y tira, y el pistón va y viene en línea recta. Funciona también al revés: el vaivén de un pistón de motor hace girar el cigüeñal.', 'm2', crankSVG());
+F('bm_volante', 'En los dos extremos del recorrido (los puntos muertos) el pistón no puede hacer girar la manivela. ¿Qué ayuda a pasarlos?', 'Un volante de inercia: una rueda pesada que sigue girando por inercia', ['Que la biela sea más corta', 'Frenar un poco la manivela', 'Aumentar la carrera'], 'En un punto muerto la biela y la manivela están alineadas y el empuje no produce giro. El volante almacena movimiento y «tira» de la manivela para pasar ese punto.', 'm2');
+F('bm_predice', 'Predice: si duplicas el radio de la manivela, ¿qué le pasa a la carrera?', 'Se duplica', ['Se reduce a la mitad', 'No cambia', 'Se multiplica por cuatro'], 'carrera = 2 × radio. Si el radio se duplica, la carrera también. Puedes comprobarlo en la animación: el círculo de la manivela crece y el pistón recorre más.', 'm2');
+
+// ---- Lección 3 · Levas ----
+T('leva', 'Leva', 'Pieza giratoria cuya forma empuja a otra pieza (el seguidor) y la hace subir y bajar a su paso.', 'm3', 'Un huevo girando empujaría hacia arriba.', 'Pieza giratoria que empuja');
+T('seguidor', 'Seguidor', 'Pieza que se apoya en la leva y sube y baja siguiendo su forma.', 'm3', 'Es el que «sigue» a la leva.', 'Pieza que sigue a la leva');
+T('arbol_levas', 'Árbol de levas', 'Eje con varias levas que abren y cierran piezas, como las válvulas de un motor, en el momento justo.', 'm3', 'Varias levas en un mismo eje.', 'Eje con varias levas');
+C('leva_lev', 'Una leva excéntrica tiene su eje desplazado 8 mm del centro del disco. ¿Cuánto sube y baja el seguidor en total?', '16 mm', ['8 mm', '32 mm', '4 mm'], 'El disco gira alrededor de un punto descentrado. El punto más alto del disco sube 8 mm sobre el eje y el más bajo baja 8 mm: en total 2 × 8 = 16 mm.', 'm3', () => {
+  const e = pick([4, 5, 6, 8, 10, 12]);
+  return { q: `Una leva excéntrica tiene su eje desplazado ${e} mm del centro del disco. ¿Cuánto sube y baja el seguidor en total?`, a: 2 * e + ' mm', wrong: uniq([e + ' mm', 4 * e + ' mm', fmt(e / 2) + ' mm'], 2 * e + ' mm'),
+    explain: `El disco gira alrededor de un punto descentrado. Su punto más alto queda ${e} mm por encima del eje y el más bajo ${e} mm por debajo: en total 2 × ${e} = ${2 * e} mm.`, fig: camSVG() };
+}, camSVG());
+F('leva_predice', 'Predice: en una leva excéntrica, ¿cuándo está el seguidor en su punto más alto?', 'Cuando la parte más alejada del eje de giro pasa bajo el seguidor', ['Cuando el centro del disco está justo a la izquierda del eje', 'Siempre está a la misma altura', 'Cuando la leva se para'], 'El seguidor sube cuanto más lejos del eje esté el borde que lo empuja. Mira la animación: está arriba cuando la línea punteada (eje → centro del disco) apunta hacia él.', 'm3', camSVG());
+F('leva_reposo', '¿Cómo se consigue que el seguidor se quede un rato quieto (en reposo) mientras la leva sigue girando?', 'Con un tramo de la leva a radio constante (un arco circular centrado en el eje)', ['Con una zona que sube más deprisa', 'Con una leva más grande', 'No se puede: siempre se mueve'], 'Si durante un tramo el borde está siempre a la misma distancia del eje, el seguidor no sube ni baja. Dando forma a la leva «programas» cuándo se mueve y cuándo descansa.', 'm3');
+F('leva_uso', 'En muchos motores de coche, ¿qué abre las válvulas en el momento justo?', 'Un árbol de levas', ['Un volante de inercia', 'Un tornillo sin fin', 'Una polea fija'], 'Cada leva del árbol empuja a su válvula con la forma justa: la forma de la leva decide cuándo se abre, cuánto y durante cuánto tiempo.', 'm3');
+
+// ---- Lección 4 · Cremallera y tornillo sin fin ----
+T('cremallera', 'Cremallera', 'Barra con dientes en línea recta que engrana con un piñón.', 'm4', 'Es un engranaje «estirado» en línea.', 'Barra dentada recta');
+T('sinfin', 'Tornillo sin fin', 'Tornillo que engrana con una rueda dentada y la hace avanzar un diente por cada vuelta.', 'm4', 'Reduce muchísimo la velocidad.', 'Tornillo que mueve una rueda');
+C('rack_avance', 'Un piñón de 12 dientes, con 5 mm entre dientes, mueve una cremallera. ¿Cuánto avanza la cremallera en una vuelta del piñón?', '60 mm', ['17 mm', '120 mm', '30 mm'], 'En una vuelta pasan 12 dientes por el contacto, y cada uno ocupa 5 mm: 12 × 5 = 60 mm.', 'm4', () => {
+  const z = pick([8, 10, 12, 16, 20]), p = pick([4, 5, 6, 8]);
+  return { q: `Un piñón de ${z} dientes, con ${p} mm entre dientes, mueve una cremallera. ¿Cuánto avanza la cremallera en una vuelta del piñón?`, a: z * p + ' mm', wrong: uniq([(z + p) + ' mm', 2 * z * p + ' mm', (z * p / 2) + ' mm'], z * p + ' mm'),
+    explain: `En una vuelta pasan ${z} dientes por el contacto, y cada uno ocupa ${p} mm: ${z} × ${p} = ${z * p} mm.`, fig: rackSVG() };
+}, rackSVG());
+C('sinfin_rel', 'Un tornillo sin fin con una sola entrada mueve una rueda de 24 dientes. ¿Cuántas vueltas da el tornillo por cada vuelta completa de la rueda?', '24 vueltas', ['12 vueltas', '48 vueltas', '1 vuelta'], 'Cada vuelta del tornillo hace avanzar la rueda un diente. Para que la rueda dé una vuelta completa hacen falta tantas vueltas del tornillo como dientes tiene: 24.', 'm4', () => {
+  const z = pick([10, 12, 16, 20, 24, 30, 40]);
+  return { q: `Un tornillo sin fin con una sola entrada mueve una rueda de ${z} dientes. ¿Cuántas vueltas da el tornillo por cada vuelta completa de la rueda?`, a: z + ' vueltas', wrong: uniq([(z / 2) + ' vueltas', 2 * z + ' vueltas', '1 vuelta'], z + ' vueltas'),
+    explain: `Cada vuelta del tornillo hace avanzar la rueda un diente. Para que la rueda dé una vuelta completa hacen falta tantas vueltas del tornillo como dientes tiene: ${z}.`, fig: wormSVG(z) };
+}, wormSVG(14));
+F('rack_uso', '¿Qué transforma una cremallera con su piñón?', 'Giro en movimiento en línea recta (y al revés)', ['Línea recta en otra línea recta', 'Giro en otro giro más rápido', 'Fuerza en velocidad sin mover nada'], 'Cuando el piñón gira, sus dientes empujan los de la cremallera, que avanza en línea recta. Si empujas la cremallera, también hace girar el piñón.', 'm4', rackSVG());
+F('sinfin_predice', 'Predice: ¿qué consigue un tornillo sin fin con una rueda de muchos dientes?', 'Una reducción enorme de velocidad (y mucha fuerza de giro) en poco espacio', ['Aumentar mucho la velocidad', 'Convertir el giro en vaivén', 'Nada: solo cambia el sentido de giro'], 'Con una entrada, la relación es igual al número de dientes de la rueda: con 40 dientes, 40 : 1 en un solo paso. Con engranajes rectos necesitarías varias etapas.', 'm4', wormSVG(14));
+F('sinfin_bloqueo', 'Con un tornillo sin fin de rosca poco inclinada, ¿qué suele pasar si empujas la rueda para hacer girar el tornillo?', 'Puede quedarse bloqueado (autobloqueo), pero no está garantizado', ['Gira más fácil que al revés, siempre', 'Gira libremente, siempre', 'Se rompe siempre'], 'El autobloqueo depende del rozamiento y del ángulo de la rosca: con poca inclinación y buen rozamiento la rueda no puede mover el tornillo. Pero el desgaste o las vibraciones pueden hacer que se pierda, así que no te fíes solo de él para sostener cargas peligrosas.', 'm4');
+
+// ---- Lección 5 · A saltos y en un solo sentido ----
+T('trinquete', 'Trinquete', 'Rueda con dientes inclinados y una uña que solo la deja girar en un sentido.', 'm5', 'Es lo que hace «clic-clic» en una llave de carraca.', 'Gira solo en un sentido');
+T('lengueta', 'Uña (lengüeta)', 'Pieza que se apoya en los dientes del trinquete y bloquea el giro hacia atrás.', 'm5', 'Se levanta al subir y cae al pasar el diente.', 'Bloquea el giro hacia atrás');
+T('ginebra', 'Cruz de Malta (mecanismo de Ginebra)', 'Rueda con ranuras que un pasador hace avanzar un paso cada vez, convirtiendo un giro continuo en giro a saltos.', 'm5', 'Gira, para, avanza un paso, para...', 'Giro continuo → giro a saltos');
+F('trinq_uso', '¿Para qué sirve la uña de un trinquete?', 'Para impedir que la rueda gire hacia atrás', ['Para que la rueda gire más deprisa', 'Para convertir el giro en vaivén', 'Para frenar la rueda en los dos sentidos'], 'En el sentido libre la uña sube por la rampa del diente y cae detrás; al intentar volver, choca con la cara vertical del diente y bloquea.', 'm5', ratchetSVG());
+F('trinq_predice', 'Predice: giras la rueda de un trinquete en su sentido libre y sueltas. ¿Qué ocurre?', 'La uña cae tras un diente y evita que la rueda vuelva atrás', ['La rueda vuelve sola a su sitio', 'La rueda sigue girando sin parar', 'La uña se rompe'], 'Al girar en el sentido libre, cada diente levanta la uña y esta cae detrás (el «clic»). Al soltar, la cara vertical del diente se apoya en la uña y la rueda no retrocede.', 'm5');
+F('ginebra_cine', 'En un proyector de cine antiguo, ¿para qué se usa una cruz de Malta?', 'Para que la película avance un fotograma y se pare un instante delante de la lente', ['Para girar el carrete más deprisa', 'Para enfocar la imagen', 'Para rebobinar la película'], 'La imagen solo se ve bien si el fotograma está quieto mientras se proyecta. El mecanismo repite «avanzar y parar» unas 24 veces por segundo, y el ojo ve movimiento continuo.', 'm5');
+F('ginebra_reloj', '¿De dónde viene el nombre «Ginebra» de este mecanismo?', 'De la relojería suiza, donde se usó como tope para que el muelle no se tensara ni se destensara del todo', ['De un inventor llamado Ginebra', 'De los primeros cines de esa ciudad', 'De la forma de una cruz suiza'], 'Su primera aplicación fue en relojes mecánicos suizos, como tope del muelle. Después se usó en proyectores de cine, y por eso se conoce también como cruz de Malta.', 'm5');
+
 // Unidades y lecciones (≤ 7 items por lección, ≈ 2-4 min)
 const UNITS = [
   { id: 'u_vm', title: 'Ventaja mecánica', sub: 'Palancas, poleas y engranajes: ganar fuerza', lessons: [
@@ -310,7 +486,89 @@ const UNITS = [
       note: { title: 'Orientativo, no oficial', body: 'Esto resume foros de aficionados, tiendas de piezas sueltas y reseñas de marcas compatibles (consultado en octubre de 2026).\n\n**No hay precios** porque cambian: compruébalos tú el día de comprar.\n\nCompra poco al principio y prueba el encaje antes de pedir más.' } },
     { id: 'l_kit30', title: 'Tu kit de unos 30 €', sub: 'Qué comprar primero', icon: '🧰', items: ['c_precio_kg', 'f_prioridad', 'f_manivela', 'f_bateria', 'x_kit30'],
       note: { title: 'Primero la mano, luego el motor', body: 'Para las lecciones de ventaja mecánica no necesitas motor: te basta una **manivela** para girar los ejes con la mano.\n\nLista mínima útil: vigas largas, pines, ejes, topes y engranajes de 8, 16, 24 y 40 dientes.\n\n⚠️ Más adelante, con baterías: nada de cargar baterías hinchadas, calientes o dañadas.' } }
+  ]},
+  { id: 'u_mec', title: 'Mecanismos que mueven', sub: 'Biela-manivela, levas, cremallera, tornillo sin fin y trinquete', lessons: [
+    { id: 'l_mov', title: 'Tipos de movimiento', sub: 'Giro, recta, vaivén y balanceo', icon: '🔄', items: ['t_rotativo', 't_lineal', 't_alternativo', 't_oscilante', 't_mecanismo', 'f_mov_limpia', 'f_mov_aguja'],
+      note: { title: 'Traductores de movimiento', fig: movimientosSVG(), body: 'Hay **cuatro** movimientos básicos: **rotativo** (da vueltas), **lineal** (avanza recto), **alternativo** (va y viene en recta) y **oscilante** (se balancea en arco).\n\nUn **mecanismo** convierte uno en otro. Casi todo en una máquina es eso: traducir movimientos.' } },
+    { id: 'l_biela', title: 'Biela-manivela', sub: 'De girar a ir y venir', icon: '🚂', items: ['t_manivela', 't_biela', 't_carrera', 'c_carrera', 'f_bm_conv', 'f_bm_volante', 'f_bm_predice'],
+      note: { title: 'Mira cómo se mueve', fig: crankSVG(), body: 'La **manivela** gira, la **biela** empuja y tira, y el **pistón** va y viene.\n\n• **carrera = 2 × radio** de la manivela\n• en los extremos (puntos muertos) el pistón no puede mover la manivela: ahí ayuda un **volante de inercia**\n\n👆 Toca el dibujo para pausarlo y mirarlo con calma.' } },
+    { id: 'l_leva', title: 'Levas', sub: 'La forma decide el movimiento', icon: '🥚', items: ['t_leva', 't_seguidor', 't_arbol_levas', 'c_leva_lev', 'f_leva_predice', 'f_leva_reposo', 'f_leva_uso'],
+      note: { title: 'La forma lo programa todo', fig: camSVG(), body: 'Una **leva** empuja a su **seguidor** según su forma.\n\nEn una **leva excéntrica** (disco con el eje descentrado) el seguidor sube y baja **2 × la excentricidad**.\n\nCambiando la forma de la leva cambias cuándo sube, cuánto y cuándo descansa.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_sinfin', title: 'Cremallera y tornillo sin fin', sub: 'Giro en recta y reducción enorme', icon: '🔩', items: ['t_cremallera', 't_sinfin', 'c_rack_avance', 'c_sinfin_rel', 'f_rack_uso', 'f_sinfin_predice', 'f_sinfin_bloqueo'],
+      note: { title: 'Dos formas de engranar', fig: rackSVG(), body: 'Un **piñón** con una **cremallera** convierte giro en línea recta: avance por vuelta = nº de dientes × paso.\n\nUn **tornillo sin fin** mueve una rueda **un diente por vuelta**: una reducción enorme en poco espacio.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_trinquete', title: 'Un sentido y a saltos', sub: 'Trinquete y cruz de Malta', icon: '🎞️', items: ['t_trinquete', 't_lengueta', 't_ginebra', 'f_trinq_uso', 'f_trinq_predice', 'f_ginebra_cine', 'f_ginebra_reloj'],
+      note: { title: 'Control del movimiento', fig: ratchetSVG(), body: 'Un **trinquete** deja girar en un sentido y bloquea el otro, gracias a su **uña**.\n\nUna **cruz de Malta** (mecanismo de Ginebra) convierte un giro continuo en giro **a saltos**: avanza un paso, para, avanza otro...' } }
   ]}
 ];
 const LESSON_BY_ID = {};
 UNITS.forEach(u => u.lessons.forEach(l => { l.unit = u.id; LESSON_BY_ID[l.id] = l; }));
+
+// =====================================================================
+// CURIOSIDADES («Sabías que…») Y MISIONES PRÁCTICAS
+// Todo lo que afirman se ha comprobado en fuentes (oct. 2026); lo dudoso se dice como dudoso.
+// =====================================================================
+const CURIOS = {
+  l_palanca: { title: 'Sabías que… la frase de Arquímedes', body: 'Se atribuye a Arquímedes la frase «dadme un punto de apoyo y moveré el mundo».\n\nLa recogen autores posteriores (como Pappus, en el siglo IV), así que **no se sabe si la dijo con esas palabras**. Lo real es la idea: con un brazo larguísimo, una fuerza pequeña puede equilibrar una carga enorme... a cambio de recorrer una distancia enorme.' },
+  l_palanca_calc: { title: 'Sabías que… la romana', body: 'La **romana** es una balanza antigua que pesa con una palanca: cuelgas lo que quieres pesar en un lado y deslizas un contrapeso por el brazo graduado hasta equilibrar.\n\nCuanto más lejos del apoyo está el contrapeso, más peso equilibra: es **fuerza × distancia**, justo lo que acabas de calcular.' },
+  l_poleas: { title: 'Sabías que… no hay ventaja gratis', body: 'Un **polipasto** combina poleas fijas y móviles con una sola cuerda. Cuantos más tramos sujetan la carga, menos fuerza haces... pero más cuerda tienes que recoger.\n\nEs la misma regla de la palanca: la ventaja no se crea, **se cambia por recorrido**.' },
+  l_engranajes: { title: 'Sabías que… el mecanismo de Anticitera', body: 'En un naufragio cerca de la isla griega de Anticitera se recuperó un mecanismo de bronce con engranajes de hace unos 2.000 años (se data entre el 150 y el 100 a. C.; algunos investigadores proponen una fecha más antigua).\n\nSe calcula que tenía **más de 30 engranajes** y servía para calcular posiciones del Sol, la Luna y otros astros. Es un tren de engranajes como los que estás aprendiendo.' },
+  l_tren: { title: 'Sabías que… el tren de un reloj', body: 'En un reloj de agujas, el segundero da **60 vueltas por cada vuelta del minutero**, y el minutero **12 por cada vuelta de la horaria**.\n\nSon dos reducciones, 60 : 1 y 12 : 1. Encadenadas se multiplican: **720 : 1**. Por eso el tren de engranajes de un reloj mecánico es largo.' },
+  l_mov: { title: 'Sabías que… casi todo es traducir giros', body: 'Un motor eléctrico corriente solo sabe **girar**. Para que algo suba y baje, avance o se balancee, hace falta un mecanismo en medio.\n\nPor eso gran parte de la mecánica es el arte de traducir un movimiento en otro. ¡Y tú vas a aprender los traductores clásicos!' },
+  l_biela: { title: 'Sabías que… el mecanismo de los motores', body: 'Los motores de pistón de los coches y las máquinas de vapor usan una **biela-manivela**: el pistón empuja y tira, y la manivela (el cigüeñal) convierte ese vaivén en el giro que mueve las ruedas.\n\nEs el mismo dibujo que acabas de ver, pero en grande y con fuego dentro.' },
+  l_leva: { title: 'Sabías que… la forma de la leva es un «programa»', body: 'En muchos motores de coche, un **árbol de levas** abre cada válvula con la forma justa: la forma de cada leva decide **cuándo** se abre, **cuánto** y **durante cuánto tiempo**.\n\nNo hay electrónica: la «instrucción» está tallada en el metal.' },
+  l_sinfin: { title: 'Sabías que… una etapa vale por varias', body: 'Con un tornillo sin fin de una entrada, una rueda de 40 dientes da una reducción de **40 : 1 en un solo paso**. Con engranajes rectos necesitarías varias etapas.\n\nEso sí: que el tornillo se **autobloquee** (que la rueda no pueda moverlo) depende del rozamiento y del ángulo de la rosca; no lo des por seguro.' },
+  l_trinquete: { title: 'Sabías que… el «clic-clic» de la carraca', body: 'El «clic-clic» de una llave de carraca es la **uña** de un trinquete saltando de diente en diente.\n\nGracias a él puedes apretar un tornillo moviendo la llave de ida y vuelta, sin sacarla cada vez.' }
+};
+Object.entries(CURIOS).forEach(([id, c]) => { LESSON_BY_ID[id].curio = c; });
+
+const MISIONES = {
+  u_vm: { id: 'm_vm', icon: '🛠️', title: 'Tren de engranajes con manivela',
+    why: 'Hasta ahora lo has **calculado**. Ahora lo vas a **sentir**: montar un tren de engranajes y girar la manivela te enseña, con los dedos, lo que significa una relación 3 : 1.',
+    think: 'Antes de girar, **predice**. Después compara con lo que ves. Si no coincide: ¿hay un eje flojo y el engrane salta, o has contado mal las vueltas? Ese es el mejor momento para aprender.',
+    safety: 'Mantén los dedos lejos de los dientes mientras giran. Si cortas cartón, usa tijeras sobre una superficie protegida.',
+    versions: {
+      piezas: { label: 'Con piezas', intro: 'Si ya tienes un piñón y una rueda de Technic (o compatibles).', steps: [
+        'Elige un piñón de 8 dientes y una rueda de 24 dientes.',
+        'Móntalos en dos ejes paralelos, a la distancia justa para que los dientes engranen sin forzar.',
+        'Pon una manivela (una viga corta) en el eje del piñón y un tope en cada eje.',
+        'Marca la rueda con un trozo de cinta y cuenta cuántas vueltas das al piñón por cada vuelta de la rueda: debería salir 3.',
+        'Cambia a la rueda de 40 dientes y, ANTES de girar, predice cuántas vueltas saldrán. Luego compruébalo.',
+        'Anota qué has notado: ¿qué pasa con la velocidad y con el esfuerzo al girar?'] },
+      papel: { label: 'En papel y cartón', intro: 'Sin piezas: dos discos con marcas, mismo tamaño de diente.', steps: [
+        'Dibuja en cartón dos círculos con marcas (dientes) alrededor: uno con 8 marcas y otro con 24. Con el mismo tamaño de diente, el de 24 debe tener un radio 3 veces mayor.',
+        'Recórtalos y pon un punto de color en un diente de cada uno.',
+        'Colócalos tocándose por el borde y «gíralos» con la mano, contando los dientes que pasan por el punto de contacto.',
+        'Cuenta cuántas vueltas del pequeño por cada vuelta del grande: debería salir 3.',
+        'Haz otro par con 8 y 16 dientes y predice el resultado antes de girarlo.'] } } },
+  u_compras: { id: 'm_compras', icon: '📝', title: 'Tu lista de compra (sin comprar)',
+    why: 'Planificar una compra pequeña es una habilidad de inventor: sabes qué necesitas, comparas y compras poco. Esta misión es **solo mirar y anotar**: no hace falta gastar nada.',
+    think: '¿Qué piezas se repiten en todos tus montajes (pines, ejes, topes)? Esas son las que más compensa comprar en cantidad.',
+    safety: 'No compres con prisa. Usa webs que conozcas, mira la opinión del vendedor y las condiciones de devolución.',
+    versions: { lista: { label: 'Lista y comparación', intro: 'Sin gastar nada.', steps: [
+      'Escribe qué quieres montar primero (por ejemplo: una palanca con viga y un tren de engranajes con manivela).',
+      'Haz la lista de piezas que necesita (vigas, pines, ejes, topes, engranajes) con cantidades.',
+      'Busca esas piezas en dos webs distintas y anota el precio de cada una HOY.',
+      'Calcula el coste total de la lista en cada web (precio × cantidad, más el envío).',
+      'Mira si un lote usado con fotos y lista te sale mejor: compara por kilo y por piezas útiles.',
+      'Decide una compra pequeña (o ninguna) y anota por qué.'] } } },
+  u_mec: { id: 'm_mec', icon: '🔁', title: 'Convierte un giro en un vaivén',
+    why: 'Vas a construir tu primer **traductor de movimiento**: una manivela que hace ir y venir una pieza. Medir la carrera y compararla con tu predicción es la mejor forma de entender de verdad la biela-manivela.',
+    think: 'Antes de girar, predice: ¿qué carrera tendrá? Luego mídela. ¿Coincide con 2 × el radio? Si no, ¿qué la cambia: el juego en las uniones, una guía floja, medir mal?',
+    safety: 'Cuidado con los dedos en las uniones que se mueven. Si usas cartón, corta con tijeras sobre una superficie protegida y lejos de ti.',
+    versions: {
+      piezas: { label: 'Con piezas', intro: 'Con vigas, pines, ejes y topes (te vale la lista de unos 30 €).', steps: [
+        'Monta una manivela: una viga corta unida a un eje con un tope.',
+        'Une una viga larga (la biela) con un pin a la punta de la manivela.',
+        'Haz que el otro extremo de la biela se mueva entre dos vigas paralelas (la guía).',
+        'Gira la manivela con la mano y mide cuánto recorre el extremo de la biela: esa es la carrera.',
+        'Compárala con 2 × el radio de la manivela (cuenta saltos de agujero × 8 mm).',
+        'Cambia el radio de la manivela y repite: ¿se cumple la predicción?'] },
+      papel: { label: 'En papel y cartón', intro: 'Sin piezas: cartón, un encuadernador (o un clip) y un lápiz.', steps: [
+        'Recorta un disco de cartón (la manivela) y marca un punto cerca del borde: ese es el pin.',
+        'Une al punto una tira de cartón (la biela) con un encuadernador o un clip.',
+        'Haz que el otro extremo de la tira se mueva entre dos reglas o lápices paralelos (la guía).',
+        'Gira el disco con el dedo y marca los dos extremos del recorrido de la tira.',
+        'Mide la distancia entre las marcas (la carrera) y compárala con 2 × la distancia del punto al centro.',
+        'Muévelo más cerca del centro y repite: ¿cambia la carrera como predijiste?'] } } }
+};
+UNITS.forEach(u => { if (MISIONES[u.id]) u.mission = MISIONES[u.id]; });

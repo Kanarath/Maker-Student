@@ -109,3 +109,4 @@ Una app gamificada y sin castigos para aprender **mecatrónica con peso en mecá
 | 2026-10-27 | Nombre provisional «Taller de Inventor»; mascota zorro-robot «Tuerca» (provisional) | Pendiente de que Ruben los apruebe |
 | 2026-10-27 | Rediseño blueprint futurista (teal + dorado + blancos/negros, sin cuadrícula) y mascota robot-dron | Feedback de Ruben: el aspecto anterior no le gustaba |
 | 2026-10-27 | Unidad u_compras «Guía de compras Technic» (4 lecciones) sin precios; orientativa, basada en foros y reseñas consultados en oct 2026 | Pedido de Ruben; los precios no se pudieron verificar |
+| 2026-10-27 | Unidad `u_mec` «Mecanismos que mueven» (5 lecciones) con figuras animadas; tarjeta «Sabías que…» en 10 lecciones y misiones prácticas en 3 unidades | Ruben pidió más material coherente, con anécdotas y ayudas de comprensión; datos comprobados en fuentes (oct 2026) |

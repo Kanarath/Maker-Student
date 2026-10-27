@@ -248,3 +248,14 @@ details { border-top: 1px solid var(--line2); padding: 6px 0; } details summary 
 @media (prefers-reduced-motion: reduce) {
   .cameo { animation: cameoFade 2.7s ease both; } .bob, .chimg svg, .chimg .mg, .chimg .fl, .chimg .fx, .node.next .circle, .chest { animation: none !important; } .chimg .fx { opacity: 1; }
 }
+
+/* ---------- misiones, avisos y figuras animadas ---------- */
+.card.warn { border-color: var(--gold); background: linear-gradient(rgba(245, 184, 61, .10), rgba(245, 184, 61, .10)), var(--card); margin-top: 12px; }
+.card.warn::before, .card.warn::after { border-color: var(--gold); } .card.warn p { margin: 6px 0 0; font-size: .92rem; }
+.view > .card { margin-top: 12px; } .view > .card p { margin: 0; line-height: 1.55; }
+.pills { display: flex; gap: 8px; margin: 14px 0 8px; flex-wrap: wrap; }
+.pill { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); font-weight: 700; font-size: .88rem; }
+.pill.on { background: var(--teal); color: #04120f; border-color: var(--teal); box-shadow: 0 0 14px var(--glow); }
+.row span { flex: 1; font-size: .95rem; line-height: 1.4; }
+.fig:has(svg[data-anim])::after { content: "toca para pausar"; position: absolute; top: 7px; right: 10px; font: 600 .6rem var(--mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.fig.paused::after { content: "pausado · toca para seguir"; color: var(--gold); }

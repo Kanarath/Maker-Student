@@ -52,8 +52,31 @@
     c_dist_huecos: (n, a) => near(a[0], (n[1] - n[0]) * 8),                       // saltos × 8 mm
     c_palanca_viga: (n, a) => near(a[0], (n[3] - n[1]) / (n[1] - n[2])),          // [15, apoyo, carga, mano]
     c_engr_technic: (n, a) => near(a[0], n[1] / n[0]),
-    c_precio_kg: (n, a, s) => { const ka = n[0] / n[1], kb = n[2] / n[3], m = /lote (A|B)/.exec(s.a); if (!m) return false; const w = m[1], kw = Math.min(ka, kb); return (w === 'A') === (ka < kb) && near(num(s.a)[0], Math.round(kw * 10) / 10); }
+    c_precio_kg: (n, a, s) => { const ka = n[0] / n[1], kb = n[2] / n[3], m = /lote (A|B)/.exec(s.a); if (!m) return false; const w = m[1], kw = Math.min(ka, kb); return (w === 'A') === (ka < kb) && near(num(s.a)[0], Math.round(kw * 10) / 10); },
+    c_carrera: (n, a) => near(a[0], 2 * n[0]),                      // carrera = 2 × radio
+    c_leva_lev: (n, a) => near(a[0], 2 * n[0]),                     // elevación = 2 × excentricidad
+    c_rack_avance: (n, a) => near(a[0], n[0] * n[1]),               // avance = dientes × paso
+    c_sinfin_rel: (n, a) => near(a[0], n[0])                        // vueltas del tornillo = dientes (1 entrada)
   };
   Object.entries(VER).forEach(([id, f]) => { const it = ITEMS[id]; if (!it) return add(`${id}: no existe`); for (let k = 0; k < 200; k++) { const s = it.gen(); const n = num(s.q), a = num(s.a); if (!f(n, a, s)) { add(`${id}: cálculo incorrecto → «${s.q}» = «${s.a}»`); break; } if (s.wrong.some(w => w === s.a)) { add(`${id}: distractor igual a la respuesta`); break; } } });
-  return { items: ids.length, lecciones: seenLesson.size, n: P.length, problemas: P };
+  // figuras animadas: cada una debe tener su animación y no producir NaN en ningún instante (se prueba fuera de pantalla)
+  const figs = [];
+  ids.forEach(id => { const it = ITEMS[id]; (it.gen ? Array.from({ length: 12 }, () => it.gen()) : [it]).forEach(s => s.fig && figs.push([id, s.fig])); });
+  UNITS.forEach(u => u.lessons.forEach(l => { if (l.note && l.note.fig) figs.push([l.id + ' (nota)', l.note.fig]); if (l.curio && l.curio.fig) figs.push([l.id + ' (curiosidad)', l.curio.fig]); }));
+  let animadas = 0;
+  figs.forEach(([id, f]) => {
+    const d = new DOMParser().parseFromString(f, 'image/svg+xml').documentElement;
+    if (d.querySelector('parsererror') || /NaN|undefined/.test(f)) return add(`${id}: figura no válida (XML roto o NaN)`);
+    if (!d.hasAttribute('data-anim')) return;
+    animadas++; const nom = d.getAttribute('data-anim'), host = document.createElement('div'); host.innerHTML = f; const svg = host.querySelector('svg');
+    if (typeof ANIMS === 'undefined' || !ANIMS[nom]) return add(`${id}: la animación «${nom}» no existe`);
+    try { [0, 0.37, 0.9, 1.5, 2.7, 5.1, 9.9, 33].forEach(t => { ANIMS[nom](svg, t); if (/NaN|undefined|Infinity/.test(svg.outerHTML)) throw new Error('valor no válido en t=' + t); }); } catch (e) { add(`${id}: la animación «${nom}» falla (${e.message})`); }
+  });
+  // curiosidades y misiones
+  UNITS.forEach(u => {
+    u.lessons.forEach(l => { if (l.curio && (!l.curio.body || l.curio.body.length < 60 || !l.curio.title)) add(`${l.id}: curiosidad incompleta`); });
+    if (u.mission) { const m = u.mission; if (!m.id || !m.title || !m.why || !m.versions || !Object.keys(m.versions).length) add(`${u.id}: misión incompleta`); Object.entries(m.versions || {}).forEach(([k, v]) => { if (!v.label || !v.steps || v.steps.length < 3) add(`${u.id}: la versión «${k}» de la misión tiene menos de 3 pasos`); }); if (!m.safety) add(`${u.id}: la misión no tiene aviso de seguridad`); }
+  });
+  const mids = UNITS.filter(u => u.mission).map(u => u.mission.id); if (new Set(mids).size !== mids.length) add('ids de misión repetidos');
+  return { items: ids.length, lecciones: seenLesson.size, animadas, curiosidades: UNITS.flatMap(u => u.lessons).filter(l => l.curio).length, misiones: mids.length, n: P.length, problemas: P };
 })();

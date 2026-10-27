@@ -23,7 +23,7 @@ const md = s => String(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').repla
 
 // ===================== estado guardado =====================
 const KEY = APP.key + '-v1';
-const defaults = () => ({ xp: 0, days: [], srs: {}, done: {}, collection: [], ui: { collapsed: {} }, exams: [], settings: { sound: true, vibrate: true, cameo: true } });
+const defaults = () => ({ xp: 0, days: [], srs: {}, done: {}, missions: {}, collection: [], ui: { collapsed: {} }, exams: [], settings: { sound: true, vibrate: true, cameo: true } });
 function loadState() {
   try { const j = JSON.parse(localStorage.getItem(KEY)); if (j) { const d = defaults(); return Object.assign(d, j, { settings: Object.assign(d.settings, j.settings || {}) }); } } catch (e) {}
   return defaults();
@@ -85,7 +85,24 @@ function confetti(n = 36) {
 
 // ===================== navegación =====================
 const app = $('#app'), nav = $('#nav'); let tab = 'home';
-function show(node, withNav = true) { app.replaceChildren(node); nav.classList.toggle('hidden', !withNav); window.scrollTo(0, 0); }
+function show(node, withNav = true) { app.replaceChildren(node); nav.classList.toggle('hidden', !withNav); window.scrollTo(0, 0); bindAnims(); }
+
+// ===================== figuras animadas =====================
+// Las figuras con <svg data-anim="nombre"> se animan con ANIMS[nombre](svg, t) (definido en content.js). Tocar el dibujo lo pausa.
+// Con «reducir animaciones» activado se pinta una pose fija y no se anima nada.
+let animSet = new Set(), animRaf = 0;
+const reduceMotion = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+function bindAnims() {
+  cancelAnimationFrame(animRaf); animSet = new Set();
+  document.querySelectorAll('#app svg[data-anim]').forEach(s => { if (typeof ANIMS !== 'undefined' && ANIMS[s.dataset.anim]) { s._t = 0.9; s._paused = false; animSet.add(s); ANIMS[s.dataset.anim](s, s._t); } });
+  if (!animSet.size || reduceMotion()) return;
+  let last = performance.now();
+  const loop = now => { const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    animSet.forEach(s => { if (!s.isConnected) return animSet.delete(s); if (!s._paused) { s._t += dt; ANIMS[s.dataset.anim](s, s._t); } });
+    if (animSet.size) animRaf = requestAnimationFrame(loop); };
+  animRaf = requestAnimationFrame(loop);
+}
+app.addEventListener('click', e => { const f = e.target.closest('.fig'); const s = f && f.querySelector('svg[data-anim]'); if (s) { s._paused = !s._paused; f.classList.toggle('paused', s._paused); } });
 function go(t) { tab = t; nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); ({ home: viewHome, review: viewReview, coll: viewColl, dojo: viewTaller })[t](); }
 nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { sfx.tap(); go(b.dataset.t); }));
 
@@ -122,9 +139,37 @@ function viewHome() {
       path.append(h('button', { class: 'node ' + (i % 2 ? 'r' : 'l') + (n ? ' done' : '') + (l === nextL ? ' next' : ''), onclick: () => { sfx.tap(); startLesson(l); } },
         h('span', { class: 'circle' }, l.icon), h('span', { class: 'ntxt' }, h('b', {}, l.title), h('small', {}, l.sub), h('span', { class: 'stars' }, n ? '★'.repeat(Math.min(n, 3)) + '☆'.repeat(3 - Math.min(n, 3)) : h('em', {}, 'nueva')))));
     });
+    if (u.mission) {   // misión práctica opcional al final de la unidad (sin calendario, sin castigo)
+      const ms = S.missions[u.mission.id];
+      path.append(h('button', { class: 'node ' + (u.lessons.length % 2 ? 'r' : 'l') + (ms && ms.finished ? ' done' : ''), onclick: () => { sfx.tap(); viewMission(u); } },
+        h('span', { class: 'circle' }, u.mission.icon || '🎯'), h('span', { class: 'ntxt' }, h('b', {}, 'Misión: ' + u.mission.title), h('small', {}, 'Práctica real · cuando quieras'), h('span', { class: 'stars' }, ms && ms.finished ? '✔ hecha' : h('em', {}, 'opcional')))));
+    }
     wrap.append(path);
   });
   wrap.append(h('p', { class: 'foot-note' }, 'Todas las lecciones están abiertas: entra por donde quieras.'));
+  show(wrap);
+}
+function viewMission(u) {
+  const m = u.mission, st = (S.missions[m.id] = S.missions[m.id] || { checks: {}, finished: false, ver: Object.keys(m.versions)[0] });
+  const wrap = h('div', { class: 'view' }, topbar(), h('h2', { class: 'unit' }, '🎯 ' + m.title, h('small', {}, 'Misión práctica · opcional, sin prisa')));
+  wrap.append(h('div', { class: 'card' }, h('p', { html: md(m.why) })));
+  const pills = h('div', { class: 'pills' }), list = h('div', { class: 'card list' });
+  const draw = () => {
+    pills.replaceChildren(...Object.entries(m.versions).map(([k, v]) => h('button', { class: 'pill' + (st.ver === k ? ' on' : ''), onclick: () => { st.ver = k; save(); draw(); } }, v.label)));
+    const v = m.versions[st.ver];
+    list.replaceChildren(h('p', { class: 'muted' }, v.intro), ...v.steps.map((s, i) => { const key = st.ver + i; return h('label', { class: 'row' }, h('span', {}, s), h('input', { type: 'checkbox', ...(st.checks[key] ? { checked: '' } : {}), onchange: e => { st.checks[key] = e.target.checked; save(); } })); }));
+  };
+  draw(); wrap.append(pills, list);
+  if (m.safety) wrap.append(h('div', { class: 'card warn' }, h('b', {}, '⚠️ Seguridad'), h('p', { html: md(m.safety) })));
+  if (m.think) wrap.append(h('div', { class: 'card' }, h('b', {}, '🤔 Para entenderlo mejor'), h('p', { html: md(m.think) })));
+  const done = h('div', { class: 'center' });
+  function finish() {
+    if (st.finished) { sfx.ok(); done.replaceChildren(h('p', { class: 'muted' }, 'Esta misión ya estaba hecha. ¡Bien!')); return; }
+    st.finished = true; S.xp += 40; const today = dayKey(Date.now()); if (!S.days.includes(today)) S.days.push(today); save(); sfx.win(); confetti();
+    done.replaceChildren(h('p', {}, h('b', {}, '+40 XP')), chestEl());
+  }
+  done.append(h('button', { class: 'btn primary', onclick: finish }, st.finished ? 'Ya la hice' : '¡Misión cumplida!'));
+  wrap.append(done, h('button', { class: 'btn ghost', onclick: () => go('home') }, 'Volver al camino'));
   show(wrap);
 }
 function viewReview() {
@@ -219,6 +264,8 @@ function startLesson(lesson) {
   steps.push(...shuffle(items.flatMap(it => exercisesFor(it, 'lesson'))));
   const terms = items.filter(i => i.kind === 'term');
   if (terms.length >= 3) steps.push(matchStep(terms.slice(0, 5)));
+  // tarjeta final «Sabías que…»: una aplicación real o una anécdota verificada que ayuda a entender para qué sirve lo aprendido
+  if (lesson.curio) steps.push({ type: 'note', note: { icon: '🧠', title: lesson.curio.title || 'Sabías que…', body: lesson.curio.body, fig: lesson.curio.fig, btn: '¡Qué curioso!' } });
   runSession({ title: lesson.title, steps, itemIds: lesson.items, lessonId: lesson.id, mode: 'lesson' });
 }
 function startReview(free) {
@@ -246,7 +293,7 @@ function nextStep() {
 }
 const advance = (lbl = 'Continuar', fn) => h('button', { class: 'btn primary', onclick: () => { sfx.tap(); (fn || (() => { SS.done++; nextStep(); }))(); } }, lbl);
 
-function rNote(step, body, foot) { body.append(h('div', { class: 'card note' }, h('h2', {}, '💡 ' + step.note.title), step.note.fig ? h('div', { class: 'fig', html: step.note.fig }) : null, h('p', { html: md(step.note.body) }))); foot.append(advance('Entendido', () => nextStep())); }
+function rNote(step, body, foot) { body.append(h('div', { class: 'card note' }, h('h2', {}, (step.note.icon || '💡') + ' ' + step.note.title), step.note.fig ? h('div', { class: 'fig', html: step.note.fig }) : null, h('p', { html: md(step.note.body) }))); foot.append(advance(step.note.btn || 'Entendido', () => nextStep())); }
 function rIntro(step, body, foot) {
   const it = step.item, tag = { term: 'Concepto nuevo', fact: 'Idea clave', calc: 'Cálculo', order: 'Procedimiento', case: 'Caso' }[it.kind];
   const card = h('div', { class: 'card intro' }, h('div', { class: 'tag' }, tag));
