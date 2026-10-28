@@ -558,6 +558,113 @@ C('potencia_calc', 'Un motor hace 600 J de trabajo en 5 s. ¿Qué potencia tiene
 F('palanca_energia', 'Con una palanca levantas una carga de 100 N a 0,2 m de altura (20 J) empujando con 25 N. ¿Cuánto tiene que bajar tu mano?', '0,8 m', ['0,2 m', '0,05 m', '4 m'], 'El trabajo que haces es el mismo (20 J, sin rozamiento): 25 N × 0,8 m = 20 J. Cuatro veces menos fuerza, cuatro veces más recorrido. Así se explica con números el «nada es gratis» de las palancas.', 'f4');
 F('conserv', '¿Qué significa que la energía «se conserva»?', 'Que no se crea ni se destruye: solo se transforma (por ejemplo, en movimiento o en calor)', ['Que siempre se guarda en una pila', 'Que una máquina puede dar más energía de la que recibe', 'Que la energía solo existe en los motores'], 'Una máquina nunca entrega más energía de la que recibe; parte se «pierde» como calor por rozamiento. Por eso no existen las máquinas que se mueven solas sin parar.', 'f4');
 
+// =====================================================================
+// UNIDAD «ESTRUCTURAS Y RIGIDEZ»  (por qué un brazo se dobla y cómo evitarlo)
+// =====================================================================
+// Marco cuadrado (se tumba) frente a marco con diagonal (aguanta). La izquierda se deforma con las barras de longitud constante.
+ANIMS.frame = (s, t) => {
+  const g = 0.5 + 0.5 * Math.sin(t * 1.3), dx = 28 * g, hh = Math.sqrt(70 * 70 - dx * dx), ty = 128 - hh, len = 10 + 14 * g;
+  const P = (x, y) => x.toFixed(1) + ' ' + y.toFixed(1), ar = (x2, y) => `M${P(x2 - len, y)}H${x2.toFixed(1)}M${P(x2 - 7, y - 5)}L${P(x2, y)}L${P(x2 - 7, y + 5)}`;
+  _q(s, 'sq').setAttribute('d', `M60 128H130L${P(130 + dx, ty)}L${P(60 + dx, ty)}Z`);
+  _a(_q(s, 'pc'), { cx: 130 + dx, cy: ty }); _a(_q(s, 'pd'), { cx: 60 + dx, cy: ty });
+  _q(s, 'ar1').setAttribute('d', ar(54 + dx, ty)); _q(s, 'ar2').setAttribute('d', ar(194, 58));
+};
+function frameSVG() {
+  const pin = (x, y, r = '') => `<circle ${r ? `data-r="${r}" ` : ''}cx="${x}" cy="${y}" r="4.5" ${SV.fill} ${SV.key}/>`;
+  return SV.wrap('0 0 320 166',
+    `<path d="M10 128H310" stroke="var(--muted)" stroke-width="1" fill="none"/>` +
+    `<path data-r="sq" d="M60 128H130V58H60Z" ${SV.fill} ${SV.ink}/>` + pin(60, 128) + pin(130, 128) + pin(130, 58, 'pc') + pin(60, 58, 'pd') +
+    `<path d="M200 128H270V58H200Z" ${SV.fill} ${SV.ink}/><path d="M200 128L270 58" fill="none" ${SV.key} style="stroke-width:3.4"/>` + pin(200, 128) + pin(270, 128) + pin(270, 58) + pin(200, 58) +
+    `<path data-r="ar1" d="M0 0" fill="none" ${SV.key} style="stroke-width:3.4"/><path data-r="ar2" d="M0 0" fill="none" ${SV.key} style="stroke-width:3.4"/>` +
+    SV.txt(95, 150, 'sin diagonal: cede', 10.5) + SV.txt(235, 150, 'con diagonal: firme', 10.5) + SV.txt(160, 14, 'empujas la esquina de arriba →', 11, 'middle', 500),
+    'Dos marcos cuadrados con pines en las esquinas: el de la izquierda se tumba al empujarlo; el de la derecha, con una diagonal, no se deforma', ' data-anim="frame"');
+}
+// Tracción, compresión y flexión
+function cargasSVG() {
+  const ar = (x1, x2, y) => { const d = x2 > x1 ? -1 : 1; return `<path d="M${x1} ${y}H${x2}M${x2 + d * 8} ${y - 6}L${x2} ${y}L${x2 + d * 8} ${y + 6}" fill="none" ${SV.key}/>`; };
+  const P = (i, inner, a, b) => `<g transform="translate(${i * 107} 0)">${inner}${SV.txt(53, 104, a, 12)}${SV.txt(53, 120, b, 11, 'middle', 500)}</g>`;
+  return SV.wrap('0 0 320 128',
+    P(0, `<rect x="30" y="44" width="48" height="16" rx="3" ${SV.fill} ${SV.ink}/>` + ar(30, 6, 52) + ar(78, 102, 52), 'tracción', 'estira') +
+    P(1, `<rect x="32" y="44" width="44" height="16" rx="3" ${SV.fill} ${SV.ink}/>` + ar(4, 32, 52) + ar(104, 76, 52), 'compresión', 'aprieta') +
+    P(2, `<path d="M14 54Q54 74 94 54" fill="none" ${SV.ink} style="stroke-width:9"/><path d="M14 66l-8 14h16zM94 66l-8 14h16z" ${SV.fill} ${SV.key}/>` + SV.arrowDown(54, 8, 48), 'flexión', 'dobla'),
+    'Tres esfuerzos: tracción (estira), compresión (aprieta) y flexión (dobla)');
+}
+// Dos voladizos con la misma carga: el doble de largo se dobla unas 8 veces más
+ANIMS.cantilever = (s, t) => {
+  const g = 0.5 + 0.5 * Math.sin(t * 1.2);
+  [['1', 135, 6, 48], ['2', 270, 48, 92]].forEach(([k, L, dmax, y0]) => {
+    const d = dmax * g, pts = []; for (let i = 0; i <= 12; i++) { const u = i / 12; pts.push((20 + L * u).toFixed(1) + ',' + (y0 + d * (3 * u * u - u ** 3) / 2).toFixed(1)); }
+    _q(s, 'b' + k).setAttribute('points', pts.join(' '));
+    const tx = 20 + L, ty = y0 + d;
+    _q(s, 'a' + k).setAttribute('d', `M${tx} ${(ty - 32).toFixed(1)}V${(ty - 4).toFixed(1)}M${tx - 6} ${(ty - 13).toFixed(1)}L${tx} ${(ty - 4).toFixed(1)}L${tx + 6} ${(ty - 13).toFixed(1)}`);
+  });
+};
+function cantileverSVG() {
+  return SV.wrap('0 0 320 168',
+    `<rect x="12" y="28" width="8" height="118" rx="2" ${SV.fill} ${SV.ink}/>` +
+    `<polyline data-r="b1" points="20,48 155,48" fill="none" ${SV.ink} style="stroke-width:7"/><path data-r="a1" d="M0 0" fill="none" ${SV.key} style="stroke-width:3.2"/>` +
+    `<polyline data-r="b2" points="20,92 290,92" fill="none" ${SV.ink} style="stroke-width:7"/><path data-r="a2" d="M0 0" fill="none" ${SV.key} style="stroke-width:3.2"/>` +
+    SV.txt(168, 52, 'viga corta', 11, 'start') + SV.txt(160, 80, 'viga el doble de larga', 11) + SV.txt(300, 18, 'misma carga', 11, 'end', 500) + SV.txt(160, 162, 'el doble de larga → baja ~8× más', 11, 'middle', 500),
+    'Dos vigas sujetas por un extremo con la misma carga en la punta: la que es el doble de larga se dobla unas ocho veces más', ' data-anim="cantilever"');
+}
+// Marco Technic de cuatro vigas reforzado con una diagonal
+function refuerzoSVG() {
+  const hole = (x, y) => `<circle cx="${x}" cy="${y}" r="4.5" ${SV.fill} ${SV.key}/>`;
+  return SV.wrap('0 0 320 160',
+    `<rect x="70" y="24" width="140" height="14" rx="7" ${SV.fill} ${SV.ink}/><rect x="70" y="122" width="140" height="14" rx="7" ${SV.fill} ${SV.ink}/>` +
+    `<rect x="70" y="24" width="14" height="112" rx="7" ${SV.fill} ${SV.ink}/><rect x="196" y="24" width="14" height="112" rx="7" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M77 129L203 31" fill="none" ${SV.key} style="stroke-width:10"/>` + hole(77, 31) + hole(203, 31) + hole(77, 129) + hole(203, 129) +
+    SV.txt(224, 76, 'riostra', 12, 'start') + SV.txt(224, 92, '(diagonal)', 11, 'start', 500), 'Marco de cuatro vigas Technic con un pin en cada esquina, reforzado con una viga en diagonal que forma dos triángulos');
+}
+
+// ---- Lección 1 · Triángulos que no ceden ----
+T('rigidez', 'Rigidez', 'Capacidad de una pieza o estructura de no deformarse al recibir una fuerza.', 'e1', 'Una regla de acero es rígida; una de goma, no.', 'No se deforma');
+T('triangulacion', 'Triangulación', 'Reforzar una estructura dividiéndola en triángulos, que no pueden cambiar de forma sin cambiar la longitud de un lado.', 'e1', 'Con tres lados de longitud fija solo existe un triángulo posible.', 'Dividir en triángulos');
+T('riostra', 'Riostra (diagonal)', 'Barra que se añade en diagonal a un marco para convertirlo en triángulos y evitar que se deforme.', 'e1', 'Como la barra diagonal de una cancela de madera.', 'Barra diagonal de refuerzo');
+F('tri_predice', 'Predice: un marco de cuatro barras unidas con un pin en cada esquina. Lo empujas por una esquina de arriba. ¿Qué le ocurre?', 'Se deforma como un paralelogramo: los lados no cambian, pero los ángulos sí', ['No le pasa nada: un cuadrado nunca se deforma', 'Se encoge hasta hacerse más pequeño', 'Se rompe siempre por la esquina'], 'Con las esquinas articuladas las barras pueden girar: los lados mantienen su longitud, pero los ángulos cambian y el cuadrado se «tumba». Míralo en la animación.', 'e1', frameSVG());
+F('tri_porque', '¿Por qué un triángulo hecho con barras y pines no se deforma?', 'Porque con tres lados de longitud fija solo existe una forma posible', ['Porque tiene menos esquinas que se pueden romper', 'Porque los triángulos pesan más', 'Porque los pines se bloquean solos'], 'Dados los tres lados, el triángulo queda determinado: para cambiar sus ángulos habría que estirar o aplastar un lado. Con cuatro lados no pasa lo mismo.', 'e1', frameSVG());
+C('diagonales', 'Un marco de 6 lados, con una articulación en cada esquina, se refuerza con diagonales que no se cruzan hasta dividirlo todo en triángulos. ¿Cuántas diagonales hacen falta?', '3', ['4', '5', '2'], 'Un polígono de n lados se divide en triángulos con n − 3 diagonales que no se cruzan: 6 − 3 = 3. (Y salen 4 triángulos, n − 2.)', 'e1', () => {
+  const n = pick([5, 6, 7, 8, 9]);
+  return { q: `Un marco de ${n} lados, con una articulación en cada esquina, se refuerza con diagonales que no se cruzan hasta dividirlo todo en triángulos. ¿Cuántas diagonales hacen falta?`, a: String(n - 3), wrong: [n - 1, n - 2, n - 4].map(String),
+    explain: `Un polígono de n lados se divide en triángulos con n − 3 diagonales que no se cruzan: ${n} − 3 = ${n - 3}. (Y salen ${n - 2} triángulos, n − 2.)` };
+});
+F('tri_ejemplos', '¿En cuál de estos objetos se aprovecha la triangulación?', 'En una grúa de torre o un puente de celosía, hechos de muchas barras que forman triángulos', ['En un ladrillo macizo', 'En una cuerda tensa', 'En un globo inflado'], 'Las celosías reparten el esfuerzo entre barras que solo se estiran o se aprietan, y usan poco material para lo rígidas que son.', 'e1');
+
+// ---- Lección 2 · Estirar, apretar y doblar ----
+T('traccion', 'Tracción', 'Esfuerzo que tiende a estirar una pieza: dos fuerzas que tiran hacia fuera.', 'e2', 'Una cuerda tirante trabaja a tracción.', 'Estira');
+T('compresion', 'Compresión', 'Esfuerzo que tiende a aplastar una pieza: dos fuerzas que empujan hacia dentro.', 'e2', 'Una columna que sostiene un techo trabaja a compresión.', 'Aprieta');
+T('flexion', 'Flexión', 'Esfuerzo que tiende a doblar una pieza: una cara se comprime y la opuesta se estira.', 'e2', 'Una regla apoyada en dos libros y empujada por el centro.', 'Dobla');
+F('cuerda_empuja', '¿Por qué una cuerda sirve para tirar de algo pero no para empujarlo?', 'Porque aguanta bien la tracción, pero a compresión se arruga y no transmite el empuje', ['Porque pesa demasiado', 'Porque siempre se estira hasta romperse', 'Porque el empuje no es una fuerza'], 'Una cuerda flexible no puede mantenerse recta cuando la aprietas. Por eso las estructuras usan cables solo donde hay tracción, y barras o columnas donde hay compresión.', 'e2', cargasSVG());
+F('flex_caras', 'Una regla apoyada por sus dos extremos y empujada hacia abajo por el centro. ¿Qué pasa en sus caras?', 'La cara de arriba se comprime y la de abajo se estira', ['La de arriba se estira y la de abajo se comprime', 'Las dos caras se estiran', 'Las dos caras se comprimen'], 'Al curvarse hacia abajo, el lado de arriba (el interior de la curva) se acorta y el de abajo (el exterior) se alarga. La zona central casi no se estira ni se comprime.', 'e2', cargasSVG());
+F('tubo_papel', 'Predice: una hoja plana de papel sobre dos libros se comba con unas monedas. ¿Qué pasa si con esa misma hoja haces un tubo y lo pones igual?', 'Aguanta bastante más: la forma importa más que la cantidad de papel', ['Aguanta lo mismo, porque es el mismo papel', 'Aguanta menos, porque está arrugado', 'Se rompe antes porque pesa más'], 'Con el mismo papel, el material queda más lejos del centro de la pieza y resiste mucho mejor la flexión. Por eso los tubos y los perfiles en doble T son más eficaces que una pletina plana.', 'e2');
+F('technic_flex', 'Una viga Technic larga y fina, apoyada solo en sus dos extremos, se dobla al cargarla. ¿Qué la hace doblarse menos?', 'Acortar la distancia entre los apoyos o unir dos vigas con varios pines', ['Quitarle pines', 'Apoyarla solo en un extremo', 'Alargarla'], 'Cuanto más corta es la distancia entre apoyos, menos se dobla (la flecha crece muy deprisa con la longitud). Dos vigas unidas con varios pines trabajan como una más gruesa.', 'e2');
+
+// ---- Lección 3 · Voladizos: brazos y vigas libres ----
+T('voladizo', 'Voladizo', 'Viga o brazo sujeto solo por un extremo, con el otro extremo libre en el aire.', 'e3', 'Un trampolín o tu brazo extendido.', 'Sujeto por un solo lado');
+T('momento', 'Momento de una fuerza', 'Efecto de giro o de doblado de una fuerza: momento = fuerza × distancia al punto que se considera. Se mide en N·m.', 'e3', 'Es la regla de la palanca aplicada a una viga.', 'Fuerza × distancia (N·m)');
+T('flecha', 'Flecha', 'Cuánto baja la punta de una viga o brazo cuando lo cargas.', 'e3', 'Si la punta baja mucho, la flecha es grande.', 'Cuánto baja la punta');
+C('momento_calc', 'Un brazo horizontal sostiene en su punta una pieza que pesa 4 N, a 0,5 m de la base. ¿Qué momento (esfuerzo de doblado) hay en la base?', '2 N·m', ['4,5 N·m', '8 N·m', '0,125 N·m'], 'Momento = fuerza × distancia = 4 N × 0,5 m = 2 N·m.', 'e3', () => {
+  const f = pick([2, 3, 4, 5, 6, 8, 10]), d = pick([0.2, 0.3, 0.4, 0.5, 0.6, 0.8]), m = f * d, a = fmt(m) + ' N·m';
+  return { q: `Un brazo horizontal sostiene en su punta una pieza que pesa ${f} N, a ${fmt(d)} m de la base. ¿Qué momento (esfuerzo de doblado) hay en la base?`, a, wrong: uniq([fmt(f + d), fmt(f / d), fmt(m * 2), fmt(m / 2), fmt(m * 10)].map(x => x + ' N·m'), a).slice(0, 3), explain: `Momento = fuerza × distancia = ${f} N × ${fmt(d)} m = ${fmt(m)} N·m.` };
+});
+F('vol_cubo', 'Duplicas el largo de un brazo en voladizo (misma carga en la punta y mismo material). ¿Cuánto más baja la punta, aproximadamente?', 'Unas 8 veces más: la flecha crece con el cubo de la longitud', ['El doble', 'Lo mismo', 'Unas 4 veces más'], 'En una viga en voladizo con la carga en la punta, la flecha es proporcional a L³: al duplicar L, 2³ = 8. Por eso acortar un brazo, aunque sea un poco, lo rigidiza mucho. Míralo en la animación.', 'e3', cantileverSVG());
+F('vol_base', 'En un brazo horizontal con una carga en la punta, ¿dónde es mayor el esfuerzo de doblado (el momento)?', 'En la base (el «hombro»), junto a donde está sujeto', ['En la punta, donde está la carga', 'En el medio, siempre', 'Es igual en todo el brazo'], 'El momento = fuerza × distancia al punto que miras. En la base, esa distancia es toda la longitud del brazo. Por eso los hombros y las bases son lo que más se refuerza.', 'e3');
+F('motor_base', 'Quieres que tu brazo se doble lo menos posible. ¿Dónde conviene colocar un motor pesado?', 'Lo más cerca posible de la base, moviendo el brazo con una correa, una cadena o varillas', ['En la punta del brazo, para empujar mejor', 'En la mitad del brazo, siempre', 'Da igual dónde esté'], 'Una masa lejos de la base multiplica el momento que debe aguantar el brazo (peso × distancia) y su inercia. Con el motor cerca de la base y una transmisión, el brazo es más ligero.', 'e3');
+
+// ---- Lección 4 · Refuerza tu montaje ----
+T('articulacion', 'Articulación', 'Unión que deja girar una pieza respecto a otra, como un pin en un solo agujero.', 'e4', 'Un solo pin = una bisagra.', 'Unión que deja girar');
+T('juego', 'Juego (holgura)', 'Pequeño margen de movimiento que queda entre dos piezas unidas, por ejemplo un pin dentro de un agujero.', 'e4', 'Si algo «baila» un poco, tiene juego.', 'Margen de movimiento');
+F('tech_cuadro', 'Montas un marco cuadrado con cuatro vigas Technic y un pin en cada esquina, y se «tumba» al empujarlo. ¿Cuál es el arreglo más eficaz?', 'Añadir una viga en diagonal: convierte el cuadrado en dos triángulos', ['Usar vigas más largas', 'Apretar más los pines', 'Añadir peso en las esquinas'], 'Cada esquina con un solo pin es una articulación. Una diagonal, con un pin en cada extremo, forma triángulos que no pueden cambiar de ángulo.', 'e4', refuerzoSVG());
+F('tech_dos_pines', 'Unes dos vigas Technic con un solo pin y giran una respecto a la otra. ¿Cómo evitas que giren?', 'Uniéndolas con dos pines en dos agujeros distintos', ['Con un pin más largo', 'Apretando el pin con más fuerza', 'Poniendo un tope en el pin'], 'Un pin en un agujero es una bisagra. Con dos pines separados, la pieza ya no puede girar alrededor de ninguno: la unión es rígida.', 'e4');
+F('tech_juego', 'Tu estructura Technic, bien triangulada, todavía «baila» un poco. ¿Qué lo explica?', 'El juego: los pines entran con holgura en los agujeros y se suma en cada unión', ['Que los triángulos no sirven en Technic', 'Que las vigas son de goma', 'Que la gravedad cambia'], 'Ningún montaje es perfectamente rígido: cada unión tiene algo de juego y esos pequeños márgenes se acumulan a lo largo de una cadena de piezas. Menos uniones, y más cortas, reducen el bailoteo.', 'e4');
+O('refuerzo', 'Ordena los pasos para reforzar un montaje que se tambalea', ['Empuja el montaje con suavidad y observa dónde se deforma', 'Busca el cuadrilátero (cuatro lados) que cambia de forma', 'Añade una diagonal con un pin en cada extremo', 'Vuelve a empujar para comprobar que ya no se deforma'], 'Primero hay que ver el problema, luego localizar la parte que cede, reforzarla y por último comprobar que el arreglo ha funcionado.', 'e4');
+X('brazo_tembloroso', 'El brazo que tiembla', [
+  'Has montado un brazo de varias vigas Technic en voladizo, con un pin en cada unión y el motor en la punta.',
+  'Al levantar una pieza ligera, el brazo se dobla hacia abajo y vibra al parar.',
+  'Las vigas no están torcidas ni dañadas.'], [
+  ['¿Qué dos cambios mejorarían más la rigidez?', ['Acortar el brazo y pasar el motor cerca de la base', 'Añadir una pegatina en cada viga', 'Alargar el brazo para ganar alcance'], 0, 'Acortar el brazo baja mucho la flecha (crece con el cubo de la longitud) y quitar peso de la punta reduce el momento en la base.'],
+  ['Las uniones de un solo pin forman cuadriláteros que se tumban. ¿Qué los arregla?', ['Diagonales que formen triángulos', 'Más pines iguales sin cambiar la forma', 'Un tope en cada pin'], 0, 'Un triángulo no puede cambiar de ángulos sin cambiar de lados: la diagonal convierte el cuadrilátero articulado en una estructura rígida.']], 'e4');
+
 // Unidades y lecciones (≤ 7 items por lección, ≈ 2-4 min)
 const UNITS = [
   { id: 'u_fuerza', title: 'Fuerza, peso y movimiento', sub: 'La base que explica por qué funcionan las máquinas', lessons: [
@@ -603,6 +710,16 @@ const UNITS = [
       note: { title: 'Dos formas de engranar', fig: rackSVG(), body: 'Un **piñón** con una **cremallera** convierte giro en línea recta: avance por vuelta = nº de dientes × paso.\n\nUn **tornillo sin fin** mueve una rueda **un diente por vuelta**: una reducción enorme en poco espacio.\n\n👆 Toca el dibujo para pausarlo.' } },
     { id: 'l_trinquete', title: 'Un sentido y a saltos', sub: 'Trinquete y cruz de Malta', icon: '🎞️', items: ['t_trinquete', 't_lengueta', 't_ginebra', 'f_trinq_uso', 'f_trinq_predice', 'f_ginebra_cine', 'f_ginebra_reloj'],
       note: { title: 'Control del movimiento', fig: ratchetSVG(), body: 'Un **trinquete** deja girar en un sentido y bloquea el otro, gracias a su **uña**.\n\nUna **cruz de Malta** (mecanismo de Ginebra) convierte un giro continuo en giro **a saltos**: avanza un paso, para, avanza otro...' } }
+  ]},
+  { id: 'u_estr', title: 'Estructuras y rigidez', sub: 'Triángulos, esfuerzos y brazos que no se doblan', lessons: [
+    { id: 'l_triangulo', title: 'Triángulos que no ceden', sub: 'Por qué la diagonal lo cambia todo', icon: '🔺', items: ['t_rigidez', 't_triangulacion', 't_riostra', 'f_tri_predice', 'f_tri_porque', 'c_diagonales', 'f_tri_ejemplos'],
+      note: { title: 'El cuadrado cede, el triángulo no', fig: frameSVG(), body: 'Un marco de cuatro barras con un pin en cada esquina **se tumba**: los lados no cambian, pero los ángulos sí.\n\nUn **triángulo** no puede: si los tres lados no cambian de longitud, tampoco cambian los ángulos.\n\nPor eso se añaden **diagonales**: convierten cuadrados en triángulos.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_cargas', title: 'Estirar, apretar y doblar', sub: 'Tracción, compresión y flexión', icon: '🪢', items: ['t_traccion', 't_compresion', 't_flexion', 'f_cuerda_empuja', 'f_flex_caras', 'f_tubo_papel', 'f_technic_flex'],
+      note: { title: 'Tres formas de cargar una pieza', fig: cargasSVG(), body: '• **Tracción**: dos fuerzas tiran hacia fuera y **estiran**.\n• **Compresión**: dos fuerzas empujan hacia dentro y **aprietan**.\n• **Flexión**: una carga **dobla** la pieza; una cara se comprime y la contraria se estira.\n\nUna misma estructura puede tener piezas en cada situación a la vez.' } },
+    { id: 'l_voladizo', title: 'Voladizos: brazos y vigas libres', sub: 'Por qué el hombro sufre', icon: '🏗️', items: ['t_voladizo', 't_momento', 't_flecha', 'c_momento_calc', 'f_vol_cubo', 'f_vol_base', 'f_motor_base'],
+      note: { title: 'Un brazo es un voladizo', fig: cantileverSVG(), body: 'Un brazo sujeto por un solo extremo es un **voladizo**. El **momento** en la base es **fuerza × distancia**: la regla de la palanca otra vez.\n\nY la **flecha** (cuánto baja la punta) crece con el **cubo** de la longitud: al doble de largo, unas **8 veces** más.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_refuerzo', title: 'Refuerza tu montaje', sub: 'Diagonales, dos pines y juego', icon: '🛡️', items: ['t_articulacion', 't_juego', 'f_tech_cuadro', 'f_tech_dos_pines', 'f_tech_juego', 'o_refuerzo', 'x_brazo_tembloroso'],
+      note: { title: 'Receta antitambaleo', fig: refuerzoSVG(), body: '1. Un solo pin es una **bisagra**: usa **dos pines** para que no gire.\n2. Busca los **cuadriláteros** y añade una **diagonal**.\n3. Acorta los voladizos y pon el peso **cerca de la base**.\n4. Un poco de **juego** siempre queda: menos uniones y más cortas.' } }
   ]}
 ];
 const LESSON_BY_ID = {};
@@ -626,6 +743,10 @@ const CURIOS = {
   l_suma: { title: 'Sabías que… el truco del mantel', body: 'Hay un truco clásico de física: tirar de un mantel **muy rápido y seco** y dejar casi inmóviles los objetos que había encima. Los objetos, por **inercia**, tienden a quedarse donde estaban.\n\nFunciona mejor con mantel liso, objetos pesados y un tirón rápido. ¡No lo pruebes con tu vajilla buena!' },
   l_roz: { title: 'Sabías que… rodar roza mucho menos', body: 'Los **rodamientos de bolas** (en patines, ruedas de bici o ejes de máquinas) cambian el deslizamiento por **rodadura**, que roza mucho menos. Por eso es mucho más fácil rodar un objeto que arrastrarlo.\n\nTambién se usa aceite o grasa en engranajes y ejes: reduce el rozamiento y la pérdida de fuerza que viste en la lección.' },
   l_trabajo: { title: 'Sabías que… el «caballo de vapor»', body: 'James Watt inventó el **caballo de vapor** (horsepower) para explicar a sus clientes cuánto trabajo hacían sus máquinas de vapor comparadas con los caballos. Un caballo de vapor equivale a unos **746 vatios**.\n\nCómo calculó exactamente ese valor se cuenta de formas distintas, y no hay una fuente histórica clara: es un buen ejemplo de que una unidad puede nacer de una necesidad práctica.' },
+  l_triangulo: { title: 'Sabías que… los triángulos están por todas partes', body: 'Los **puentes de celosía**, las **grúas de torre** y las torres de alta tensión están hechos de barras que forman **triángulos**. La **Torre Eiffel** también es una celosía de hierro, con miles de piezas.\n\nCon poco material consiguen mucha rigidez: justo lo que viste en la animación.' },
+  l_cargas: { title: 'Sabías que… las vigas tienen forma de I', body: 'Las vigas de acero en **doble T** (I o H) tienen el material en las alas de arriba y de abajo, que son las que más trabajan a flexión, y un alma fina en medio: así pesan poco y aguantan mucho.\n\nGalileo ya escribió en 1638 que un tubo hueco resiste mejor que una barra maciza con el mismo material, y lo relacionó con los huesos y los tallos.' },
+  l_voladizo: { title: 'Sabías que… la grúa se equilibra con un contrapeso', body: 'Una **grúa torre** lleva bloques de hormigón como contrapeso al otro lado de la pluma. Trabajan como una palanca: el **momento** de la carga (peso × distancia) se compensa con el del contrapeso.\n\nPor eso su límite de carga baja cuando la carga se aleja de la torre: más distancia, más momento.' },
+  l_refuerzo: { title: 'Sabías que… un cuadro de bici son dos triángulos', body: 'El cuadro clásico de una bicicleta (el «cuadro de diamante») está formado por **dos triángulos** unidos, uno delantero y otro trasero. Es el mismo truco de la diagonal, con tubos huecos y ligeros.\n\nSe usa desde hace más de un siglo.' },
   l_trinquete: { title: 'Sabías que… el «clic-clic» de la carraca', body: 'El «clic-clic» de una llave de carraca es la **uña** de un trinquete saltando de diente en diente.\n\nGracias a él puedes apretar un tornillo moviendo la llave de ida y vuelta, sin sacarla cada vez.' }
 };
 Object.entries(CURIOS).forEach(([id, c]) => { LESSON_BY_ID[id].curio = c; });
@@ -695,6 +816,25 @@ const MISIONES = {
         'Haz que el otro extremo de la tira se mueva entre dos reglas o lápices paralelos (la guía).',
         'Gira el disco con el dedo y marca los dos extremos del recorrido de la tira.',
         'Mide la distancia entre las marcas (la carrera) y compárala con 2 × la distancia del punto al centro.',
-        'Muévelo más cerca del centro y repite: ¿cambia la carrera como predijiste?'] } } }
+        'Muévelo más cerca del centro y repite: ¿cambia la carrera como predijiste?'] } } },
+  u_estr: { id: 'm_estr', icon: '📐', title: 'Triángulos contra cuadrados',
+    why: 'Vas a **sentir** en las manos que un cuadrado articulado se tumba y que una sola diagonal lo arregla. Y vas a medir cómo un voladizo se dobla muchísimo más cuando lo alargas.',
+    think: 'Antes de cada empujón, **predice** qué hará la estructura. En el voladizo, antes de medir, predice cuántas veces más baja la punta al duplicar el largo. No hace falta que salga exacto: las medidas caseras tienen error.',
+    safety: 'Corta el cartón con tijeras sobre una superficie protegida y lejos de ti. Haz los agujeros con un lápiz sobre un material blando, sin poner la mano debajo. Sujeta bien el libro para que no caiga sobre tus dedos ni tus pies.',
+    versions: {
+      carton: { label: 'Con cartón', intro: 'Tiras de cartón, encuadernadores de latón (o clips), un lápiz, una regla de plástico, un libro pesado y unas monedas con cinta.', steps: [
+        'Recorta cuatro tiras de cartón iguales (por ejemplo, 2 cm × 15 cm) y haz un agujero cerca de cada extremo.',
+        'Únelas en cuadrado con un encuadernador (o un clip) en cada esquina, de modo que las uniones puedan girar.',
+        'Predice y empuja una esquina de arriba: ¿se queda cuadrado o se tumba?',
+        'Recorta una quinta tira para la diagonal, haz los agujeros a la distancia justa y únela a dos esquinas opuestas.',
+        'Empuja otra vez: ¿se deforma? Anota qué ha cambiado.',
+        'Voladizo: sujeta una regla de plástico con un libro pesado en el borde de la mesa, con 10 cm fuera. Pega unas monedas en la punta y mide cuánto baja.',
+        'Repite con 20 cm fuera y las mismas monedas. Antes de medir, predice si baja el doble o mucho más, y compara.'] },
+      papel: { label: 'En papel', intro: 'Hojas de papel, dos libros y monedas o clips.', steps: [
+        'Separa dos libros unos 15 cm y apoya una hoja de papel plana como puente.',
+        'Pon monedas encima, una a una, hasta que se hunda. Anota cuántas aguantó.',
+        'Haz otro puente con otra hoja doblada en acordeón, con los pliegues en la misma dirección que el puente (de un libro al otro). Predice cuántas monedas aguantará.',
+        'Haz un tercer puente con otra hoja enrollada en tubo y pegada con cinta. Predice de nuevo.',
+        'Compara los tres: misma cantidad de papel, distinta forma. ¿Cuál aguantó más?'] } } }
 };
 UNITS.forEach(u => { if (MISIONES[u.id]) u.mission = MISIONES[u.id]; });

@@ -61,7 +61,9 @@
     c_resultante_calc: (n, a, s) => near(a[0], Math.abs(n[0] - n[1])) && (n[0] > n[1]) === /izquierda/.test(s.a),   // se restan; gana la mayor
     c_roz_calc: (n, a) => near(a[0], n[0] * n[1]),                  // μ × normal
     c_trabajo_calc: (n, a) => near(a[0], n[0] * n[1]),              // fuerza × distancia
-    c_potencia_calc: (n, a) => near(a[0], n[0] / n[1])              // trabajo ÷ tiempo
+    c_potencia_calc: (n, a) => near(a[0], n[0] / n[1]),             // trabajo ÷ tiempo
+    c_diagonales: (n, a) => near(a[0], n[0] - 3),                   // n lados → n − 3 diagonales
+    c_momento_calc: (n, a) => near(a[0], n[0] * n[1])               // momento = fuerza × distancia
   };
   Object.entries(VER).forEach(([id, f]) => { const it = ITEMS[id]; if (!it) return add(`${id}: no existe`); for (let k = 0; k < 200; k++) { const s = it.gen(); const n = num(s.q), a = num(s.a); if (!f(n, a, s)) { add(`${id}: cálculo incorrecto → «${s.q}» = «${s.a}»`); break; } if (s.wrong.some(w => w === s.a)) { add(`${id}: distractor igual a la respuesta`); break; } } });
   // figuras animadas: cada una debe tener su animación y no producir NaN en ningún instante (se prueba fuera de pantalla)
