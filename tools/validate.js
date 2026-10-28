@@ -79,7 +79,21 @@
     c_asc_diff: (n, a) => near(a[0], Math.abs(n[0] - n[1])),        // diferencia de masas
     c_proy_l2: (n, a) => near(a[0], n[0] - n[1]),                   // L2 = total − L1
     c_proy_par: (n, a) => near(a[0], n[1] * n[0] + n[2] * n[0] / 2),// pieza en la punta + peso propio a mitad
-    c_proy_margen: (n, a) => near(a[0], n[0] * n[1])                // par × margen
+    c_proy_margen: (n, a) => near(a[0], n[0] * n[1]),               // par × margen
+    c_rampa: (n, a) => near(a[0], n[0] * n[1] / n[2]),              // peso × altura ÷ largo
+    c_paso_tornillo_calc: (n, a) => near(a[0], n[0] * n[1]),        // paso × vueltas
+    c_rueda_eje_calc: (n, a) => near(a[0], n[0] / n[1]),            // R ÷ r
+    c_correa_rel: (n, a) => near(a[0], n[1] / n[0]),                // D ÷ d
+    c_dir_vueltas: (n, a) => near(a[0], n[1] / n[0]),               // grados ÷ vueltas
+    c_dif_rpm: (n, a) => near(a[0], 2 * n[0] - n[1]),               // entrada = media de las dos ruedas
+    c_agarre: (n, a) => near(a[0], n[0] * n[1]),                    // μ × N
+    c_presion_calc: (n, a) => near(a[0], n[0] / n[1]),              // F ÷ A
+    c_hidr_fuerza: (n, a) => near(a[0], n[0] * n[2] / n[1]),        // F × A2 ÷ A1
+    c_hidr_recorrido: (n, a) => near(a[0], n[2] * n[0] / n[1]),     // d × A2 ÷ A1
+    c_neum_fuerza: (n, a) => near(a[0], n[0] * n[1] / 10),          // kPa × cm² ÷ 10
+    c_codo_pos: (n, a) => near(a[0], n[0]) && near(a[1], n[1]),     // (L1, L2)
+    c_codo_dist: (n, a) => near(a[0], Math.hypot(n[0], n[1])),      // Pitágoras
+    c_res_punta: (n, a) => near(a[0], n[0] * 0.175)                 // 0,0175 × L (cm) en mm
   };
   Object.entries(VER).forEach(([id, f]) => { const it = ITEMS[id]; if (!it) return add(`${id}: no existe`); for (let k = 0; k < 200; k++) { const s = it.gen(); const n = num(s.q), a = num(s.a); if (!f(n, a, s)) { add(`${id}: cálculo incorrecto → «${s.q}» = «${s.a}»`); break; } if (s.wrong.some(w => w === s.a)) { add(`${id}: distractor igual a la respuesta`); break; } } });
   // figuras animadas: cada una debe tener su animación y no producir NaN en ningún instante (se prueba fuera de pantalla)
