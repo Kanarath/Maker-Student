@@ -838,3 +838,11 @@ const MISIONES = {
         'Compara los tres: misma cantidad de papel, distinta forma. ¿Cuál aguantó más?'] } } }
 };
 UNITS.forEach(u => { if (MISIONES[u.id]) u.mission = MISIONES[u.id]; });
+
+// Para las unidades que viven en otros ficheros (content2.js…): las registra con sus curiosidades y misiones.
+// Las unidades cuyo id esté en `frontIds` van al principio del camino; el resto, al final.
+function addUnits(units, curios = {}, misiones = {}, frontIds = []) {
+  units.forEach(u => { u.lessons.forEach(l => { l.unit = u.id; LESSON_BY_ID[l.id] = l; }); if (misiones[u.id]) u.mission = misiones[u.id]; });
+  Object.entries(curios).forEach(([id, c]) => { LESSON_BY_ID[id].curio = c; });
+  UNITS.unshift(...units.filter(u => frontIds.includes(u.id))); UNITS.push(...units.filter(u => !frontIds.includes(u.id)));
+}

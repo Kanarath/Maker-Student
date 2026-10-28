@@ -63,7 +63,23 @@
     c_trabajo_calc: (n, a) => near(a[0], n[0] * n[1]),              // fuerza × distancia
     c_potencia_calc: (n, a) => near(a[0], n[0] / n[1]),             // trabajo ÷ tiempo
     c_diagonales: (n, a) => near(a[0], n[0] - 3),                   // n lados → n − 3 diagonales
-    c_momento_calc: (n, a) => near(a[0], n[0] * n[1])               // momento = fuerza × distancia
+    c_momento_calc: (n, a) => near(a[0], n[0] * n[1]),              // momento = fuerza × distancia
+    c_escala: (n, a) => near(a[0], n[2] * n[1] / n[0]),             // real = dibujo × razón (1:r)
+    c_pot_elec: (n, a) => near(a[0], n[0] * n[1]),                  // P = V · I
+    c_pilas: (n, a) => near(a[0], n[0] * n[1]),                     // serie: n × 1,5 V
+    c_paso_grados: (n, a) => near(a[0], 360 / n[0]),                // grados por paso
+    c_motor_red: (n, a) => near(a[0], n[0] / n[1]),                 // rpm ÷ relación
+    c_par_red: (n, a) => near(a[0], n[0] * n[1]),                   // par × relación (ideal)
+    c_extr_vol: (n, a) => near(a[0], n[0] * n[0] * n[1]),           // lado² × grosor
+    c_capas: (n, a) => near(a[0], n[0] / n[1]),                     // altura ÷ capa
+    c_alcance_max: (n, a) => near(a[0], n[0] + n[1]),               // L1 + L2
+    c_alcance_min: (n, a) => near(a[0], Math.abs(n[0] - n[1])),     // |L1 − L2|
+    c_par_brazo: (n, a) => near(a[0], n[0] * n[1]),                 // longitud × fuerza
+    c_servo_carga: (n, a) => near(a[0], n[0] / n[1]),               // kg·cm ÷ cm
+    c_asc_diff: (n, a) => near(a[0], Math.abs(n[0] - n[1])),        // diferencia de masas
+    c_proy_l2: (n, a) => near(a[0], n[0] - n[1]),                   // L2 = total − L1
+    c_proy_par: (n, a) => near(a[0], n[1] * n[0] + n[2] * n[0] / 2),// pieza en la punta + peso propio a mitad
+    c_proy_margen: (n, a) => near(a[0], n[0] * n[1])                // par × margen
   };
   Object.entries(VER).forEach(([id, f]) => { const it = ITEMS[id]; if (!it) return add(`${id}: no existe`); for (let k = 0; k < 200; k++) { const s = it.gen(); const n = num(s.q), a = num(s.a); if (!f(n, a, s)) { add(`${id}: cálculo incorrecto → «${s.q}» = «${s.a}»`); break; } if (s.wrong.some(w => w === s.a)) { add(`${id}: distractor igual a la respuesta`); break; } } });
   // figuras animadas: cada una debe tener su animación y no producir NaN en ningún instante (se prueba fuera de pantalla)
