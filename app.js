@@ -41,6 +41,7 @@ function applyResult(id, ok) {
 }
 const dueItems = () => Object.keys(S.srs).filter(id => ITEMS[id] && S.srs[id].due <= Date.now()).sort((a, b) => S.srs[a].box - S.srs[b].box || S.srs[a].due - S.srs[b].due);
 const learnedIds = () => Object.keys(S.srs).filter(id => ITEMS[id]);
+const ITEM_UNIT = {}; UNITS.forEach(u => u.lessons.forEach(l => l.items.forEach(i => { ITEM_UNIT[i] = u.title; })));   // de qué unidad es cada ejercicio (para el examen por temas)
 const rankIdx = xp => { let i = 0; APP.ranks.forEach((r, k) => { if (xp >= r.xp) i = k; }); return i; };
 
 // ===================== sonido y vibración =====================
@@ -210,7 +211,17 @@ function viewTaller() {
     h('p', { class: 'muted' }, 'Preguntas de todas las categorías, sin pistas y sin prisa. No pasa nada si fallas: te dice qué repasar.'),
     last ? h('p', {}, '🎓 Último resultado: ', h('b', {}, last.pct + ' %'), ' (' + new Date(last.d).toLocaleDateString('es-ES') + ')') : null,
     (last && last.missed && last.missed.length) ? h('button', { class: 'btn ghost', onclick: () => startFixes(last.missed) }, '🔁 Repasar los errores del último examen (' + last.missed.length + ')') : null,
-    h('button', { class: 'btn', onclick: () => startExam('learned') }, '🎓 Sobre lo que he estudiado'), h('button', { class: 'btn ghost', onclick: () => startExam('all') }, 'Todo el curso')));
+    h('button', { class: 'btn', onclick: () => startExam('learned') }, '🎓 Sobre lo que he estudiado'), h('button', { class: 'btn ghost', onclick: () => startExam('all') }, '🏁 Examen final: todo el curso (más largo)')));
+  wrap.append(h('h3', {}, 'Instalar en tu dispositivo'), h('div', { class: 'card list' },
+    h('p', { class: 'muted' }, 'Puedes usar la app desde el navegador, pero instalada se abre a pantalla completa y funciona sin conexión.'),
+    h('details', {}, h('summary', {}, '📱 Android (Chrome)'), h('ol', { class: 'inst' }, [
+      'Abre la app en Chrome.', 'Pulsa el menú ⋮ (arriba a la derecha).', 'Elige «Instalar aplicación» (o «Añadir a la pantalla de inicio» si sale así).', 'Confirma. Aparecerá el icono del robot en tu pantalla o en el cajón de aplicaciones.'].map(t => h('li', {}, t)))),
+    h('details', {}, h('summary', {}, '💻 PC (Chrome o Edge)'), h('ol', { class: 'inst' }, [
+      'Abre la app en el navegador.', 'Pulsa el icono de instalar que aparece en la barra de direcciones (un monitor con una flecha), o el menú ⋮ → «Instalar Maker Student».', 'Confirma. Se abrirá en su propia ventana.'].map(t => h('li', {}, t)))),
+    h('details', {}, h('summary', {}, '🍎 iPhone o iPad (Safari)'), h('ol', { class: 'inst' }, [
+      'Abre la app en Safari.', 'Pulsa el botón de compartir (un cuadrado con una flecha).', 'Elige «Añadir a pantalla de inicio» y confirma.'].map(t => h('li', {}, t)))),
+    h('details', {}, h('summary', {}, '❓ Dice «ya instalada» pero no la veo'), h('ol', { class: 'inst' }, [
+      'Busca «Maker Student» en el cajón de aplicaciones de tu móvil: a veces está instalada, pero sin icono en la pantalla principal.', 'Si no está, abre Ajustes de Android → Aplicaciones y busca «Maker Student»; si aparece, desinstálala y vuelve a instalar.', 'Si sigue igual, en Chrome elige menú ⋮ → «Añadir a la pantalla de inicio» → «Crear acceso directo»: funciona igual.', 'Tu progreso se guarda en el navegador: antes de desinstalar nada, descarga la copia de seguridad (más abajo).'].map(t => h('li', {}, t))))));
   const set = S.settings, toggle = (t, k) => h('label', { class: 'row' }, h('span', {}, t), h('input', { type: 'checkbox', ...(set[k] ? { checked: '' } : {}), onchange: e => { set[k] = e.target.checked; save(); } }));
   wrap.append(h('h3', {}, 'Ajustes'), h('div', { class: 'card list' }, toggle('Sonidos', 'sound'), toggle('Vibración', 'vibrate'), toggle('La mascota se asoma en las lecciones', 'cameo')));
   wrap.append(h('h3', {}, 'Copia de seguridad'), h('div', { class: 'card list' },
@@ -283,7 +294,7 @@ function startFixes(ids) {
   const items = ids.filter(i => ITEMS[i]).slice(0, 12).map(i => ITEMS[i]); if (!items.length) return;
   runSession({ title: 'Repaso de tus errores', steps: shuffle(items.flatMap(it => exercisesFor(it, 'review'))), itemIds: items.map(i => i.id), mode: 'review' });
 }
-function runSession(cfg) { SS = { cfg, queue: cfg.steps.slice(), total: cfg.steps.length, done: 0, combo: 0, maxCombo: 0, right: 0, tries: 0, wrong: new Set(), xp: 0, cat: {}, missed: [] }; nextStep(); }
+function runSession(cfg) { SS = { cfg, queue: cfg.steps.slice(), total: cfg.steps.length, done: 0, combo: 0, maxCombo: 0, right: 0, tries: 0, wrong: new Set(), xp: 0, cat: {}, unit: {}, missed: [] }; nextStep(); }
 function quitSession() { SS = null; go(tab); }
 function nextStep() {
   if (!SS.queue.length) return finishSession();
@@ -294,7 +305,7 @@ function nextStep() {
     h('div', { class: 'pbar' }, h('i', { style: `width:${pct}%` })), h('div', { class: 'combo' + (SS.combo >= 3 ? ' hot' : '') }, SS.combo >= 2 ? `🔥 ×${SS.combo}` : '')), body, foot), false);
   curKeys = null;
   if (step.type === 'intro') rIntro(step, body, foot); else if (step.type === 'note') rNote(step, body, foot); else if (step.type === 'match') rMatch(step, body, foot);
-  else { const spec = step.make(); spec.itemId = step.itemId; spec.retry = !!step.retry; spec.src = step; spec.cat = step.cat; (spec.type === 'order' ? rOrder : rMcq)(spec, body, foot);
+  else { const spec = step.make(); spec.itemId = step.itemId; spec.retry = !!step.retry; spec.src = step; spec.cat = step.cat; spec.unit = step.unit; (spec.type === 'order' ? rOrder : rMcq)(spec, body, foot);
     if (SS.cfg.exam && spec.cat) body.prepend(h('div', { class: 'examcat' }, spec.cat + ' · ' + (SS.done + 1) + ' / ' + SS.total)); }
   bindAnims(); // las figuras se añaden después de show(), así que hay que enlazarlas ahora
 }
@@ -360,7 +371,10 @@ function rMatch(step, body, foot) {
 // --- calificación y feedback ---
 const GOOD_MSG = () => pick(APP.good);
 function grade(spec, ok) {
-  if (SS.cfg.exam) { const c = (SS.cat[spec.cat] = SS.cat[spec.cat] || { r: 0, t: 0 }); c.t++; SS.tries++; if (ok) { c.r++; SS.right++; } else { if (spec.itemId) SS.wrong.add(spec.itemId); SS.missed.push({ cat: spec.cat, id: spec.itemId, q: spec.big || spec.question, a: spec.answerText }); } return; }
+  if (SS.cfg.exam) { const c = (SS.cat[spec.cat] = SS.cat[spec.cat] || { r: 0, t: 0 }); c.t++; SS.tries++; if (ok) { c.r++; SS.right++; }
+    if (spec.unit) { const u = (SS.unit[spec.unit] = SS.unit[spec.unit] || { r: 0, t: 0 }); u.t++; if (ok) u.r++; }
+    if (!ok) { if (spec.itemId) SS.wrong.add(spec.itemId); SS.missed.push({ cat: spec.cat, id: spec.itemId, q: spec.big || spec.question, a: spec.answerText }); }
+    return; }
   maybeCameo(ok); SS.tries++;
   if (ok) { SS.right++; SS.combo++; SS.maxCombo = Math.max(SS.maxCombo, SS.combo); SS.xp += spec.retry ? 4 : 10; sfx.ok(); }
   else { SS.combo = 0; sfx.bad(); if (!spec.retry) { SS.wrong.add(spec.itemId); SS.queue.splice(Math.min(3, SS.queue.length), 0, { itemId: spec.itemId, make: spec.src.make, retry: true }); } }
@@ -410,11 +424,11 @@ function chestEl() {
 const EXAM_TIPS = { term: 'Repasa los conceptos fallados y relee sus definiciones; tus fallos ya están en el Repaso.', fact: 'Revisa las explicaciones: lo importante es el "por qué".', calc: 'Repite los cálculos con números distintos. Truco: casi todo son reglas de tres (distancias, tramos de cuerda o dientes).', order: 'Repite los procedimientos pensando en el motivo de cada paso (y la seguridad primero).', case: 'Lee los casos con calma y razona de lo simple a lo complejo (revisa lo barato y fácil antes que cambiar piezas).' };
 function startExam(scope) {
   const pool = scope === 'learned' ? learnedIds().map(id => ITEMS[id]) : Object.values(ITEMS), steps = [];
-  const N = { term: 6, fact: 5, calc: 5, order: 3, case: 2 };
+  const N = { term: 6, fact: 5, calc: 5, order: 3, case: 2 }, big = scope === 'all' ? 3 : 1;   // el examen final de todo el curso es 3 veces más largo
   Object.keys(APP.kinds).forEach(kind => {
-    shuffle(pool.filter(i => i.kind === kind)).slice(0, N[kind] || 3).forEach(it => {
+    shuffle(pool.filter(i => i.kind === kind)).slice(0, (N[kind] || 3) * big).forEach(it => {
       const exs = kind === 'term' ? [pick([E.t2d, E.d2t])(it)] : kind === 'case' ? [E.q(it, Math.floor(Math.random() * it.qs.length))] : exercisesFor(it, 'review');
-      exs.forEach(ex => steps.push(Object.assign({}, ex, { cat: APP.kinds[kind] })));
+      exs.forEach(ex => steps.push(Object.assign({}, ex, { cat: APP.kinds[kind], unit: ITEM_UNIT[it.id] })));
     });
   });
   if (steps.length < 6) { alert('Aún no has estudiado lo suficiente para un examen con tu avance. Prueba «Todo el curso».'); return; }
@@ -423,11 +437,12 @@ function startExam(scope) {
 function finishExam() {
   const cfg = SS.cfg; let r = 0, t = 0; Object.values(SS.cat).forEach(c => { r += c.r; t += c.t; });
   const pct = t ? Math.round(r / t * 100) : 0, cats = Object.entries(SS.cat).map(([k, c]) => [k, Math.round(c.r / c.t * 100)]), missed = SS.missed.slice();
+  const units = Object.entries(SS.unit).map(([k, c]) => [k, Math.round(c.r / c.t * 100), c.t]);   // resultado por tema (unidad)
   SS.wrong.forEach(id => { if (S.srs[id]) applyResult(id, false); });
   const prev = (S.exams || []).filter(e => e.scope === cfg.scope).slice(-1)[0];
   S.exams = (S.exams || []).concat({ d: Date.now(), scope: cfg.scope, pct, cats: Object.fromEntries(cats), missed: [...new Set(missed.map(m => m.id).filter(Boolean))].slice(0, 30) }).slice(-10);
   const gain = r * 2; S.xp += gain; const today = dayKey(Date.now()); if (!S.days.includes(today)) S.days.push(today); save(); SS = null; sfx.win(); confetti(40);
-  renderExamResults({ pct, cats, r, t, gain, scope: cfg.scope, missed, prev: prev ? prev.pct : null });
+  renderExamResults({ pct, cats, units, r, t, gain, scope: cfg.scope, missed, prev: prev ? prev.pct : null });
 }
 function renderExamResults(x) {
   const verdict = x.pct >= 85 ? '¡Nivel casi dominado! Listo para el siguiente.' : x.pct >= 65 ? 'Nivel sólido: estás cerca de dominarlo.' : x.pct >= 40 ? 'Vas bien. Refuerza tus puntos débiles.' : 'Estás construyendo la base: sigue con las lecciones y el repaso.';
@@ -441,6 +456,7 @@ function renderExamResults(x) {
       delta == null ? null : h('p', { class: delta >= 0 ? 'delta up' : 'delta' }, (delta >= 0 ? '▲ +' : '▼ ') + delta + ' puntos respecto a tu último examen')),
     h('div', { class: 'card' }, h('b', {}, verdict), h('p', { class: 'muted' }, 'Es una orientación, no una evaluación oficial.')),
     h('div', { class: 'card examrows' }, x.cats.map(c => h('div', { class: 'examrow' + (c[1] < 60 ? ' low' : '') }, h('span', {}, c[0]), h('div', { class: 'xpbar' }, h('i', { style: 'width:' + c[1] + '%' })), h('b', {}, c[1] + ' %')))),
+    (x.units && x.units.length > 1) ? h('div', { class: 'card examrows' }, h('b', {}, '🧭 Por tema'), [...x.units].sort((a, b) => a[1] - b[1]).map(c => h('div', { class: 'examrow' + (c[1] < 60 ? ' low' : '') }, h('span', {}, c[0] + ' (' + c[2] + ')'), h('div', { class: 'xpbar' }, h('i', { style: 'width:' + c[1] + '%' })), h('b', {}, c[1] + ' %')))) : null,
     weak.length ? h('div', { class: 'card' }, h('b', {}, '🎯 Qué repasar'), weak.map(c => h('p', {}, h('b', {}, c[0] + ' (' + c[1] + ' %). '), EXAM_TIPS[kindOf[c[0]]] || ''))) : null,
     lessons.length ? h('div', { class: 'card' }, h('b', {}, '📖 Lecciones para repasar'), lessons.map(([l, n]) => h('button', { class: 'btn ghost', onclick: () => startLesson(l) }, l.icon + '  ' + l.title + '  ·  ' + n + (n === 1 ? ' error' : ' errores')))) : null,
     Object.keys(byCat).length ? h('div', { class: 'card' }, h('b', {}, '❌ Lo que has fallado'), Object.entries(byCat).map(([cat, list]) => h('details', {}, h('summary', {}, cat + ' (' + list.length + ')'), list.map(m => h('div', { class: 'missrow' }, h('span', { class: 'mq' }, m.q), h('span', { class: 'ma' }, '→ ' + m.a)))))) : null,

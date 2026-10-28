@@ -260,3 +260,4 @@ details { border-top: 1px solid var(--line2); padding: 6px 0; } details summary 
 .fig:has(svg[data-anim])::after { content: "toca para pausar"; position: absolute; top: 7px; right: 10px; font: 600 .6rem var(--mono); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
 .fig.paused::after { content: "pausado · toca para seguir"; color: var(--gold); }
 .fig.still::after { content: "▶ toca para ver el movimiento"; color: var(--teal); }
+.inst { margin: 4px 0 10px; padding-left: 22px; line-height: 1.55; font-size: .95rem; } .card.list details { border-top: 1px solid var(--line); } .card.list details > summary { cursor: pointer; font-weight: 700; padding: 11px 0; } .card.list details[open] > summary { color: var(--teal); }
