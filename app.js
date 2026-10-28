@@ -129,6 +129,8 @@ function viewHome() {
   const nextL = UNITS.flatMap(u => u.lessons).find(l => !S.done[l.id]);
   if (nextL) wrap.append(h('button', { class: 'card next-card', onclick: () => { sfx.tap(); startLesson(nextL); } },
     h('span', { class: 'circle sm' }, nextL.icon), h('div', {}, h('small', {}, 'Siguiente lección'), h('b', {}, nextL.title)), h('span', { class: 'go' }, 'Ir ›')));
+  wrap.append(h('button', { class: 'card review-card', onclick: () => { sfx.tap(); viewCompras(); } }, h('span', { class: 'big-emoji' }, '🛒'),
+    h('div', {}, h('b', {}, 'Compras: dónde comprar tu kit'), h('small', {}, 'Listados con precios y enlaces · consultado ' + COMPRAS.fecha)), h('span', { class: 'chev' }, '›')));
   // acceso directo a las unidades «transversales» (p. ej. la guía de compras), para que no queden escondidas al final del camino
   UNITS.filter(u => u.shortcut).forEach(u => {
     const n = u.lessons.filter(l => S.done[l.id]).length;

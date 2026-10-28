@@ -261,3 +261,6 @@ details { border-top: 1px solid var(--line2); padding: 6px 0; } details summary 
 .fig.paused::after { content: "pausado · toca para seguir"; color: var(--gold); }
 .fig.still::after { content: "▶ toca para ver el movimiento"; color: var(--teal); }
 .inst { margin: 4px 0 10px; padding-left: 22px; line-height: 1.55; font-size: .95rem; } .card.list details { border-top: 1px solid var(--line); } .card.list details > summary { cursor: pointer; font-weight: 700; padding: 11px 0; } .card.list details[open] > summary { color: var(--teal); }
+.shop { display: grid; gap: 6px; padding: 12px 0; border-top: 1px solid var(--line); } .shop:first-of-type { border-top: 0; } .shop > b { line-height: 1.35; } .shop p { margin: 0; font-size: .88rem; line-height: 1.45; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; } .chip { font: 600 .72rem var(--mono); padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); } .chip.gold { color: var(--gold); border-color: var(--gold); }
+.price { font: 800 1.15rem var(--mono); color: var(--gold); } a.btn { display: block; text-align: center; text-decoration: none; }

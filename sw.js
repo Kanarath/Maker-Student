@@ -2,8 +2,8 @@
 // IMPORTANTE: subir CACHE en cada versiÃ³n y listar aquÃ­ los ficheros nuevos.
 // El prefijo del nombre debe ser ÃšNICO de esta app (el dominio de GitHub Pages se comparte con otras apps).
 const PREFIX = 'tallerinv-';
-const CACHE = PREFIX + 'v11';
-const FILES = ['./', 'index.html', 'style.css', 'content.js', 'content2.js', 'content3.js', 'content4.js', 'mascot.js', 'app.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+const CACHE = PREFIX + 'v12';
+const FILES = ['./', 'index.html', 'style.css', 'content.js', 'content2.js', 'content3.js', 'content4.js', 'compras.js', 'mascot.js', 'app.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
   // borra SOLO las cachÃ©s antiguas de esta app, nunca las de otras apps del mismo dominio
