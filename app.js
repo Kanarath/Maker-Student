@@ -90,19 +90,25 @@ function show(node, withNav = true) { app.replaceChildren(node); nav.classList.t
 // ===================== figuras animadas =====================
 // Las figuras con <svg data-anim="nombre"> se animan con ANIMS[nombre](svg, t) (definido en content.js). Tocar el dibujo lo pausa.
 // Con «reducir animaciones» activado se pinta una pose fija y no se anima nada.
-let animSet = new Set(), animRaf = 0;
+let animSet = new Set(), animRaf = 0, animTimer = 0;
 const reduceMotion = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 function bindAnims() {
   cancelAnimationFrame(animRaf); animSet = new Set();
-  document.querySelectorAll('#app svg[data-anim]').forEach(s => { if (typeof ANIMS !== 'undefined' && ANIMS[s.dataset.anim]) { s._t = 0.9; s._paused = false; animSet.add(s); ANIMS[s.dataset.anim](s, s._t); } });
-  if (!animSet.size || reduceMotion()) return;
+  clearInterval(animTimer); const still = reduceMotion();
+  document.querySelectorAll('#app svg[data-anim]').forEach(s => { if (typeof ANIMS !== 'undefined' && ANIMS[s.dataset.anim]) {
+    s._t = 0.9; s._paused = still; animSet.add(s); ANIMS[s.dataset.anim](s, s._t);
+    const f = s.closest('.fig'); if (f) { f.classList.toggle('paused', still); f.classList.toggle('still', still); } } });
+  if (!animSet.size) return;
+  // Se anima siempre (aunque el móvil tenga «quitar animaciones»); en ese caso empieza en pausa y se activa tocando el dibujo.
   let last = performance.now();
-  const loop = now => { const dt = Math.min(0.05, (now - last) / 1000); last = now;
-    animSet.forEach(s => { if (!s.isConnected) return animSet.delete(s); if (!s._paused) { s._t += dt; ANIMS[s.dataset.anim](s, s._t); } });
-    if (animSet.size) animRaf = requestAnimationFrame(loop); };
+  const step = now => { const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+    animSet.forEach(s => { if (!s.isConnected) return animSet.delete(s); if (!s._paused) { s._t += dt; ANIMS[s.dataset.anim](s, s._t); } }); };
+  const loop = now => { step(now); if (animSet.size) animRaf = requestAnimationFrame(loop); };
   animRaf = requestAnimationFrame(loop);
+  // Respaldo: si el navegador no entrega fotogramas (ahorro de batería), un temporizador mueve la animación igualmente.
+  animTimer = setInterval(() => { if (!animSet.size) return clearInterval(animTimer); const now = performance.now(); if (now - last > 120) step(now); }, 66);
 }
-app.addEventListener('click', e => { const f = e.target.closest('.fig'); const s = f && f.querySelector('svg[data-anim]'); if (s) { s._paused = !s._paused; f.classList.toggle('paused', s._paused); } });
+app.addEventListener('click', e => { const f = e.target.closest('.fig'); const s = f && f.querySelector('svg[data-anim]'); if (s) { s._paused = !s._paused; f.classList.toggle('paused', s._paused); if (!s._paused) f.classList.remove('still'); } });
 function go(t) { tab = t; nav.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); ({ home: viewHome, review: viewReview, coll: viewColl, dojo: viewTaller })[t](); }
 nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { sfx.tap(); go(b.dataset.t); }));
 
@@ -290,6 +296,7 @@ function nextStep() {
   if (step.type === 'intro') rIntro(step, body, foot); else if (step.type === 'note') rNote(step, body, foot); else if (step.type === 'match') rMatch(step, body, foot);
   else { const spec = step.make(); spec.itemId = step.itemId; spec.retry = !!step.retry; spec.src = step; spec.cat = step.cat; (spec.type === 'order' ? rOrder : rMcq)(spec, body, foot);
     if (SS.cfg.exam && spec.cat) body.prepend(h('div', { class: 'examcat' }, spec.cat + ' · ' + (SS.done + 1) + ' / ' + SS.total)); }
+  bindAnims(); // las figuras se añaden después de show(), así que hay que enlazarlas ahora
 }
 const advance = (lbl = 'Continuar', fn) => h('button', { class: 'btn primary', onclick: () => { sfx.tap(); (fn || (() => { SS.done++; nextStep(); }))(); } }, lbl);
 
