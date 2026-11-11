@@ -1,0 +1,89 @@
+---
+// Portada («Taller»): tu progreso, la siguiente lección y el mapa de unidades.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { visibleLessons, lessonXp } from "../lib/lessons";
+import { UNITS } from "../data/units";
+import { url } from "../lib/url";
+
+const lessons = await visibleLessons();
+const first = lessons[0];
+---
+
+<BaseLayout title="Taller">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Mecánica y mecatrónica · montando de verdad</p>
+      <h1>Aprende montando.<br />Cada lección acaba en algo que has construido.</h1>
+      <p class="lead">Primero ves la idea con imágenes y laboratorios que puedes mover; luego lo montas paso a paso; después lo registras con una foto. Sin vidas, sin rachas, sin prisa.</p>
+      <p class="cta">
+        <a class="btn" data-next-lesson href={first ? url(`${first.data.unit}/${first.data.id}/`) : "#"}>
+          <span data-next-verb>Empieza</span>: <span data-next-title>{first?.data.title}</span> →
+        </a>
+      </p>
+    </div>
+    <aside class="panel me" aria-label="Tu progreso">
+      <p class="eyebrow">Tu taller</p>
+      <p class="big"><b data-xp-total-big>0</b> XP</p>
+      <p class="rank" data-rank-name>Curioso</p>
+      <div class="bar" data-xp-bar><i></i></div>
+      <p class="muted small" data-rank-next></p>
+    </aside>
+  </section>
+
+  {UNITS.map((u) => {
+    const ls = lessons.filter((l) => l.data.unit === u.id);
+    return (
+      <section class="unit" data-unit={u.id}>
+        <header>
+          <span class="ico" aria-hidden="true">{u.icon}</span>
+          <div><h2>{u.title}</h2><p class="muted">{u.sub}</p></div>
+        </header>
+        <div class="cards">
+          {ls.map((l) => (
+            <a class="card" href={url(`${u.id}/${l.data.id}/`)} data-lesson-card={l.data.id}>
+              <img src={url(`assets/img/${l.data.cover}.webp`)} alt="" width="1280" height="720" loading="lazy" />
+              <div class="txt">
+                <small>{l.data.id.toUpperCase()} · ~{l.data.duration} min {l.data.status !== "publicada" && <span class="tag">{l.data.status === "borrador" ? "borrador" : "en prueba"}</span>}</small>
+                <h3>{l.data.title}</h3>
+                <p>{l.data.summary}</p>
+                <span class="state" data-state>+{lessonXp(l)} XP</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    );
+  })}
+
+  <p class="muted note">Esto es el piloto del nuevo formato: una unidad completa. El resto del temario (estructuras, motores, brazos…) sigue en la versión anterior hasta que lo pasemos aquí.</p>
+</BaseLayout>
+
+<style>
+  .hero { display: grid; grid-template-columns: 1fr 300px; gap: 36px; align-items: start; margin-bottom: 56px; }
+  h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); }
+  .cta { margin: 26px 0 0; }
+  .me .big { font: 700 2.4rem var(--font-head); margin: 0; }
+  .me .big b { color: var(--amber); }
+  .rank { font: 600 1.15rem var(--font-head); margin: 0 0 12px; }
+  .bar { height: 10px; background: var(--panel-2); border-radius: 99px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: var(--p, 0%); background: var(--amber); transition: width .6s ease; }
+  .small { font-size: .85rem; margin: 8px 0 0; }
+  .unit header { display: flex; gap: 14px; align-items: center; margin-bottom: 18px; }
+  .ico { display: grid; place-items: center; width: 52px; height: 52px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: 1.6rem; }
+  .unit h2 { margin: 0; font-size: 1.7rem; }
+  .unit p { margin: 0; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; }
+  .card { display: flex; flex-direction: column; text-decoration: none; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; transition: transform .15s ease, border-color .15s ease; }
+  .card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .card img { display: block; width: 100%; height: auto; background: #05060a; }
+  .txt { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .txt small { font: .72rem var(--font-mono); color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+  .tag { margin-left: 6px; padding: 1px 6px; border: 1px dashed var(--accent); text-transform: none; letter-spacing: 0; }
+  .txt h3 { font-size: 1.2rem; margin: 2px 0; }
+  .txt p { margin: 0; color: var(--muted); font-size: .94rem; }
+  .state { margin-top: auto; padding-top: 10px; font: 600 .82rem var(--font-mono); color: var(--accent); }
+  .card.done { border-color: #4ade80; }
+  .card.done .state { color: #4ade80; }
+  .note { margin-top: 48px; font-size: .88rem; }
+  @media (max-width: 860px) { .hero { grid-template-columns: 1fr; } }
+</style>

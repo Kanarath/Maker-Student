@@ -1,0 +1,31 @@
+---
+// Un paso del montaje guiado. Uso: <Step n={2} title="Pon el soporte" img="vm/p_s2" alt="…"> … </Step>
+// Si lleva imagen, lo NUEVO en este paso sale en color y lo anterior en gris.
+import { url } from "../../lib/url";
+interface Props { n: number; title: string; img?: string; alt?: string }
+const { n, title, img, alt } = Astro.props;
+---
+
+<div class="step">
+  <div class="head"><span class="n">{n}</span><h3>{title}</h3></div>
+  {img && (
+    <figure>
+      <img src={url(`assets/img/${img}.webp`)} alt={alt ?? title} width="1280" height="720" loading="lazy" decoding="async" />
+      <figcaption>Lo nuevo de este paso sale en color; lo que ya tenías, en gris.</figcaption>
+    </figure>
+  )}
+  <div class="body"><slot /></div>
+</div>
+
+<style>
+  .step { background: var(--panel); border: 1px solid var(--line); padding: 16px 18px; margin: 16px 0; border-radius: 4px; }
+  .head { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .n { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border: 2px solid var(--accent); color: var(--accent); font: 600 .9rem var(--font-mono); border-radius: 50%; }
+  h3 { margin: 0; font-size: 1.15rem; }
+  figure { margin: 0 0 12px; background: #05060a; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  img { display: block; width: 100%; height: auto; }
+  figcaption { padding: 6px 12px; font: .72rem var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .body :global(ol), .body :global(ul) { padding-left: 1.3em; margin: 6px 0; }
+  .body :global(li) { margin: 4px 0; }
+  .body :global(> :last-child) { margin-bottom: 0; }
+</style>

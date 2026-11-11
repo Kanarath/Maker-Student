@@ -1,0 +1,163 @@
+---
+// Laboratorio de engranajes: elige los dientes del piñón (el que mueves) y de la rueda (el que se mueve)
+// y gira la manivela. Cada engranaje Technic mide t/16 de agujero de radio, así que dos engranajes
+// engranan cuando sus ejes están a (t1 + t2)/16 agujeros.
+// Con `idler`, añade una casilla para intercalar un engranaje «loco» de 24 dientes.
+interface Props { idler?: boolean }
+const { idler = false } = Astro.props;
+const TEETH = [8, 16, 24, 40];
+---
+
+<div class="lab" data-gears data-idler={idler ? "1" : "0"}>
+  <div class="head"><b>Laboratorio · Engranajes</b><span class="muted">Elige los dientes y gira</span></div>
+  <svg viewBox="0 0 800 340" role="img" aria-label="Dos engranajes engranados que giran">
+    <rect width="800" height="340" fill="#05060a" />
+    <g data-scene></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Piñón (el que giras tú)</legend>
+      <div class="opts" data-drv>{TEETH.map((t) => <button type="button" class="opt" data-t={t} aria-pressed={t === 8}>{t}</button>)}</div>
+    </fieldset>
+    <fieldset>
+      <legend>Rueda (la que se mueve)</legend>
+      <div class="opts" data-out>{TEETH.map((t) => <button type="button" class="opt" data-t={t} aria-pressed={t === 24}>{t}</button>)}</div>
+    </fieldset>
+  </div>
+  <div class="bar">
+    <button class="btn" type="button" data-play>▶ Girar la manivela</button>
+    {idler && <label class="chk"><input type="checkbox" data-loco /> Poner un engranaje «loco» (24) en medio</label>}
+  </div>
+  <p class="out" aria-live="polite" data-info></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+
+  /** Contorno de un engranaje de t dientes (radio primitivo t/16 en agujeros), escalado a píxeles. */
+  function gearPath(t: number, k: number) {
+    const rp = t / 16, root = rp - 1.25 / 8, tip = rp + 1 / 8, p = (2 * Math.PI) / t;
+    const pts: string[] = [];
+    for (let i = 0; i < t; i++) {
+      const a = i * p;
+      for (const [r, da] of [[root, -0.3], [tip, -0.1], [tip, 0.1], [root, 0.3]] as const)
+        pts.push(`${(r * k * Math.cos(a + da * p)).toFixed(1)},${(r * k * Math.sin(a + da * p)).toFixed(1)}`);
+    }
+    return pts.join(" ");
+  }
+
+  const COLORS = ["#2f7fe0", "#9aa3b5", "#f2b230"];
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-gears]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const scene = q<SVGGElement>("[data-scene]");
+    const info = q<HTMLElement>("[data-info]");
+    const play = q<HTMLButtonElement>("[data-play]");
+    const loco = root.querySelector<HTMLInputElement>("[data-loco]");
+    let t1 = 8, t2 = 24, phi = 0, playing = false, last = 0, raf = 0;
+    let gears: { t: number; g: SVGGElement; x: number }[] = [];
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function build() {
+      scene.replaceChildren();
+      const chain = loco?.checked ? [t1, 24, t2] : [t1, t2];
+      // posiciones: cada par engrana a (ti + tj)/16 agujeros
+      const xs = [0];
+      for (let i = 1; i < chain.length; i++) xs.push(xs[i - 1] + (chain[i - 1] + chain[i]) / 16);
+      const left = -chain[0] / 16 - 0.2, right = xs[xs.length - 1] + chain[chain.length - 1] / 16 + 0.2;
+      const k = Math.min(70, 740 / (right - left));
+      const ox = 400 - ((left + right) / 2) * k;
+      gears = chain.map((t, i) => {
+        const g = mk("g", {}) as SVGGElement;
+        g.setAttribute("transform", `translate(${(ox + xs[i] * k).toFixed(1)} 170)`);
+        const inner = mk("g", {}) as SVGGElement;
+        inner.append(mk("polygon", { points: gearPath(t, k), fill: COLORS[i % 3], stroke: "#0b0d12", "stroke-width": 2, "stroke-linejoin": "round" }));
+        inner.append(mk("circle", { r: Math.max(4, 0.2 * k), fill: "#0b0d12", opacity: ".55" }));
+        inner.append(mk("rect", { x: -0.045 * k, y: -(t / 16) * k + 0.04 * k, width: 0.09 * k, height: 0.22 * k, fill: "#ff8a1f" })); // marca para contar las vueltas
+        const label = mk("text", { x: 0, y: -(t / 16) * k - 10, "text-anchor": "middle", fill: "#a3a1b4", "font-size": 15, "font-family": "monospace" });
+        label.textContent = `${t} dientes`;
+        g.append(inner, label);
+        scene.append(g);
+        return { t, g: inner, x: xs[i] };
+      });
+      draw();
+    }
+
+    function draw() {
+      // el primero gira phi; cada siguiente engrana con el anterior (fase de dientes en el punto de contacto)
+      let th = phi;
+      gears.forEach((gr, i) => {
+        if (i > 0) th = 180 + 180 / gr.t - th * (gears[i - 1].t / gr.t);
+        gr.g.setAttribute("transform", `rotate(${th.toFixed(2)})`);
+      });
+      const ratio = t2 / t1;
+      const turns1 = phi / 360;
+      const turns2 = turns1 / ratio;
+      const same = !!loco?.checked;
+      const f = (n: number) => n.toLocaleString("es-ES", { maximumFractionDigits: 2 });
+      const txt =
+        ratio > 1 ? `Reducción ${f(ratio)}:1 → la rueda gira <b>${f(ratio)} veces más lenta</b> y empuja con <b>${f(ratio)} veces más fuerza</b>.`
+        : ratio < 1 ? `Multiplicación 1:${f(1 / ratio)} → la rueda gira <b>${f(1 / ratio)} veces más rápido</b> pero con <b>${f(1 / ratio)} veces menos fuerza</b>.`
+        : "Misma velocidad y misma fuerza: solo cambias el sentido.";
+      const chain = gears.map((g) => g.t);
+      const gaps = chain.slice(1).map((t, i) => (chain[i] + t) / 16);
+      const bad = gaps.filter((d) => !Number.isInteger(d));
+      const dist = `Ejes a <b>${gaps.map(f).join(" y ")}</b> agujero${gaps.length > 1 || gaps[0] !== 1 ? "s" : ""} de distancia. ` +
+        (bad.length ? `⚠ ${bad.map(f).join(" y ")} no son enteros: con vigas normales estos ejes no encajan.` : "✓ Encajan en agujeros enteros de una viga.");
+      info.innerHTML = `Piñón <b>${t1}</b> → rueda <b>${t2}</b> dientes. Vueltas del piñón: <b>${f(turns1)}</b> · de la rueda: <b>${f(turns2)}</b>.<br>${txt} Sentido: ${same ? "<b>el mismo</b> (el loco invierte dos veces)" : "<b>contrario</b>"}.<br><span class="muted">${dist}</span>`;
+    }
+
+    function frame(now: number) {
+      if (!playing) return;
+      phi += ((now - last) / 1000) * 90; // 1/4 de vuelta por segundo
+      last = now;
+      draw();
+      raf = requestAnimationFrame(frame);
+    }
+    function setPlaying(on: boolean) {
+      playing = on;
+      play.textContent = on ? "⏸ Parar" : "▶ Girar la manivela";
+      if (on) { last = performance.now(); raf = requestAnimationFrame(frame); } else cancelAnimationFrame(raf);
+    }
+    play.addEventListener("click", () => setPlaying(!playing));
+    loco?.addEventListener("change", () => { build(); });
+
+    for (const [sel, set] of [["[data-drv]", (t: number) => (t1 = t)], ["[data-out]", (t: number) => (t2 = t)]] as const) {
+      const wrap = q<HTMLElement>(sel);
+      wrap.addEventListener("click", (e) => {
+        const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-t]");
+        if (!b) return;
+        set(+b.dataset.t!);
+        wrap.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        phi = 0;
+        build();
+      });
+    }
+    build();
+    if (!reduce) setPlaying(true);
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px 0; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  .opts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .opt { min-width: 56px; padding: 10px 12px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 4px; font: 600 1rem var(--font-mono); cursor: pointer; }
+  .opt[aria-pressed="true"] { background: var(--accent); color: #0b0d12; border-color: var(--accent); }
+  .bar { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; padding: 12px 14px; }
+  .chk { display: flex; gap: 8px; align-items: center; font-size: .92rem; }
+  .chk input { width: 18px; height: 18px; accent-color: var(--accent); }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

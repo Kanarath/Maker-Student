@@ -1,0 +1,96 @@
+---
+// Registrar tu montaje: una foto (opcional) y una frase. Da la mayor parte de la XP de la lección.
+// Todo queda en tu navegador (IndexedDB). Uso: <RegisterPiece /> dentro del bloque «calidad».
+interface Props { piece?: string }
+const { piece } = Astro.props;
+---
+
+<div class="reg" data-register>
+  <h3>Registra tu montaje</h3>
+  {piece && <p class="muted">Pieza de esta lección: <b>{piece}</b></p>}
+  <label class="f">¿Qué has notado? <span class="muted">(una frase: lo que predecías y lo que pasó)</span>
+    <textarea rows="2" maxlength="400" data-note placeholder="Predije 3 vueltas y salieron 3. La manivela costaba menos con el engranaje grande."></textarea>
+  </label>
+  <label class="f">Foto del montaje <span class="muted">(opcional; no sale de tu dispositivo)</span>
+    <input type="file" accept="image/*" data-photo />
+  </label>
+  <button class="btn" type="button" data-save>Registrar montaje</button>
+  <p class="msg" aria-live="polite" data-msg></p>
+  <ul class="list" data-list></ul>
+</div>
+
+<script>
+  import { addPiece, deletePiece, listPieces, shrinkImage, type Piece } from "../../lib/store/portfolio";
+  import { setPart } from "../../lib/store/progress";
+
+  for (const box of document.querySelectorAll<HTMLElement>("[data-register]")) {
+    const lessonId = box.closest<HTMLElement>("[data-lesson-id]")?.dataset.lessonId;
+    if (!lessonId) continue;
+    const note = box.querySelector<HTMLTextAreaElement>("[data-note]")!;
+    const photo = box.querySelector<HTMLInputElement>("[data-photo]")!;
+    const msg = box.querySelector<HTMLElement>("[data-msg]")!;
+    const list = box.querySelector<HTMLElement>("[data-list]")!;
+    const urls: string[] = [];
+
+    async function refresh() {
+      urls.splice(0).forEach((u) => URL.revokeObjectURL(u));
+      let pieces: Piece[] = [];
+      try { pieces = await listPieces(lessonId); } catch (e) { msg.textContent = (e as Error).message; }
+      list.replaceChildren(
+        ...pieces.map((p) => {
+          const li = document.createElement("li");
+          if (p.image) {
+            const u = URL.createObjectURL(p.image); urls.push(u);
+            const im = document.createElement("img"); im.src = u; im.alt = "Foto de tu montaje"; li.append(im);
+          }
+          const t = document.createElement("div");
+          t.innerHTML = `<small></small><p></p>`;
+          t.querySelector("small")!.textContent = new Date(p.created).toLocaleDateString("es-ES");
+          t.querySelector("p")!.textContent = p.note || "(sin nota)";
+          const del = document.createElement("button");
+          del.type = "button"; del.textContent = "Borrar"; del.className = "del";
+          del.addEventListener("click", async () => {
+            await deletePiece(p.id);
+            const left = await listPieces(lessonId);
+            if (!left.length) setPart(lessonId!, "piece", false);
+            refresh();
+          });
+          li.append(t, del);
+          return li;
+        }),
+      );
+    }
+
+    box.querySelector("[data-save]")!.addEventListener("click", async () => {
+      msg.textContent = "";
+      if (!note.value.trim() && !photo.files?.length) { msg.textContent = "Escribe una frase o añade una foto."; return; }
+      try {
+        const image = photo.files?.[0] ? await shrinkImage(photo.files[0]) : undefined;
+        await addPiece({ lessonId: lessonId!, note: note.value.trim(), image });
+        setPart(lessonId!, "piece", true);
+        note.value = ""; photo.value = "";
+        msg.textContent = "¡Montaje registrado! XP conseguida.";
+        refresh();
+      } catch (e) {
+        msg.textContent = (e as Error).message;
+      }
+    });
+    refresh();
+  }
+</script>
+
+<style>
+  .reg { background: var(--panel); border: 1px solid var(--accent); padding: 16px 18px; margin: 16px 0; border-radius: 4px; }
+  h3 { font-size: 1.15rem; margin: 0 0 8px; }
+  .f { display: block; margin: 12px 0; font-weight: 500; }
+  textarea { display: block; width: 100%; margin-top: 6px; padding: 10px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 4px; font: inherit; }
+  input[type="file"] { display: block; margin-top: 6px; color: var(--muted); }
+  .msg { min-height: 1.4em; margin: 10px 0 0; color: var(--accent); font: .9rem var(--font-mono); }
+  .list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
+  .list :global(li) { display: grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items: center; background: var(--panel-2); padding: 8px; border-radius: 4px; }
+  .list :global(li:not(:has(img))) { grid-template-columns: 1fr auto; }
+  .list :global(img) { width: 96px; height: 72px; object-fit: cover; border-radius: 4px; }
+  .list :global(small) { color: var(--muted); font: .72rem var(--font-mono); }
+  .list :global(p) { margin: 2px 0 0; font-size: .92rem; }
+  .list :global(.del) { background: none; border: 1px solid var(--line); color: var(--muted); padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+</style>

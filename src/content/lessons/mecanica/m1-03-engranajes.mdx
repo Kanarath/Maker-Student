@@ -1,0 +1,152 @@
+---
+id: m1-03
+unit: vm
+order: 3
+title: "Engranajes: contar dientes para cambiar fuerza y velocidad"
+summary: "Monta un reductor de 8 a 24 dientes con manivela, predice cuántas vueltas dará cada engranaje y descubre por qué más lento significa más fuerte."
+cover: vm/g_hero
+duration: 35
+status: borrador
+prerequisites: [m1-01]
+objectives:
+  - "Calcular la relación con dientes de la rueda ÷ dientes del piñón"
+  - "Explicar por qué un reductor gira más lento pero empuja con más fuerza"
+  - "Colocar dos engranajes a la distancia correcta para que engranen"
+materials:
+  - "Engranajes de 8 y 24 dientes (o 8 y 16), dos ejes, una viga de 11 agujeros y una manivela"
+piece:
+  name: "Reductor 3:1 con manivela"
+  hint: "Foto de tu reductor con una marca en cada engranaje y el recuento de vueltas"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **reductor**: un engranaje pequeño (8 dientes) que gira con una manivela y mueve uno grande (24 dientes). Antes de girar, **predecirás cuántas vueltas** da el grande por cada vuelta del pequeño.
+
+<Fig src="vm/g_hero" alt="Un engranaje azul pequeño con una manivela roja engrana con un engranaje amarillo grande de 24 dientes, sobre una viga gris. Una pieza verde marca el engranaje grande." caption="El pequeño gira 3 veces mientras el grande da una. Con la manivela notarás menos esfuerzo… a cambio de más vueltas." />
+</Block>
+
+<Block kind="concepto">
+## Contar dientes lo explica todo
+
+Dos engranajes engranados **recorren los mismos dientes**. Si el pequeño tiene 8 y el grande 24:
+
+- el grande tiene **3 veces más dientes** → da **3 veces menos vueltas**.
+
+**relación = dientes de la rueda ÷ dientes del piñón** (aquí 24 ÷ 8 = **3:1**)
+
+Dos efectos, siempre a la vez:
+
+<Fig src="vm/g_lento_fuerte" alt="El piñón azul pequeño movido por una manivela con una flecha naranja larga y la rueda amarilla grande con una flecha azul cian corta." caption="Pequeño mueve grande: la rueda gira más lenta (arco corto) pero empuja con más fuerza." />
+
+<Fig src="vm/g_rapido_flojo" alt="El engranaje amarillo grande movido con una manivela y el piñón azul pequeño que gira más rápido, con una flecha cian larga." caption="Grande mueve pequeño: el pequeño gira más rápido, pero con menos fuerza." />
+
+Pruébalo con los dientes que quieras:
+
+<GearLab idler />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- **Reducción** (pequeño → grande): más lento, **más fuerza**.
+- **Multiplicación** (grande → pequeño): más rápido, **menos fuerza**.
+- Dos engranajes engranados giran en **sentidos contrarios**. Un tercer engranaje en medio (el «loco») **no cambia la relación**, solo hace que los dos de los extremos giren en el mismo sentido.
+</details>
+
+<Why title="¿Por qué más lento es más fuerte?">
+En el punto donde se tocan, los dientes de los dos engranajes se empujan con la **misma fuerza**. Pero el grande la aplica **más lejos de su eje**: es una palanca más larga, así que su eje recibe más fuerza de giro (**par**). Lo que ganas en par lo pierdes en velocidad: es la palanca de la lección anterior, en círculo.
+</Why>
+
+<Quiz id="q1" q="Un piñón de 8 dientes mueve una rueda de 40. Si das 10 vueltas al piñón, ¿cuántas da la rueda?" options={["2 vueltas", "5 vueltas", "10 vueltas"]} answer={0}>
+La relación es 40 ÷ 8 = 5:1. La rueda gira 5 veces más lenta: 10 ÷ 5 = **2 vueltas**.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cinco pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="La viga de base" img="vm/g_s1" alt="Una viga gris de 11 agujeros en horizontal.">
+Pon una viga de 11 agujeros en horizontal. Será la placa donde irán los dos ejes.
+</Step>
+
+<Step n={2} title="Dos ejes a la distancia justa" img="vm/g_s2" alt="Dos ejes en cruz atravesando dos agujeros de la viga, con dos agujeros de separación.">
+Mete un eje en el **primer agujero** y otro en el **tercero**: quedan a **2 agujeros** de distancia.
+<Why>Los engranajes de 8 y 24 dientes engranan cuando sus ejes están a (8 + 24) ÷ 16 = **2 agujeros**. Si no cuadra, no engranan bien.</Why>
+</Step>
+
+<Step n={3} title="El piñón de 8" img="vm/g_s3" alt="Un engranaje azul pequeño de 8 dientes colocado en el eje de la izquierda.">
+Coloca el engranaje de **8 dientes** (el pequeño) en el eje de la izquierda.
+</Step>
+
+<Step n={4} title="La rueda de 24" img="vm/g_s4" alt="Un engranaje amarillo grande de 24 dientes en el eje de la derecha, engranando con el pequeño.">
+Coloca el engranaje de **24 dientes** (el grande) en el otro eje, de modo que los dientes **encajen** sin forzar. Gira uno con el dedo: el otro debe seguirlo suave.
+</Step>
+
+<Step n={5} title="Manivela y marca" img="vm/g_s5" alt="Una manivela roja en el eje del piñón y una pieza verde en el eje de la rueda grande.">
+Pon una **manivela** en el eje del piñón y una **marca** (una viga verde o un trozo de cinta) en la rueda grande para contar sus vueltas.
+
+**Predice:** ¿cuántas vueltas de manivela por cada vuelta de la marca? Gira y cuenta.
+
+<details>
+<summary>Respuesta</summary>
+
+**3 vueltas** de manivela por cada vuelta de la rueda (24 ÷ 8 = 3). ¿Notas que cuesta menos mover la rueda que girar la manivela?
+</details>
+
+<Warn title="Dedos y pelo">
+Los dientes en marcha pellizcan. Gira despacio y con la mano lejos de donde se encuentran los engranajes.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una pieza, **predice** el resultado y compruébalo:
+
+1. **Cambia la rueda por una de 40 dientes** (ejes a 3 agujeros). ¿Cuántas vueltas por vuelta de la rueda? ¿Cuesta más o menos girar?
+2. **Invierte los papeles:** mueve ahora con el engranaje de 24 y mira cuántas vueltas da el de 8. ¿Qué pasa con la fuerza?
+3. **Tren de dos etapas:** añade otro par 8 → 24 detrás del primero (el engranaje de 24 comparte eje con uno de 8). Predice: ¿cuántas vueltas de manivela por una de la última rueda?
+
+<Fig src="vm/g_tren" alt="Un tren de tres ejes con dos pares de engranajes: el piñón azul mueve un engranaje gris de 24 que comparte eje con otro azul de 8, que mueve el engranaje amarillo final de 24." caption="Dos reducciones 3:1 en fila: 3 × 3 = 9 vueltas de manivela por vuelta de salida." />
+
+<details>
+<summary>Respuesta del tren</summary>
+
+Las relaciones **se multiplican**: 3 × 3 = **9 vueltas** de manivela por cada vuelta de la rueda final.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Ejes demasiado separados" wrongLabel="A 3 agujeros: no engranan" rightLabel="A 2 agujeros: encajan">
+  <Fig slot="wrong" src="vm/g_dist_lejos" alt="Un engranaje pequeño azul y uno grande amarillo con un hueco entre sus dientes: no llegan a tocarse." />
+  <Fig slot="right" src="vm/g_dist_justa" alt="Los dos engranajes con los dientes encajados." />
+
+Si dejas de más, los dientes **no se tocan** y el grande no se mueve. Se arregla acercando los ejes a la distancia (dientes₁ + dientes₂) ÷ 16 agujeros.
+</Mistake>
+
+<Mistake title="Ejes demasiado juntos" wrongLabel="Demasiado cerca: se clavan" rightLabel="A 2 agujeros: encajan">
+  <Fig slot="wrong" src="vm/g_dist_cerca" alt="Los dos engranajes superpuestos, con los dientes clavados uno dentro del otro." />
+  <Fig slot="right" src="vm/g_dist_justa" alt="Los dos engranajes con los dientes encajados correctamente." />
+
+Si los acercas, los dientes **se atascan o saltan**: el engranaje fuerza y puede romperse. En el montaje real notarás que **no gira libre**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Los ejes están a 2 agujeros y los engranajes giran sin atascarse",
+  "He predicho las vueltas con dientes de la rueda ÷ dientes del piñón antes de girar",
+  "He contado las vueltas reales con la marca",
+  "He notado que la rueda grande gira más lenta pero cuesta menos mover",
+  "Sé decir por qué un tren de dos etapas multiplica las relaciones",
+]} />
+
+<Quiz id="q2" q="Mueves una rueda de 24 con un piñón de 8 y la manivela te cuesta poco. ¿Qué pagas a cambio?" options={["Nada: es gratis", "La rueda gira 3 veces más lenta", "La rueda gira 3 veces más rápido"]} answer={1}>
+Ganas fuerza **a cambio de velocidad**: la rueda grande da una vuelta por cada 3 del piñón.
+</Quiz>
+
+<RegisterPiece piece="Reductor 3:1 con manivela" />
+</Block>

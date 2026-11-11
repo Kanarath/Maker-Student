@@ -1,0 +1,131 @@
+---
+id: m1-02
+unit: vm
+order: 2
+title: "Poleas: repartir el peso entre tramos de cuerda"
+summary: "Monta una polea fija y una móvil, cuenta los tramos que sujetan la carga y comprueba por qué tiras con la mitad de fuerza… recogiendo el doble de cuerda."
+cover: vm/po_hero
+duration: 30
+status: borrador
+prerequisites: [m1-01]
+objectives:
+  - "Distinguir una polea fija de una móvil y saber qué hace cada una"
+  - "Calcular la fuerza con fuerza = peso ÷ tramos que sujetan la carga"
+  - "Calcular cuánta cuerda recoges por cada centímetro que sube la carga"
+materials:
+  - "Dos poleas (o ruedas con garganta), cuerda fina y un marco o soporte para colgarlas"
+  - "Una carga que puedas colgar (una bolsita con tornillos, por ejemplo) y un medidor de fuerza casero (una goma elástica)"
+piece:
+  name: "Polipasto de 2 tramos"
+  hint: "Foto de tu polea con la carga colgada y la cuenta de tramos"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **polipasto de dos poleas**: una **fija**, arriba, y una **móvil**, de la que cuelga la carga. Tirando con la mitad de fuerza, subirás la misma carga.
+
+<Fig src="vm/po_hero" alt="Marco de vigas grises. Una polea azul fija arriba y una polea roja móvil colgada con una pesa. La cuerda sale de arriba a la izquierda, baja por debajo de la polea móvil, sube por encima de la polea fija y cae a la derecha donde una flecha naranja marca el tirón." caption="La cuerda baja, rodea la polea móvil, sube, pasa por la fija y llega a tu mano. Dos tramos sujetan la carga." />
+
+<Tip title="Sin poleas">
+Dos carretes de hilo o dos ruedas con ranura valen. Lo que importa es contar tramos de cuerda.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Dos clases de polea, dos trabajos distintos
+
+- **Polea fija**: está atornillada arriba y **solo cambia la dirección** del tirón. Tiras hacia abajo, la carga sube. No ahorras fuerza.
+- **Polea móvil**: sube con la carga y **reparte el peso** entre los tramos de cuerda que la sujetan.
+
+<Fig src="vm/po_fija" alt="Una sola polea fija arriba con la cuerda pasando por encima. A la izquierda cuelga una pesa; a la derecha, la flecha naranja del tirón hacia abajo." caption="Polea fija: tiras con la misma fuerza que pesa la carga. Solo cambias el sentido." />
+
+La regla (sin contar el rozamiento):
+
+**fuerza = peso ÷ nº de tramos que sujetan la carga**
+
+Y su otra cara, igual de importante:
+
+**cuerda que recoges = nº de tramos × lo que sube la carga**
+
+<PulleyLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+Con 2 tramos tiras con la **mitad** de fuerza, pero recoges el **doble** de cuerda. Con 4, un cuarto de fuerza y cuatro veces la cuerda. Es la misma idea que en la palanca: **fuerza y recorrido se compensan**.
+</details>
+
+<Why title="¿Por qué se reparte el peso?">
+La polea móvil está colgada de **varios tramos de la misma cuerda**, y la tensión de una cuerda es igual en todo su recorrido. Si hay 2 tramos, cada uno aguanta la mitad. Con rozamiento real tirarás un poco más fuerte que la cuenta.
+</Why>
+
+<Quiz id="q1" q="Una carga de 60 N colgada de una polea móvil con 3 tramos que la sujetan. ¿Con cuánta fuerza tiras (sin rozamiento)?" options={["10 N", "20 N", "60 N"]} answer={1}>
+60 ÷ 3 = **20 N**.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="El marco" img="vm/po_s1" alt="Un marco cuadrado de vigas grises con dos vigas verticales, una arriba y otra abajo.">
+Monta un marco rectangular con vigas: dos de pie a los lados y una arriba y otra abajo. Tiene que quedar rígido.
+<Why>Una polea tira de su soporte con **más fuerza que el peso de la carga**. Si el marco se dobla, tu medida no vale.</Why>
+</Step>
+
+<Step n={2} title="La polea fija y el anclaje" img="vm/po_s2" alt="Una polea azul con un eje en cruz colocada arriba a la derecha del marco, y un pasador negro más a la izquierda en la viga superior.">
+Cuelga la **polea fija** arriba, un poco a la derecha, y pon un **pasador de anclaje** en la viga superior, a la izquierda: ahí atarás un extremo de la cuerda.
+</Step>
+
+<Step n={3} title="La polea móvil y la cuerda" img="vm/po_s3" alt="Una polea roja más abajo con un eje, y una cuerda que sale del anclaje, baja, rodea la polea roja por debajo, sube por encima de la polea azul y cae a la derecha.">
+Ata la cuerda al anclaje y baja hasta la **polea móvil**. Rodéala por debajo, sube hacia la polea fija, pasa por encima y deja caer el extremo libre. Ese extremo es el que tirarás.
+</Step>
+
+<Step n={4} title="La carga" img="vm/po_s4" alt="Una viga amarilla pequeña cuelga de la polea roja y de ella cuelgan dos pesas verdes. La polea completa con su cuerda.">
+Cuelga la carga del eje de la polea móvil con una viga de 2 agujeros.
+
+Ahora **predice**: si la carga pesa 40 N, ¿con cuánta fuerza tendrás que tirar? ¿Cuánta cuerda recogerás para subirla 10 cm?
+
+<details>
+<summary>Respuesta</summary>
+
+2 tramos sujetan la polea móvil: tiras con 40 ÷ 2 = **20 N** y recoges 2 × 10 = **20 cm** de cuerda.
+</details>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia algo, predice y compruébalo:
+
+1. **Mide el tirón:** engancha una goma elástica al extremo libre y mira cuánto se estira con la polea fija sola. Después repítelo con tu polipasto: ¿se estira menos?
+2. **Cuenta la cuerda:** marca la cuerda con rotuladores a intervalos de 5 cm, sube la carga 10 cm y comprueba cuánta cuerda has recogido.
+3. **Añade un tercer tramo:** busca cómo conseguir 3 o 4 tramos con más poleas móviles (pista: la polea móvil puede llevar la cuerda de ida y vuelta varias veces).
+</Block>
+
+<Block kind="errores">
+<Mistake title="Contar también el tramo por el que tiras" wrongLabel="3 tramos: de más" rightLabel="2 tramos: los de la polea móvil">
+  <Fig slot="wrong" src="vm/po_error_cuenta_mal" alt="Tres flechas rojas marcan los tres tramos de cuerda, incluido el que cae a la derecha por el que se tira." />
+  <Fig slot="right" src="vm/po_error_cuenta_bien" alt="Dos flechas verdes marcan solo los dos tramos que bajan hasta la polea móvil." />
+
+Solo cuentan los tramos **que sujetan la polea móvil con la carga**. El tramo que pasa por la polea fija y llega a tu mano es el mismo cable que baja: **solo cambia la dirección**, no sujeta nada extra.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "La polea fija está bien sujeta y el marco no se dobla",
+  "He contado los tramos que sujetan la carga (sin el que tiro)",
+  "He predicho la fuerza con peso ÷ tramos antes de tirar",
+  "He comprobado que recojo más cuerda de la que sube la carga",
+  "Sé decir por qué la polea fija no ahorra fuerza",
+]} />
+
+<Quiz id="q2" q="Tiras de 3 tramos que sujetan la carga. Para subirla 10 cm, ¿cuánta cuerda recoges?" options={["10 cm", "30 cm", "3 cm"]} answer={1}>
+Por cada centímetro que sube la carga recoges un centímetro **por cada tramo**: 3 × 10 = **30 cm**.
+</Quiz>
+
+<RegisterPiece piece="Polipasto de 2 tramos" />
+</Block>

@@ -1,0 +1,7 @@
+---
+// <Tip> truco útil. Uso: <Tip>texto</Tip>
+import Note from "./Note.astro";
+const { title } = Astro.props;
+---
+
+<Note variant="tip" label={title ?? "Truco"}><slot /></Note>

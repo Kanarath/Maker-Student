@@ -1,0 +1,157 @@
+---
+id: m1-01
+unit: vm
+order: 1
+title: "La palanca: ganar fuerza a cambio de recorrido"
+summary: "Monta una palanca con pesas, aprende la regla pesas × distancia y úsala para predecir cuándo se equilibra, antes de comprobarlo."
+cover: vm/p_hero
+duration: 30
+status: borrador
+prerequisites: []
+objectives:
+  - "Calcular si una palanca está en equilibrio con la regla pesas × distancia"
+  - "Contar la distancia desde el apoyo, no desde el borde"
+  - "Explicar por qué el lado que hace menos fuerza recorre más camino"
+materials:
+  - "Una viga larga con agujeros (11) y un soporte con un eje de apoyo, o una regla sobre un lápiz"
+  - "Pesas iguales: piezas o monedas iguales"
+piece:
+  name: "Palanca en equilibrio con pesas"
+  hint: "Foto de tu palanca equilibrada, con la cuenta que la explica"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar una **palanca**: una viga que gira sobre un apoyo, con pesas colgadas a cada lado. Al terminar sabrás **predecir con una cuenta** si se queda en equilibrio… y comprobarlo.
+
+<Fig src="vm/p_hero" alt="Viga amarilla de 11 agujeros apoyada en su agujero central sobre un soporte azul. A la izquierda cuelgan dos pesas verdes a dos agujeros del apoyo; a la derecha, una pesa a cuatro agujeros. Dos flechas marcan las fuerzas." caption="Dos pesas a 2 agujeros del apoyo equilibran una sola pesa a 4 agujeros. Fíjate: 2 × 2 = 1 × 4." />
+
+Mira bien esta imagen: **a la derecha hay menos peso, pero está más lejos**. Esa es la clave de toda la lección.
+
+<Tip title="Sin piezas también vale">
+Una regla de 30 cm sobre un lápiz y monedas del mismo valor funcionan igual. Lo importante es predecir y comprobar, no el material.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Una palanca no regala fuerza: la cambia por recorrido
+
+La regla es una sola cuenta, en cada lado del apoyo:
+
+**pesas × distancia al apoyo**
+
+Si los dos lados dan el mismo número, la viga se queda **equilibrada**. Si no, **baja el lado con el número mayor**.
+
+<Fig src="vm/p_ventaja" alt="La misma palanca con cuatro pesas a un agujero del apoyo a la izquierda y una sola pesa a cuatro agujeros a la derecha. La flecha de la izquierda es gruesa y la de la derecha, fina." caption="Cuatro pesas a 1 agujero (4 × 1) equilibran una pesa a 4 agujeros (1 × 4). Con una pesa pequeña, muy lejos, mueves una carga grande." />
+
+Pruébalo tú. **Antes de mover nada, predice** y luego mueve los deslizadores:
+
+<LeverLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Cuando los dos números son iguales, la viga se **para horizontal**.
+- Cuando equilibras con una pesa lejos, el lado lejano **baja y sube mucho más** que el cercano. Es la ventaja mecánica: **fuerza × recorrido se compensan**.
+</details>
+
+<Why title="¿Por qué se compensa?">
+Para subir una pesa 1 cm necesitas gastar un esfuerzo. Con una palanca puedes gastar la mitad de fuerza si tu mano se mueve el doble de camino. **El trabajo (fuerza × camino) es el mismo**: la palanca solo cambia cómo lo repartes. Por eso no existe una palanca que dé fuerza gratis.
+</Why>
+
+<Fig src="vm/p_recorrido" alt="Palanca inclinada con dos arcos que muestran el recorrido de cada extremo: un arco pequeño cerca del apoyo y uno grande lejos del apoyo." caption="Mismo giro, distinto camino: lejos del apoyo recorres más." />
+
+<Quiz id="q1" q="Tienes 3 pesas a 2 agujeros del apoyo. ¿Cuántas pesas a 3 agujeros del otro lado la equilibran?" options={["1 pesa", "2 pesas", "3 pesas"]} answer={1}>
+3 × 2 = 6. Al otro lado necesitas que pesas × 3 sea también 6, y eso son **2 pesas** (2 × 3 = 6).
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cinco pasos. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.**
+
+<Step n={1} title="La base" img="vm/p_s1" alt="Una viga gris de 9 agujeros tumbada en horizontal en la parte baja.">
+Pon una viga de 9 agujeros en horizontal. Es el suelo de tu palanca: solo tiene que ser larga para que no se vuelque.
+</Step>
+
+<Step n={2} title="El soporte" img="vm/p_s2" alt="Una viga azul de 7 agujeros en vertical, unida con un pasador al agujero central de la base.">
+Une con un pasador, en el **agujero del medio** de la base, una viga de 7 agujeros puesta de pie. La parte de arriba del soporte será el apoyo.
+<Why>Si el apoyo está **justo en el centro** de la viga, el cálculo es el más sencillo: la distancia a cada lado se cuenta igual.</Why>
+</Step>
+
+<Step n={3} title="La palanca y su apoyo" img="vm/p_s3" alt="Una viga amarilla de 11 agujeros colocada delante del soporte, atravesada en su agujero central por un pasador negro que la une al agujero de arriba del soporte.">
+Coloca una viga de 11 agujeros delante del soporte. Pasa un **eje con tope (o un pasador largo)** por el agujero de arriba del soporte y por el **agujero central (el sexto)** de la viga.
+
+<Warn title="Que gire libre">
+Si aprietas demasiado, la viga rozará y falseará todas tus pruebas. Debe girar con un empujón suave del dedo.
+</Warn>
+</Step>
+
+<Step n={4} title="Colgadores y pesas" img="vm/p_s4" alt="Dos vigas rojas pequeñas cuelgan de la viga amarilla, una a dos agujeros a la izquierda del apoyo con dos pesas verdes, otra a cuatro agujeros a la derecha con una pesa.">
+Cuelga dos colgadores (vigas de 3 agujeros) con pasadores: uno **2 agujeros a la izquierda del apoyo** y otro **4 a la derecha**. De cada uno cuelga una columna de pesas: **2 pesas a la izquierda y 1 a la derecha**.
+</Step>
+
+<Step n={5} title="Predice y comprueba" img="vm/p_hero" alt="La palanca terminada y equilibrada, con dos flechas de fuerza.">
+Antes de soltar la viga, haz la cuenta en voz alta:
+
+- Izquierda: 2 pesas × 2 agujeros = **4**
+- Derecha: 1 pesa × 4 agujeros = **4**
+
+Si tus pesas son iguales, ¿se queda horizontal? Suéltala con cuidado.
+
+<details>
+<summary>Si no se equilibra</summary>
+
+Casi siempre es una de estas tres cosas: **a)** las pesas no pesan lo mismo, **b)** el pasador roza y frena la viga, **c)** has contado la distancia mal (mira «Errores típicos»).
+</details>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba. Elige un reto:
+
+1. **Ventaja 4:** cuelga 4 pesas a 1 agujero a la izquierda. ¿Cuántas a 4 agujeros a la derecha la equilibran? Mira cuánto sube y baja cada lado al inclinarla.
+2. **La que no se equilibra:** pon 3 pesas a 2 agujeros y 2 pesas a 2 agujeros. ¿Qué lado baja? ¿Qué cambio mínimo la equilibra?
+3. **Sin números:** coloca 6 pesas como quieras repartidas a los dos lados y busca **a ojo** el equilibrio. Después haz la cuenta y mira si acertaste.
+
+O prueba el laboratorio en modo reto:
+
+<LeverLab challenge />
+</Block>
+
+<Block kind="errores">
+<Mistake title="Contar desde el borde de la viga" wrongLabel="Contando desde el extremo" rightLabel="Contando desde el apoyo">
+  <Fig slot="wrong" src="vm/p_error_borde_mal" alt="Las flechas de distancia salen del extremo izquierdo de la viga y llegan a cada colgador." />
+  <Fig slot="right" src="vm/p_error_borde_bien" alt="Las flechas de distancia salen del apoyo central y llegan a cada colgador." />
+
+La distancia **siempre se mide desde el apoyo**, no desde un extremo. Si mides desde el borde, la cuenta de cada lado sale distinta de la real y la predicción falla.
+</Mistake>
+
+<Mistake title="Contar el agujero del apoyo como si fuera uno más" wrongLabel="5 agujeros: de más" rightLabel="4 agujeros: los saltos">
+  <Fig slot="wrong" src="vm/p_error_cuenta_mal" alt="Cinco esferas rojas marcan los agujeros desde el apoyo hasta el colgador derecho, incluyendo el agujero del apoyo." />
+  <Fig slot="right" src="vm/p_error_cuenta_bien" alt="Cuatro esferas verdes marcan los agujeros a la derecha del apoyo hasta el colgador, sin contar el del apoyo." />
+
+El agujero del apoyo es el **cero**. Cuenta los **saltos** hasta tu pesa: aquí son 4, no 5. Es el fallo más común de todos.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu montaje:
+
+<Checklist items={[
+  "El apoyo está en el agujero central y la viga gira libre",
+  "He hecho la cuenta (pesas × distancia) de los dos lados ANTES de soltar",
+  "He contado la distancia desde el apoyo, sin incluir su agujero",
+  "Sé decir qué lado baja cuando los números no coinciden",
+  "He notado que el lado lejano recorre más camino que el cercano",
+]} />
+
+<Quiz id="q2" q="Una pesa a 4 agujeros del apoyo equilibra 4 pesas a 1 agujero. ¿Qué pasa con el camino que recorre cada una?" options={["Recorren lo mismo", "La lejana recorre 4 veces más", "La lejana recorre 4 veces menos"]} answer={1}>
+Con 4 pesas a 1 agujero y 1 pesa a 4, el lado lejano se mueve **4 veces más** que el cercano. Es el precio de usar 4 veces menos fuerza.
+</Quiz>
+
+<RegisterPiece piece="Palanca en equilibrio con pesas" />
+</Block>

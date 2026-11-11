@@ -1,0 +1,53 @@
+---
+// «Mis montajes»: todas tus fotos y notas, guardadas solo en este navegador.
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Mis montajes">
+  <p class="eyebrow">Tu portfolio</p>
+  <h1>Mis montajes</h1>
+  <p class="lead">Aquí se guardan las fotos y notas que registras al terminar cada lección. Viven solo en este dispositivo: no se suben a ningún sitio.</p>
+  <p class="msg muted" data-msg aria-live="polite"></p>
+  <div class="grid" data-grid></div>
+</BaseLayout>
+
+<script>
+  import { listPieces } from "../lib/store/portfolio";
+  const grid = document.querySelector<HTMLElement>("[data-grid]")!;
+  const msg = document.querySelector<HTMLElement>("[data-msg]")!;
+  const catalog = JSON.parse(document.getElementById("maker-catalog")?.textContent ?? "{}");
+  const title = (id: string) => catalog.lessons?.find((l: { id: string }) => l.id === id)?.title ?? id;
+  const href = (id: string) => catalog.lessons?.find((l: { id: string }) => l.id === id)?.href ?? "#";
+
+  listPieces()
+    .then((pieces) => {
+      if (!pieces.length) { msg.textContent = "Todavía no has registrado ningún montaje. Termina una lección y registra el tuyo."; return; }
+      grid.replaceChildren(
+        ...pieces.map((p) => {
+          const a = document.createElement("a");
+          a.className = "card"; a.href = href(p.lessonId);
+          if (p.image) { const im = document.createElement("img"); im.src = URL.createObjectURL(p.image); im.alt = "Foto de tu montaje"; a.append(im); }
+          const d = document.createElement("div"); d.className = "t";
+          d.innerHTML = "<small></small><h3></h3><p></p>";
+          d.querySelector("small")!.textContent = new Date(p.created).toLocaleDateString("es-ES");
+          d.querySelector("h3")!.textContent = title(p.lessonId);
+          d.querySelector("p")!.textContent = p.note || "(sin nota)";
+          a.append(d);
+          return a;
+        }),
+      );
+    })
+    .catch((e: Error) => (msg.textContent = e.message));
+</script>
+
+<style>
+  .msg { margin: 18px 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 12px; }
+  .grid :global(.card) { display: block; text-decoration: none; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .grid :global(.card:hover) { border-color: var(--accent); }
+  .grid :global(img) { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .grid :global(.t) { padding: 12px 14px; }
+  .grid :global(small) { font: .72rem var(--font-mono); color: var(--accent); }
+  .grid :global(h3) { font-size: 1.05rem; margin: 2px 0 4px; }
+  .grid :global(p) { margin: 0; color: var(--muted); font-size: .92rem; }
+</style>

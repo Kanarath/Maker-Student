@@ -1,0 +1,68 @@
+---
+// Tu progreso en una lección: tres partes con su XP. Se guarda en tu navegador.
+// La parte «montaje registrado» (la que más XP da) no se marca a mano: se consigue registrando tu montaje.
+interface Props { id: string; xp: { concept: number; build: number; piece: number }; piece: string }
+const { id, xp, piece } = Astro.props;
+const total = xp.concept + xp.build + xp.piece;
+---
+
+<div class="lp panel" data-lesson-progress={id} data-xp-concept={xp.concept} data-xp-build={xp.build} data-xp-piece={xp.piece}>
+  <h2>Tu progreso</h2>
+  <ul>
+    <li><label><input type="checkbox" data-part="concept" /><span class="txt">He entendido la idea</span><span class="xp">+{xp.concept}</span></label></li>
+    <li><label><input type="checkbox" data-part="build" /><span class="txt">He hecho el montaje guiado</span><span class="xp">+{xp.build}</span></label></li>
+    <li class="piece-row">
+      <span class="mark" data-piece-mark aria-hidden="true"></span>
+      <span class="txt">
+        <span data-piece-todo>Registra tu montaje: <b>{piece}</b></span>
+        <span data-piece-done hidden>Montaje registrado</span>
+      </span>
+      <span class="xp">+{xp.piece}</span>
+    </li>
+  </ul>
+  <a class="btn reg" data-piece-link href="#b-calidad">Registrar mi montaje ↓</a>
+  <p class="sum"><b data-lp-earned>0</b> / {total} XP <span class="done-msg">· ¡Lección completa!</span></p>
+</div>
+
+<script>
+  import { onProgress, setPart } from "../../lib/store/progress";
+  import type { Part } from "../../lib/game/core";
+
+  for (const box of document.querySelectorAll<HTMLElement>("[data-lesson-progress]")) {
+    const id = box.dataset.lessonProgress!;
+    const xp = { concept: Number(box.dataset.xpConcept), build: Number(box.dataset.xpBuild), piece: Number(box.dataset.xpPiece) };
+    const inputs = [...box.querySelectorAll<HTMLInputElement>("input[data-part]")];
+    inputs.forEach((i) => i.addEventListener("change", () => setPart(id, i.dataset.part as Part, i.checked)));
+    onProgress((s) => {
+      const parts = s.lessons[id]?.parts ?? {};
+      inputs.forEach((i) => (i.checked = !!parts[i.dataset.part as Part]));
+      const hasPiece = !!parts.piece;
+      box.querySelector("[data-piece-mark]")!.classList.toggle("on", hasPiece);
+      box.querySelector<HTMLElement>("[data-piece-todo]")!.hidden = hasPiece;
+      box.querySelector<HTMLElement>("[data-piece-done]")!.hidden = !hasPiece;
+      box.querySelector<HTMLElement>("[data-piece-link]")!.hidden = hasPiece;
+      const earned = (parts.concept ? xp.concept : 0) + (parts.build ? xp.build : 0) + (hasPiece ? xp.piece : 0);
+      box.querySelector("[data-lp-earned]")!.textContent = String(earned);
+      box.classList.toggle("complete", !!(parts.concept && parts.build && hasPiece));
+    });
+  }
+</script>
+
+<style>
+  h2 { font: 600 .75rem var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 8px; }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  label, .piece-row { display: grid; grid-template-columns: 20px 1fr auto; gap: 8px; align-items: start; font-size: .92rem; }
+  label { cursor: pointer; }
+  input { accent-color: var(--accent); width: 18px; height: 18px; margin-top: 2px; }
+  .mark { width: 18px; height: 18px; margin-top: 2px; border: 1px solid var(--line); border-radius: 3px; }
+  .mark:global(.on) { background: var(--accent); border-color: var(--accent); }
+  .xp { font: 600 .74rem var(--font-mono); color: var(--accent); }
+  input:checked ~ .txt { color: var(--muted); text-decoration: line-through; }
+  .reg { display: block; text-align: center; margin-top: 12px; padding: 9px 12px; font-size: .9rem; }
+  [hidden] { display: none !important; }
+  .sum { margin: 10px 0 0; font: .82rem var(--font-mono); color: var(--muted); }
+  .sum b { color: var(--text); }
+  .done-msg { display: none; color: #4ade80; }
+  .complete { border-color: #4ade80; }
+  .complete .done-msg { display: inline; }
+</style>

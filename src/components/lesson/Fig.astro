@@ -1,0 +1,18 @@
+---
+// Imagen de una lección (renders de Blender en public/assets/img/). Uso: <Fig src="vm/p_hero" alt="…" caption="…" />
+// `alt` es obligatorio: describe lo que se ve para quien no puede verlo.
+import { url } from "../../lib/url";
+interface Props { src: string; alt: string; caption?: string; w?: number; h?: number }
+const { src, alt, caption, w = 1280, h = 720 } = Astro.props;
+---
+
+<figure>
+  <img src={url(`assets/img/${src}.webp`)} alt={alt} width={w} height={h} loading="lazy" decoding="async" />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  figure { margin: 18px 0; background: #05060a; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  img { display: block; width: 100%; height: auto; }
+  figcaption { padding: 10px 14px; font-size: .9rem; color: var(--muted); border-top: 1px solid var(--line); background: var(--panel); }
+</style>

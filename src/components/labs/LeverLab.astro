@@ -1,0 +1,150 @@
+---
+// Laboratorio de la palanca: cambia pesas y distancias y mira cómo se inclina la viga.
+// Regla: fuerza × distancia al apoyo. Cada agujero de la viga está a 8 mm del siguiente (Technic).
+// Con `challenge`, propone un reto: equilibra la viga con tus pesas.
+interface Props { challenge?: boolean }
+const { challenge = false } = Astro.props;
+---
+
+<div class="lab" data-lever data-challenge={challenge ? "1" : "0"}>
+  <div class="head"><b>Laboratorio · La palanca</b><span class="muted">Mueve los deslizadores y mira qué pasa</span></div>
+
+  <svg viewBox="0 0 800 330" role="img" aria-label="Viga con apoyo central y pesas a cada lado">
+    <rect x="0" y="0" width="800" height="330" fill="#05060a" />
+    <g data-stand>
+      <polygon points="400,170 372,300 428,300" fill="#2f7fe0" />
+      <rect x="320" y="296" width="160" height="14" rx="4" fill="#6b7186" />
+    </g>
+    <g data-beam style="transform-origin: 400px 170px; transition: transform .6s cubic-bezier(.3,1.4,.5,1)">
+      <rect x="70" y="150" width="660" height="40" rx="20" fill="#f2b230" />
+      <g data-holes></g>
+      <g data-left></g>
+      <g data-right></g>
+    </g>
+    <circle cx="400" cy="170" r="13" fill="#2a2c35" stroke="#0b0d12" stroke-width="3" />
+    <text x="400" y="326" text-anchor="middle" fill="#a3a1b4" font-size="14" font-family="monospace">apoyo</text>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Lado izquierdo</legend>
+      <label>Pesas: <b data-lu-v>2</b><input type="range" min="0" max="5" value="2" data-lu /></label>
+      <label>Distancia al apoyo: <b data-ld-v>2</b> agujeros<input type="range" min="1" max="5" value="2" data-ld /></label>
+    </fieldset>
+    <fieldset>
+      <legend>Lado derecho</legend>
+      <label>Pesas: <b data-ru-v>1</b><input type="range" min="0" max="5" value="1" data-ru /></label>
+      <label>Distancia al apoyo: <b data-rd-v>4</b> agujeros<input type="range" min="1" max="5" value="4" data-rd /></label>
+    </fieldset>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <p class="ride muted" data-ride></p>
+  {challenge && (
+    <div class="chal">
+      <p data-goal></p>
+      <button class="btn" type="button" data-new>Otro reto</button>
+    </div>
+  )}
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const PX = 60, CX = 400, CY = 170; // 60 px por agujero (= 8 mm)
+
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-lever]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const beam = q<SVGGElement>("[data-beam]");
+    const holes = q<SVGGElement>("[data-holes]");
+    const gl = q<SVGGElement>("[data-left]");
+    const gr = q<SVGGElement>("[data-right]");
+    const inp = { lu: q<HTMLInputElement>("[data-lu]"), ld: q<HTMLInputElement>("[data-ld]"), ru: q<HTMLInputElement>("[data-ru]"), rd: q<HTMLInputElement>("[data-rd]") };
+    const out = q<HTMLElement>("[data-out]");
+    const ride = q<HTMLElement>("[data-ride]");
+    const challenge = root.dataset.challenge === "1";
+    const goal = root.querySelector<HTMLElement>("[data-goal]");
+    let target: { units: number; dist: number; need: number; free: "units" | "dist" } | null = null;
+
+    for (let i = -5; i <= 5; i++) holes.append(mk("circle", { cx: CX + i * PX, cy: CY, r: 12, fill: "#05060a", opacity: ".85" }));
+
+    function hang(g: SVGGElement, units: number, dist: number, side: -1 | 1) {
+      g.replaceChildren();
+      if (!units) return;
+      const x = CX + side * dist * PX;
+      g.append(mk("line", { x1: x, y1: CY, x2: x, y2: CY + 34, stroke: "#d5d9e2", "stroke-width": 4 }));
+      for (let k = 0; k < units; k++)
+        g.append(mk("rect", { x: x - 24, y: CY + 34 + k * 29, width: 48, height: 26, rx: 4, fill: "#37b26c", stroke: "#0b0d12", "stroke-width": 2 }));
+    }
+
+    function update() {
+      const lu = +inp.lu.value, ld = +inp.ld.value, ru = +inp.ru.value, rd = +inp.rd.value;
+      root.querySelector("[data-lu-v]")!.textContent = String(lu);
+      root.querySelector("[data-ld-v]")!.textContent = String(ld);
+      root.querySelector("[data-ru-v]")!.textContent = String(ru);
+      root.querySelector("[data-rd-v]")!.textContent = String(rd);
+      hang(gl, lu, ld, -1);
+      hang(gr, ru, rd, 1);
+      const tl = lu * ld, tr = ru * rd;
+      const angle = Math.max(-12, Math.min(12, (tr - tl) * 3));
+      beam.style.transform = `rotate(${angle}deg)`;
+      const rel = tl === tr ? (tl === 0 ? "No hay nada que equilibrar: pon alguna pesa." : "✓ ¡Equilibrio! Los dos lados valen lo mismo.") : tl > tr ? "Gana el lado izquierdo: baja." : "Gana el lado derecho: baja.";
+      out.innerHTML = `Izquierda: <b>${lu} × ${ld} = ${tl}</b> &nbsp;·&nbsp; Derecha: <b>${ru} × ${rd} = ${tr}</b><br>${rel}`;
+      out.classList.toggle("ok", tl === tr && tl > 0);
+      if (tl === tr && tl > 0 && ld !== rd) {
+        const near = Math.min(ld, rd), far = Math.max(ld, rd);
+        ride.textContent = `Ventaja ${far / near}: el lado lejano (${far} agujeros) recorre ${far / near} veces más camino que el cercano (${near}), pero hace ${far / near} veces menos fuerza.`;
+      } else ride.textContent = "";
+      if (challenge && target) {
+        const ok = tl === tr && tl > 0;
+        goal!.classList.toggle("ok", ok);
+      }
+    }
+
+    function newChallenge() {
+      // Lado derecho fijo; hay que ajustar uno de los dos datos del izquierdo para que sumen lo mismo.
+      const pairs: [number, number][] = [];
+      for (let ru = 1; ru <= 3; ru++) for (let rd = 2; rd <= 5; rd++) pairs.push([ru, rd]);
+      const [ru, rd] = pairs[Math.floor(Math.random() * pairs.length)];
+      const need = ru * rd;
+      const divs = [1, 2, 3, 4, 5].filter((d) => need % d === 0 && need / d <= 5 && need / d >= 1);
+      const ld = divs[Math.floor(Math.random() * divs.length)];
+      target = { units: need / ld, dist: ld, need, free: "units" };
+      inp.ru.value = String(ru); inp.rd.value = String(rd);
+      inp.lu.value = "0"; inp.ld.value = "1";
+      goal!.innerHTML = `<b>Reto:</b> a la derecha hay <b>${ru}</b> pesa${ru > 1 ? "s" : ""} a <b>${rd}</b> agujeros del apoyo. Equilibra la viga poniendo pesas a la izquierda (tú eliges cuántas y a qué distancia).`;
+      update();
+    }
+
+    for (const i of Object.values(inp)) i.addEventListener("input", update);
+    if (challenge) {
+      root.querySelector("[data-new]")!.addEventListener("click", newChallenge);
+      newChallenge();
+    } else update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .out.ok { background: #4ade8014; border-top-color: #4ade80; }
+  .ride { margin: 0; padding: 0 14px 12px; font-size: .92rem; }
+  .ride:empty { display: none; }
+  .chal { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 12px 14px; border-top: 1px solid var(--line); background: var(--panel-2); }
+  .chal p { margin: 0; flex: 1 1 280px; }
+  .chal :global(.ok) { color: #4ade80; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

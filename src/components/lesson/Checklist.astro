@@ -1,0 +1,54 @@
+---
+// Lista de comprobación de tu montaje. Las marcas se guardan en tu navegador, asociadas a la lección.
+// Uso: <Checklist items={["La palanca se mueve libre", "…"]} />
+interface Props { items: string[]; title?: string }
+const { items, title = "Antes de dar tu montaje por bueno" } = Astro.props;
+---
+
+<div class="checklist" data-checklist>
+  <h3>{title}</h3>
+  <ul>
+    {items.map((it, i) => (
+      <li><label><input type="checkbox" data-i={i} /> <span>{it}</span></label></li>
+    ))}
+  </ul>
+  <p class="count" aria-live="polite"><b data-done>0</b>/{items.length} comprobado</p>
+</div>
+
+<script>
+  import { loadProgress, setChecks } from "../../lib/store/progress";
+
+  for (const box of document.querySelectorAll<HTMLElement>("[data-checklist]")) {
+    const lessonId = box.closest<HTMLElement>("[data-lesson-id]")?.dataset.lessonId;
+    const inputs = [...box.querySelectorAll<HTMLInputElement>("input")];
+    const out = box.querySelector("[data-done]")!;
+    const update = () => {
+      const done = inputs.filter((x) => x.checked).length;
+      out.textContent = String(done);
+      box.classList.toggle("complete", done === inputs.length);
+    };
+    if (lessonId) {
+      const saved = loadProgress().lessons[lessonId]?.checks ?? [];
+      inputs.forEach((x, i) => (x.checked = saved.includes(i)));
+    }
+    inputs.forEach((x) =>
+      x.addEventListener("change", () => {
+        update();
+        if (lessonId) setChecks(lessonId, inputs.flatMap((y, i) => (y.checked ? [i] : [])));
+      }),
+    );
+    update();
+  }
+</script>
+
+<style>
+  .checklist { background: var(--panel); border: 1px solid var(--line); padding: 16px 18px; margin: 16px 0; border-radius: 4px; }
+  .checklist.complete { border-color: #4ade80; }
+  h3 { font-size: 1.1rem; margin: 0 0 10px; }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  label { display: flex; gap: 12px; align-items: start; cursor: pointer; }
+  input { accent-color: var(--accent); width: 20px; height: 20px; margin-top: 3px; flex: none; }
+  input:checked + span { color: var(--muted); text-decoration: line-through; }
+  .count { margin: 12px 0 0; font: .82rem var(--font-mono); color: var(--muted); }
+  .complete .count { color: #4ade80; }
+</style>

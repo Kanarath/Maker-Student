@@ -1,0 +1,44 @@
+---
+// Plantilla común de todas las páginas. `unit` activa el tema de color de la unidad (data-unit).
+import "../styles/tokens.css";
+import "../styles/base.css";
+import SiteHeader from "../components/SiteHeader.astro";
+import { buildCatalog } from "../lib/catalog";
+import { BASE as base } from "../lib/url";
+const catalog = await buildCatalog();
+
+interface Props { title: string; description?: string; unit?: string }
+const { title, description = "Aprende mecánica y mecatrónica montando piezas reales: palancas, poleas, engranajes y brazos.", unit } = Astro.props;
+const fullTitle = title === "Taller" ? "Maker Student · aprende mecánica montando" : `${title} · Maker Student`;
+---
+
+<!doctype html>
+<html lang="es" data-unit={unit}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <a class="skip" href="#contenido">Saltar al contenido</a>
+    <SiteHeader />
+    <main id="contenido" class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>Maker Student · aprende mecánica montando piezas reales</span>
+        <span>Tu progreso y tus fotos viven solo en este dispositivo.</span>
+      </div>
+    </footer>
+    <script type="application/json" id="maker-catalog" set:html={JSON.stringify(catalog)} />
+    <script>
+      import "../lib/ui/progress-ui";
+    </script>
+  </body>
+</html>

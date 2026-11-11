@@ -1,0 +1,36 @@
+---
+// Comparativa error / corrección. Uso en MDX:
+//   <Mistake title="Contar desde el borde" wrongLabel="…" rightLabel="…">
+//     <Fig slot="wrong" src="vm/p_error_borde_mal" alt="…" />
+//     <Fig slot="right" src="vm/p_error_borde_bien" alt="…" />
+//     Explicación de qué pasa y cómo se arregla.
+//   </Mistake>
+interface Props { title: string; wrongLabel?: string; rightLabel?: string }
+const { title, wrongLabel = "Así no", rightLabel = "Así sí" } = Astro.props;
+---
+
+<div class="mistake">
+  <h3>{title}</h3>
+  <div class="pair">
+    <div class="side wrong"><span class="tag">✕ {wrongLabel}</span><div class="art"><slot name="wrong" /></div></div>
+    <div class="side right"><span class="tag">✓ {rightLabel}</span><div class="art"><slot name="right" /></div></div>
+  </div>
+  <div class="explain"><slot /></div>
+</div>
+
+<style>
+  .mistake { background: var(--panel); border: 1px solid var(--line); padding: 16px 18px; margin: 18px 0; border-radius: 4px; }
+  h3 { font-size: 1.15rem; margin: 0 0 12px; }
+  .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+  .side { border: 1px solid var(--line); padding: 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0; border-radius: 4px; }
+  .wrong { border-color: #ff6b5a66; }
+  .right { border-color: #4ade8066; }
+  .tag { font: 600 .78rem var(--font-mono); }
+  .wrong .tag { color: #ff6b5a; }
+  .right .tag { color: #4ade80; }
+  .art :global(figure) { margin: 0; }
+  .art :global(figcaption) { font-size: .8rem; padding: 6px 8px; }
+  .explain { margin-top: 12px; color: var(--muted); }
+  .explain :global(p) { margin: 0 0 6px; }
+  @media (max-width: 560px) { .pair { grid-template-columns: 1fr; } }
+</style>

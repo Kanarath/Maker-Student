@@ -1,0 +1,58 @@
+---
+// Pregunta de autoevaluación con explicación. Uso:
+//   <Quiz id="q1" q="¿Cuánta fuerza hace falta?" options={["10 N", "20 N"]} answer={1}>Explicación al responder.</Quiz>
+// `id` identifica la pregunta dentro de la lección (guarda tu última respuesta). Sin JavaScript se ve como lista.
+interface Props { id: string; q: string; options: string[]; answer: number }
+const { id, q, options, answer } = Astro.props;
+const uid = `q${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<fieldset class="quiz" data-quiz={id} data-answer={answer}>
+  <legend>{q}</legend>
+  {options.map((o, i) => (
+    <label><input type="radio" name={uid} value={i} /> <span>{o}</span></label>
+  ))}
+  <div class="result" aria-live="polite" hidden>
+    <p class="verdict"></p>
+    <div class="why"><slot /></div>
+  </div>
+</fieldset>
+
+<script>
+  import { setQuiz } from "../../lib/store/progress";
+  for (const q of document.querySelectorAll<HTMLElement>("[data-quiz]")) {
+    const answer = Number(q.dataset.answer);
+    const result = q.querySelector<HTMLElement>(".result")!;
+    const verdict = q.querySelector<HTMLElement>(".verdict")!;
+    const lessonId = q.closest<HTMLElement>("[data-lesson-id]")?.dataset.lessonId;
+    q.addEventListener("change", (e) => {
+      const input = e.target as HTMLInputElement;
+      const picked = Number(input.value);
+      const ok = picked === answer;
+      q.querySelectorAll("label").forEach((l, i) => {
+        l.classList.toggle("is-right", i === answer);
+        l.classList.toggle("is-wrong", !ok && l.contains(input));
+      });
+      verdict.textContent = ok ? "✓ Correcto" : "✕ No exactamente: mira por qué";
+      q.classList.toggle("ok", ok);
+      q.classList.toggle("ko", !ok);
+      result.hidden = false;
+      if (lessonId) setQuiz(lessonId, q.dataset.quiz!, picked);
+    });
+  }
+</script>
+
+<style>
+  .quiz { border: 1px solid var(--line); background: var(--panel); padding: 14px 18px 16px; margin: 16px 0; border-radius: 4px; }
+  legend { font: 600 1.05rem var(--font-head); padding: 0 6px; }
+  label { display: flex; gap: 10px; align-items: center; padding: 10px 12px; margin: 8px 0; border: 1px solid var(--line); cursor: pointer; border-radius: 4px; }
+  label:hover { border-color: var(--accent); }
+  input { accent-color: var(--accent); width: 18px; height: 18px; }
+  label.is-right { border-color: #4ade80; background: #4ade8014; }
+  label.is-wrong { border-color: #ff6b5a; background: #ff6b5a14; }
+  .verdict { font: 600 .9rem var(--font-mono); margin: 10px 0 4px; }
+  .ok .verdict { color: #4ade80; }
+  .ko .verdict { color: #ff6b5a; }
+  .why { color: var(--muted); }
+  .why :global(p) { margin: 0; }
+</style>

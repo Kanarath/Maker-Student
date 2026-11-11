@@ -1,0 +1,106 @@
+---
+// Laboratorio de poleas: cuántos tramos de cuerda sujetan la carga y qué cuesta cada uno.
+// Sin rozamiento: fuerza = peso ÷ tramos; cuerda recogida = tramos × altura que sube la carga.
+---
+
+<div class="lab" data-pulley>
+  <div class="head"><b>Laboratorio · Poleas</b><span class="muted">Cambia los tramos y el peso</span></div>
+  <svg viewBox="0 0 800 340" role="img" aria-label="Carga colgada de una polea móvil con varios tramos de cuerda">
+    <rect width="800" height="340" fill="#05060a" />
+    <rect x="160" y="20" width="480" height="18" rx="6" fill="#6b7186" />
+    <g data-ropes></g>
+    <g data-load style="transition: transform .5s ease"></g>
+    <g data-hand></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Tramos que sujetan la carga</legend>
+      <div class="opts" data-n>{[1, 2, 3, 4].map((n) => <button type="button" class="opt" data-n={n} aria-pressed={n === 2}>{n}</button>)}</div>
+    </fieldset>
+    <fieldset>
+      <legend>Peso de la carga: <b data-w-v>40</b> N</legend>
+      <input type="range" min="10" max="100" step="10" value="40" data-w />
+    </fieldset>
+    <fieldset class="wide">
+      <legend>Sube la carga: <b data-h-v>10</b> cm</legend>
+      <input type="range" min="0" max="20" step="5" value="10" data-h />
+    </fieldset>
+  </div>
+  <p class="out" aria-live="polite" data-info></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-pulley]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const ropes = q<SVGGElement>("[data-ropes]");
+    const load = q<SVGGElement>("[data-load]");
+    const hand = q<SVGGElement>("[data-hand]");
+    const info = q<HTMLElement>("[data-info]");
+    const w = q<HTMLInputElement>("[data-w]");
+    const h = q<HTMLInputElement>("[data-h]");
+    let n = 2;
+
+    function update() {
+      const W = +w.value, H = +h.value;
+      root.querySelector("[data-w-v]")!.textContent = String(W);
+      root.querySelector("[data-h-v]")!.textContent = String(H);
+      const F = W / n;
+      const pull = n * H;
+      // dibujo: n tramos entre la barra (y=38) y el bloque; el bloque sube H/20 de 110 px
+      const top = 38, blockY = 230 - (H / 20) * 110;
+      ropes.replaceChildren();
+      const x0 = 400 - ((n - 1) * 34) / 2;
+      for (let i = 0; i < n; i++) ropes.append(mk("line", { x1: x0 + i * 34, y1: top, x2: x0 + i * 34, y2: blockY, stroke: "#f4eedd", "stroke-width": 4 }));
+      load.replaceChildren();
+      load.append(mk("rect", { x: x0 - 26, y: blockY, width: (n - 1) * 34 + 52, height: 22, rx: 8, fill: "#d8382f" }));
+      load.append(mk("rect", { x: 370, y: blockY + 22, width: 60, height: 60, rx: 6, fill: "#37b26c", stroke: "#0b0d12", "stroke-width": 2 }));
+      const t = mk("text", { x: 400, y: blockY + 60, "text-anchor": "middle", fill: "#0b0d12", "font-size": 18, "font-weight": 700, "font-family": "monospace" });
+      t.textContent = `${W} N`;
+      load.append(t);
+      hand.replaceChildren();
+      const hx = x0 + (n - 1) * 34 + 90;
+      hand.append(mk("line", { x1: hx, y1: top, x2: hx, y2: 270, stroke: "#f4eedd", "stroke-width": 4 }));
+      hand.append(mk("path", { d: `M${hx} 330 V288 M${hx - 10} 298 L${hx} 286 L${hx + 10} 298`, stroke: "#ff8a1f", "stroke-width": 6, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round" }));
+      const ft = mk("text", { x: hx + 18, y: 318, fill: "#ff8a1f", "font-size": 18, "font-family": "monospace", "font-weight": 700 });
+      ft.textContent = `tiras con ${F.toLocaleString("es-ES", { maximumFractionDigits: 1 })} N`;
+      hand.append(ft);
+      info.innerHTML = `${n} tramo${n > 1 ? "s" : ""} sujetan la carga → tiras con <b>${W} ÷ ${n} = ${F.toLocaleString("es-ES", { maximumFractionDigits: 1 })} N</b>. Para subirla <b>${H} cm</b> recoges <b>${n} × ${H} = ${pull} cm</b> de cuerda: lo que ganas en fuerza lo pagas en recorrido.${n === 1 ? " Con un solo tramo (polea fija) solo cambias la dirección." : ""}`;
+    }
+
+    q<HTMLElement>("[data-n]").addEventListener("click", (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-n]");
+      if (!b) return;
+      n = +b.dataset.n!;
+      root.querySelectorAll("[data-n] button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      update();
+    });
+    w.addEventListener("input", update);
+    h.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  .wide { grid-column: 1 / -1; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  .opts { display: flex; gap: 8px; margin-top: 4px; }
+  .opt { min-width: 52px; padding: 10px 12px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 4px; font: 600 1rem var(--font-mono); cursor: pointer; }
+  .opt[aria-pressed="true"] { background: var(--accent); color: #0b0d12; border-color: var(--accent); }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 8px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

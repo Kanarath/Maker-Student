@@ -1,0 +1,22 @@
+{
+  "name": "maker-student",
+  "version": "2.0.0-piloto",
+  "private": true,
+  "type": "module",
+  "description": "Maker Student: aprende mecánica y mecatrónica montando piezas reales",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node --test tests/",
+    "validate": "node tools/validate.mjs",
+    "check": "npm test && npm run validate"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "8.1.3",
+    "astro": "7.4.7"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.15"
+  }
+}

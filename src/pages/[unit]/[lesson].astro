@@ -1,0 +1,113 @@
+---
+// Página de una lección. Se genera una por cada archivo de src/content/lessons/. URL: /vm/m1-01/
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { visibleLessons, lessonXp, type Lesson } from "../../lib/lessons";
+import { UNITS } from "../../data/units";
+import { url } from "../../lib/url";
+import { lessonComponents } from "../../components/lesson";
+import LessonProgress from "../../components/lesson/LessonProgress.astro";
+
+export async function getStaticPaths() {
+  const list = await visibleLessons();
+  return list.map((lesson) => ({ params: { unit: lesson.data.unit, lesson: lesson.data.id }, props: { lesson, all: list } }));
+}
+
+interface Props { lesson: Lesson; all: Lesson[] }
+const { lesson, all } = Astro.props;
+const l = lesson.data;
+const unit = UNITS.find((x) => x.id === l.unit)!;
+const { Content } = await render(lesson);
+const href = (x: Lesson) => url(`${x.data.unit}/${x.data.id}/`);
+const prereqs = l.prerequisites.map((p) => all.find((x) => x.data.id === p)).filter((x): x is Lesson => !!x);
+const same = all.filter((x) => x.data.unit === l.unit);
+const i = same.findIndex((x) => x.data.id === l.id);
+const prev = same[i - 1];
+const next = same[i + 1];
+const statusLabel = { borrador: "Borrador · solo en local", revisada: "En prueba", publicada: "" }[l.status];
+---
+
+<BaseLayout title={`${l.title}`} unit={l.unit} description={l.summary}>
+  <nav class="crumbs" aria-label="Migas"><a href={url("")}>Taller</a> / <span>{unit.title}</span></nav>
+
+  <header>
+    <p class="eyebrow">{l.id.toUpperCase()} {statusLabel && <span class="status">{statusLabel}</span>}</p>
+    <h1>{l.title}</h1>
+    <p class="lead">{l.summary}</p>
+    <ul class="meta">
+      <li><span>Duración</span>~{l.duration} min</li>
+      <li><span>Montaje</span>{l.piece.name}</li>
+      <li><span>XP</span>{lessonXp(lesson)}</li>
+    </ul>
+  </header>
+
+  <div class="layout">
+    <aside class="side">
+      <LessonProgress id={l.id} xp={l.xp} piece={l.piece.name} />
+      <nav class="panel toc" aria-label="En esta lección">
+        <h2>En esta lección</h2>
+        <ol>
+          <li><a href="#b-pieza">El montaje</a></li>
+          <li><a href="#b-concepto">La idea</a></li>
+          <li><a href="#b-montaje">Montaje guiado</a></li>
+          <li><a href="#b-version">Tu versión</a></li>
+          <li><a href="#b-errores">Errores típicos</a></li>
+          <li><a href="#b-calidad">Comprueba y registra</a></li>
+        </ol>
+      </nav>
+      <div class="panel">
+        <h2>Al terminar sabrás</h2>
+        <ul>{l.objectives.map((o) => <li>{o}</li>)}</ul>
+      </div>
+      {l.materials.length > 0 && (
+        <div class="panel">
+          <h2>Material (opcional)</h2>
+          <p class="muted small">Puedes seguir la lección solo en pantalla.</p>
+          <ul>{l.materials.map((m) => <li>{m}</li>)}</ul>
+        </div>
+      )}
+      {prereqs.length > 0 && (
+        <div class="panel">
+          <h2>Antes, completa</h2>
+          <ul>{prereqs.map((p) => <li><a href={href(p)}>{p.data.title}</a></li>)}</ul>
+        </div>
+      )}
+    </aside>
+
+    <article class="body" data-lesson-id={l.id}>
+      <Content components={lessonComponents} />
+    </article>
+  </div>
+
+  <nav class="pager" aria-label="Lecciones">
+    {prev ? <a href={href(prev)}><small>← Anterior</small>{prev.data.title}</a> : <span />}
+    {next ? <a class="next" href={href(next)}><small>Siguiente →</small>{next.data.title}</a> : <span />}
+  </nav>
+</BaseLayout>
+
+<style>
+  .crumbs { font: .8rem var(--font-mono); color: var(--muted); margin-bottom: 16px; }
+  .crumbs a { color: var(--accent); text-decoration: none; }
+  .status { margin-left: 8px; padding: 2px 8px; border: 1px dashed var(--accent); text-transform: none; letter-spacing: 0; }
+  h1 { font-size: clamp(2rem, 4.5vw, 3rem); }
+  .meta { list-style: none; padding: 0; display: flex; gap: 28px; flex-wrap: wrap; margin: 20px 0 32px; }
+  .meta span { display: block; font: .7rem var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .layout { display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: start; }
+  .side { display: grid; gap: 12px; position: sticky; top: 76px; }
+  .side h2 { font: 600 .75rem var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 8px; }
+  .side ul { margin: 0; padding-left: 1.1em; font-size: .92rem; }
+  .side a { color: var(--accent); }
+  .small { font-size: .85rem; margin: 0 0 6px; }
+  .toc ol { padding-left: 1.4em; margin: 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); }
+  .body { max-width: 780px; min-width: 0; }
+  .body :global(code) { font-family: var(--font-mono); background: var(--panel-2); padding: 1px 6px; font-size: .9em; border-radius: 3px; }
+  .body :global(h2) { font-size: 1.5rem; }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+  .pager a { display: block; text-decoration: none; padding: 14px 16px; border: 1px solid var(--line); background: var(--panel); border-radius: 4px; }
+  .pager a:hover { border-color: var(--accent); }
+  .pager .next { text-align: right; }
+  .pager small { display: block; font: .72rem var(--font-mono); color: var(--accent); }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .side { position: static; } }
+</style>

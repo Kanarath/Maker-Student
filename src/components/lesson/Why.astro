@@ -1,0 +1,7 @@
+---
+// <Why> nota «¿Por qué?». Uso: <Why>texto</Why>  (title opcional cambia la etiqueta)
+import Note from "./Note.astro";
+const { title } = Astro.props;
+---
+
+<Note variant="why" label={title ?? "¿Por qué?"}><slot /></Note>
