@@ -1,0 +1,148 @@
+---
+id: m6-01
+unit: estr
+order: 1
+title: "Triángulos: el marco que no se tumba"
+summary: "Monta un marco de cuatro vigas, comprueba que se tumba y arréglalo con una diagonal. Descubre por qué un triángulo no puede cambiar de forma."
+practice: [l_triangulo]
+cover: estr/t_hero
+duration: 30
+status: revisada
+prerequisites: []
+objectives:
+  - "Predecir que un marco de cuatro barras articuladas se deforma (los lados no cambian, los ángulos sí)"
+  - "Explicar por qué un triángulo con tres lados fijos no se deforma"
+  - "Reforzar un marco con una diagonal unida por los dos extremos"
+materials:
+  - "2 vigas de 5 agujeros, 2 vigas de 4 agujeros y 1 viga de 6 agujeros (piezas tipo Technic)"
+  - "Pasadores: 2 largos (3 capas) y 2 cortos (2 capas)"
+  - "Sin piezas: tiras de cartón, encuadernadores de latón o clips, y unas tijeras"
+piece:
+  name: "Marco con diagonal (3-4-5)"
+  hint: "Foto de tu marco sin diagonal tumbado y de tu marco con diagonal, quieto, empujados igual"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **marco de cuatro vigas** y empujarlo. Verás que **se tumba**. Después le pondrás **una sola diagonal** y no se moverá.
+
+<Fig src="estr/t_hero" alt="A la izquierda, un marco de vigas grises y azules tumbado en forma de paralelogramo, con una flecha naranja que lo empuja desde la izquierda. A la derecha, un marco igual pero con una viga roja en diagonal de esquina a esquina, que se mantiene rectangular." caption="Mismas cuatro vigas, mismo empujón. El de la izquierda cede; el de la derecha, con la diagonal roja, no." />
+
+Fíjate: la diagonal **no añade fuerza**. Solo cambia la forma del dibujo… y eso lo cambia todo.
+
+<Tip title="Sin piezas también vale">
+Cuatro tiras de cartón, un agujero cerca de cada extremo y cuatro encuadernadores de latón (o clips) hacen el mismo marco. Lo importante es que las esquinas **puedan girar**.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## El cuadrado cede, el triángulo no
+
+Un marco de cuatro barras con **un pin en cada esquina** tiene las esquinas articuladas: cada barra puede girar en sus extremos.
+
+**Predice antes de mirar:** si empujas una esquina de arriba hacia un lado, ¿qué cambia: la longitud de las barras o los ángulos de las esquinas?
+
+<details>
+<summary>Mira la respuesta</summary>
+
+**Los ángulos.** Las barras no se estiran, siguen midiendo lo mismo, pero las esquinas giran y el rectángulo se convierte en un **paralelogramo**. Se «tumba».
+</details>
+
+<Fig src="estr/t_cede" alt="Marco de cuatro vigas empujado por una flecha naranja desde la izquierda; se ha tumbado hacia la derecha y las esquinas ya no son rectas. Un contorno fino gris marca la posición original del rectángulo." caption="Los lados siguen midiendo igual, pero los ángulos han cambiado. El contorno gris fino marca dónde estaba el marco." />
+
+Ahora lo haces tú. Empuja el marco y luego **añade la diagonal**:
+
+<TriFrameLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Sin diagonal, el marco se inclina con cualquier empujón.
+- Con diagonal, la barra roja **tendría que cambiar de longitud** para que el marco se moviera. Y una barra no se estira ni se encoge: el marco **no se mueve**.
+</details>
+
+<Why title="¿Por qué un triángulo sí aguanta?">
+Si te dan **los tres lados** de un triángulo, solo existe **una forma** posible. Para cambiar sus ángulos tendrías que estirar o aplastar un lado. Con cuatro lados, en cambio, hay muchas formas con los mismos lados.
+
+Por eso se añaden **diagonales** (riostras): convierten cuadriláteros en triángulos.
+</Why>
+
+Un detalle bonito: en este marco de **4 × 3 agujeros** la diagonal mide justo **5** (un triángulo 3-4-5), así que cae exacta sobre los agujeros.
+
+<Quiz id="q1" q="Un marco de 6 lados, con una articulación en cada esquina, se divide en triángulos con diagonales que no se cruzan. ¿Cuántas diagonales hacen falta?" options={["2", "3", "4"]} answer={1}>
+Un polígono de n lados se divide con **n − 3** diagonales que no se cruzan: 6 − 3 = **3**. (Y salen 4 triángulos, que son n − 2.)
+</Quiz>
+
+<Tip title="Sabías que… los triángulos están por todas partes">
+Los **puentes de celosía**, las **grúas de torre** y las torres de alta tensión están hechos de barras que forman **triángulos**. La **Torre Eiffel** también es una celosía de hierro, con miles de piezas. Con poco material consiguen mucha rigidez.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. **En cada imagen, lo nuevo sale en color y lo anterior, en gris.**
+
+<Step n={1} title="Las dos vigas largas" img="estr/t_s1" alt="Dos vigas grises de 5 agujeros en horizontal, una encima de otra, separadas por tres agujeros de altura.">
+Coloca dos vigas de 5 agujeros en horizontal, una encima de la otra, separadas **3 agujeros** de altura. Serán el suelo y el techo del marco.
+</Step>
+
+<Step n={2} title="Las dos vigas cortas" img="estr/t_s2" alt="Dos vigas azules de 4 agujeros en vertical unen los extremos de las dos vigas grises. En cada esquina hay un pasador negro; los de la esquina de abajo a la izquierda y de arriba a la derecha son más largos.">
+Une los extremos con dos vigas de 4 agujeros en vertical, con **un pasador en cada esquina**. En la esquina de abajo a la izquierda y en la de arriba a la derecha, usa **pasadores largos**: ahí irá la diagonal.
+<Why>El pasador largo atraviesa tres capas: las dos vigas de la esquina y la diagonal que pondrás después.</Why>
+</Step>
+
+<Step n={3} title="La diagonal" img="estr/t_s3" alt="Una viga roja de 6 agujeros cruza el marco desde la esquina de abajo a la izquierda hasta la de arriba a la derecha, sujeta por los dos pasadores largos.">
+Pon una viga de 6 agujeros en diagonal, de la esquina de abajo a la izquierda a la de arriba a la derecha, **sujeta por los dos extremos** con los pasadores largos.
+<Warn title="Los dos extremos, fijos">
+Los dos extremos de la diagonal deben ir **fijos en sus pasadores**. Si solo uno lo está, no sirve (mira «Errores típicos»).
+</Warn>
+</Step>
+
+<Step n={4} title="Empuja y comprueba" img="estr/t_s4" alt="El marco con la diagonal roja, completo y recto, con una flecha naranja que lo empuja desde la izquierda en una esquina de arriba.">
+**Antes de empujar, predice:** ¿se tumbará o se quedará recto? Empuja suavemente una esquina de arriba.
+
+Para comparar, quita la diagonal (un pasador) y empuja otra vez. Anota qué ha cambiado.
+</Step>
+</Block>
+
+<Block kind="version">
+Esta es la misión de la unidad, con cartón. **Predice** antes de cada empujón:
+
+1. **Cuadrado de cartón:** recorta cuatro tiras iguales (por ejemplo, 2 cm × 15 cm), haz un agujero cerca de cada extremo y únelas con un encuadernador por esquina. Empuja una esquina de arriba: ¿se queda cuadrado o se tumba?
+2. **Con diagonal:** recorta una quinta tira, haz los agujeros a la distancia justa y únela a dos esquinas opuestas. Empuja otra vez: ¿se deforma?
+3. **Con otra forma:** une tres tiras en triángulo y empuja. ¿Qué diferencia notas con el cuadrado?
+
+<Warn title="Seguridad">
+Corta el cartón con tijeras sobre una superficie protegida y lejos de ti. Haz los agujeros con un lápiz sobre un material blando, sin poner la mano debajo.
+</Warn>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Diagonal unida solo por un extremo" wrongLabel="Un solo extremo unido" rightLabel="Los dos extremos unidos">
+  <Fig slot="wrong" src="estr/t_error_mal" alt="Marco tumbado con una viga roja unida solo a la esquina de abajo a la izquierda. Su otro extremo queda suelto, con una esfera roja marcándolo, lejos de la esquina de arriba a la derecha." />
+  <Fig slot="right" src="estr/t_error_bien" alt="Marco recto con la viga roja de esquina a esquina, con esferas verdes en sus dos extremos unidos a los pasadores." />
+
+Una diagonal con **un extremo suelto** no forma ningún triángulo: el marco sigue cediendo. La diagonal debe ir **fija en sus dos puntas**, en esquinas opuestas.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu montaje:
+
+<Checklist items={[
+  "He predicho qué pasaría antes de empujar, cada vez",
+  "He comprobado que el marco sin diagonal se tumba, aunque los lados no cambian",
+  "La diagonal está unida por los dos extremos, en esquinas opuestas",
+  "He comprobado que con la diagonal el marco ya no se tumba",
+  "Sé explicar por qué un triángulo no cambia de forma",
+]} />
+
+<Quiz id="q2" q="¿Por qué un triángulo hecho con barras y pines no se deforma?" options={["Porque tiene menos esquinas que se pueden romper", "Porque con tres lados de longitud fija solo existe una forma posible", "Porque los pines se bloquean solos"]} answer={1}>
+Dados los tres lados, el triángulo queda determinado. Para cambiar sus ángulos habría que **estirar o aplastar un lado**.
+</Quiz>
+
+<RegisterPiece piece="Marco con diagonal (3-4-5)" />
+</Block>

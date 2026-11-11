@@ -1,0 +1,164 @@
+---
+id: m8-02
+unit: motor
+order: 2
+title: "Motor y reducción: menos velocidad, más fuerza"
+summary: "Conoce los tipos de motor y monta una reducción 9:1 en el eje de un motor para ganar fuerza de giro a cambio de velocidad."
+practice: [l_motor, l_reduccion]
+cover: motor/m_hero
+duration: 40
+status: revisada
+prerequisites: [m8-01, m3-03]
+objectives:
+  - "Distinguir un motor de CC, un servo y un paso a paso por lo que hace cada uno"
+  - "Calcular la velocidad y el par de salida de una reducción ideal"
+  - "Probar un motor con su transmisión sin dañarlo, subiendo la carga poco a poco"
+materials:
+  - "Un motor pequeño de CC y el circuito de la lección anterior"
+  - "Engranajes de 8 y de 24 dientes (2 de cada), 3 ejes y una viga de 11 agujeros (piezas tipo Technic)"
+  - "Algo para fijar el motor a la viga"
+piece:
+  name: "Motorreductor 9:1"
+  hint: "Foto de tu reducción montada y el cálculo de rpm de entrada y de salida"
+xp: { concept: 10, build: 25, piece: 45 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Un motor pequeño gira **muy rápido y flojo**. Vas a montarle una **reducción de engranajes** para que gire más despacio y con **más fuerza de giro**, la misma regla que ya viste con los engranajes.
+
+<Fig src="motor/m_hero" alt="Una viga gris con un motor rojo por detrás, un engranaje azul pequeño en su eje que mueve un engranaje gris grande; en el mismo eje de este, otro azul pequeño mueve uno grande amarillo. Un arco cian fino marca el giro rápido de entrada y un arco naranja grueso, el giro lento de salida." caption="Dos etapas de 8 a 24 dientes (3:1 cada una) dan una reducción de 9:1. Arco fino cian: rápido. Arco grueso naranja: lento y con más fuerza." />
+
+Al terminar sabrás **predecir cuántas vueltas** da la salida y **cuánta fuerza** gana.
+</Block>
+
+<Block kind="concepto">
+## Tres motores, tres usos
+
+<Fig src="motor/m_tipos" alt="Tres motores sobre la mesa. A la izquierda, un motor cilíndrico gris con un eje fino y dos terminales. En el centro, un servo azul con orejas de fijación, un brazo de salida blanco y un cable de tres hilos. A la derecha, un motor cuadrado oscuro con brida gris, cuatro tornillos y un eje." caption="De izquierda a derecha: motor de corriente continua, servo y motor paso a paso." />
+
+- **Motor de CC**: gira al darle tensión; si intercambias los cables, gira al revés. Con menos tensión, gira más despacio y con menos fuerza.
+- **Servo**: le pides un **ángulo** y lo mantiene, normalmente en un recorrido limitado (por ejemplo, 180°). Ideal para articulaciones.
+- **Paso a paso**: gira en **pasos fijos**; contando pasos sabes cuánto ha girado. Un motor de 200 pasos por vuelta avanza 360 ÷ 200 = **1,8°** por paso.
+
+**Predice antes de mirar:** quieres que la articulación de un brazo se coloque en un ángulo concreto y se quede ahí. ¿Qué motor encaja mejor?
+
+<details>
+<summary>Mira la respuesta</summary>
+
+**Un servo.** Lleva dentro su propio control de posición: le pides un ángulo y va hasta él. Un motor de CC solo gira, y tendrías que añadir algo para saber dónde está.
+</details>
+
+### La reducción
+
+Un **motorreductor** es un motor con una reducción de engranajes integrada. En una reducción ideal:
+
+- **velocidad de salida = velocidad del motor ÷ relación**
+- **par de salida = par del motor × relación**
+
+Un motor de 3000 rpm con una reducción 30:1 sale a **100 rpm**. Y un motor de 0,04 N·m con una reducción ideal 20:1 da **0,8 N·m**: 20 veces más fuerza de giro, a cambio de girar 20 veces más despacio.
+
+<ReductorLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Cuando la velocidad **baja** a la novena parte, el par **sube** nueve veces: se compensan, como en la palanca.
+- Al bajar el **rendimiento**, el par de salida es **algo menor** que el calculado: es el rozamiento.
+</details>
+
+<Why title="¿Por qué sale menos par del calculado?">
+Los cálculos «ideales» no cuentan el **rozamiento**, que convierte parte de la energía en calor. Se llama **rendimiento**: cuantas más etapas de engranajes, más se pierde.
+</Why>
+
+<Quiz id="q1" q="Un motor gira a 3000 rpm y lo conectas a una reducción de 30:1. ¿A cuántas rpm gira la salida?" options={["90000 rpm", "100 rpm", "1500 rpm"]} answer={1}>
+Una reducción de 30:1 divide la velocidad entre 30: 3000 ÷ 30 = **100 rpm**.
+</Quiz>
+
+<Quiz id="q2" q="Un motor entrega 0,04 N·m. Con una reducción ideal de 20:1 (sin pérdidas), ¿qué par hay en la salida?" options={["0,8 N·m", "0,002 N·m", "20,04 N·m"]} answer={0}>
+En una reducción ideal el par se multiplica por la relación: 0,04 × 20 = **0,8 N·m**.
+</Quiz>
+
+<Tip title="Sabías que… un motor de juguete es rapidísimo y flojo">
+Un motor de juguete pequeño puede girar a **miles de vueltas por minuto**, pero casi no tiene fuerza. Por eso casi siempre lleva una **reducción**: cambia velocidad por fuerza, como en las palancas.
+</Tip>
+
+<Tip title="Sabías que… cómo entiende un servo el ángulo">
+Un **servo** de modelismo recibe un pulso eléctrico cada unos 20 milisegundos. La **duración del pulso** (aproximadamente de 1 a 2 ms) le dice qué ángulo debe ocupar. Tú no tienes que programar nada: basta saber que un servo «entiende» posiciones, no solo giros.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos de montaje y uno de prueba. **En cada imagen, lo nuevo sale en color y lo anterior, en gris.** Sigue siempre este orden: **fijar, probar solo, añadir transmisión, cargar poco a poco**.
+
+<Step n={1} title="Fija el motor" img="motor/m_s1" alt="Una viga gris de 11 agujeros en horizontal con un motor rojo fijado por detrás y un eje que atraviesa la viga por el primer agujero.">
+Fija el motor **firmemente** a la viga, con su eje atravesando el **primer agujero** (por la cara de delante).
+<Warn title="Que no se mueva">
+Un motor suelto se gira él mismo en vez de mover la transmisión. Fíjalo bien antes de darle corriente.
+</Warn>
+</Step>
+
+<Step n={2} title="Pruébalo solo" img="motor/m_s2" alt="El mismo montaje con un engranaje azul de 8 dientes montado en el eje del motor, a la izquierda de la viga.">
+Pon el engranaje de **8 dientes** en el eje del motor. Conéctalo **primero sin carga** y mira el **sentido de giro**.
+<Why>Si algo va mal (cables cambiados, un roce), lo ves sin que nada más esté en juego.</Why>
+</Step>
+
+<Step n={3} title="Primera etapa 8 a 24" img="motor/m_s3" alt="Un engranaje gris grande de 24 dientes a dos agujeros del pequeño, engranado con él, sobre un eje largo.">
+Pon un engranaje de **24 dientes** a **2 agujeros** del primero, sobre un eje. Ya tienes una reducción **3:1**: la rueda grande gira 3 veces más despacio.
+<Why>Dos engranajes engranan cuando sus ejes están a (dientes₁ + dientes₂) ÷ 16 agujeros: (8 + 24) ÷ 16 = 2.</Why>
+</Step>
+
+<Step n={4} title="Segunda etapa" img="motor/m_s4" alt="En el eje del engranaje grande gris, un segundo engranaje azul de 8 dientes por delante; engrana con un engranaje amarillo de 24 dientes a dos agujeros más a la derecha.">
+En el mismo eje del engranaje de 24, **por delante**, pon otro de **8 dientes**, y a 2 agujeros más a la derecha, uno de **24**. La reducción total es 3 × 3 = **9:1**.
+</Step>
+
+<Step n={5} title="Prueba con poca carga" img="motor/m_hero" alt="El motorreductor completo con flechas de giro: una fina cian en el motor y otra gruesa naranja en la salida.">
+**Predice:** si el motor gira a 3000 rpm, ¿a cuántas gira la salida? (3000 ÷ 9 = 333 rpm, aproximadamente.) Conecta con **poca carga** y súbela poco a poco.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Más reducción:** añade una tercera etapa 8 a 24. ¿Cuál es ahora la relación total? ¿Y cómo gira la salida?
+2. **Al revés:** cambia los cables del motor. ¿Qué cambia en la salida?
+3. **Menos tensión:** prueba con menos pilas (sin pasar de lo que admite el motor). ¿Qué pasa con la velocidad de la salida?
+
+<Quiz id="q3" q="Reduces la tensión que recibe un motor de corriente continua sin carga. ¿Qué suele pasar?" options={["Gira más deprisa", "Gira más despacio", "Cambia de sentido"]} answer={1}>
+En un motor de CC la velocidad sin carga aumenta con la tensión. Con menos tensión, gira más despacio y con menos fuerza.
+</Quiz>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Seguir dando corriente a un motor atascado" wrongLabel="Algo atasca la salida" rightLabel="Todo gira libre">
+  <Fig slot="wrong" src="motor/m_error_mal" alt="El motorreductor con una viga roja atravesada contra los dientes del engranaje grande de salida. Un arco rojo en el motor marca que sigue empujando." />
+  <Fig slot="right" src="motor/m_error_bien" alt="El mismo motorreductor sin nada en medio, con arcos verdes que indican el giro libre de entrada y de salida." />
+
+Cuando un motor de corriente continua **se bloquea** mientras sigue conectado, no «frena» la corriente por sí mismo y **consume muchísima**: se calienta y se puede dañar. **Desconéctalo en cuanto se bloquee** y busca qué roza o atasca antes de tocar.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu montaje:
+
+<Checklist items={[
+  "El motor está fijo y su eje atraviesa la viga",
+  "Lo probé solo, sin carga, y vi su sentido de giro",
+  "Los engranajes engranan a la distancia correcta (2 agujeros) y giran sin rozar",
+  "He calculado las rpm de salida: rpm del motor ÷ relación",
+  "Subo la carga poco a poco y desconecto si algo se bloquea",
+]} />
+
+<Quiz id="q4" q="Un motor de corriente continua se queda bloqueado (no puede girar) mientras sigue conectado. ¿Qué ocurre?" options={["Se enfría porque no gira", "No consume nada", "Consume mucha corriente y se puede calentar y dañar"]} answer={2}>
+Cuando no gira, el motor toma muchísima corriente. Desconéctalo en cuanto se bloquee: es un fallo típico al forzar un mecanismo.
+</Quiz>
+
+<Quiz id="q5" q="Un motor paso a paso da 200 pasos por vuelta completa. ¿Cuántos grados avanza en cada paso?" options={["3,6°", "1,8°", "18°"]} answer={1}>
+Una vuelta son 360°. Cada paso: 360 ÷ 200 = **1,8°**.
+</Quiz>
+
+<RegisterPiece piece="Motorreductor 9:1" />
+</Block>

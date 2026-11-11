@@ -1,0 +1,162 @@
+---
+id: m10-02
+unit: fluidos
+order: 2
+title: "Pistones: la palanca de los líquidos"
+summary: "Une una jeringuilla pequeña y una grande, predice cuánto se mueve y con qué fuerza, y comprueba que lo que ganas en fuerza lo pagas en recorrido."
+practice: [l_hidr]
+cover: fluidos/f_h_hero
+duration: 35
+status: revisada
+prerequisites: [m10-01, m3-01]
+objectives:
+  - "Calcular la fuerza del émbolo grande con presión = fuerza ÷ área y fuerza = presión × área"
+  - "Calcular cuánto se mueve el émbolo grande sabiendo que el volumen que sale es el que entra"
+  - "Explicar por qué un sistema hidráulico no crea fuerza de la nada (fuerza × recorrido se conserva)"
+  - "Explicar cómo un gato hidráulico levanta un coche con poca fuerza de brazo"
+materials:
+  - "Dos jeringuillas SIN AGUJA de distinto tamaño (por ejemplo una de 5 ml y otra de 20 ml) y 30-40 cm de tubo flexible"
+  - "Agua, bandeja o toalla de papel, regla y, si puedes, un calibre o una regla para medir los diámetros"
+piece:
+  name: "Prensa de dos jeringuillas de distinto tamaño"
+  hint: "Foto del circuito y una nota con los dos recorridos que mediste y la razón de áreas que calculaste"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a unir una **jeringuilla pequeña** con una **grande** por un tubo lleno de agua. Empujas la pequeña y la grande empuja con **más fuerza**… pero se mueve **menos**. Antes de empujar, **predecirás** cuánto menos.
+
+<Fig src="fluidos/f_h_hero" alt="Una jeringuilla pequeña y otra el doble de ancha, tumbadas y unidas por un tubo azul en U, llenas de agua. Una flecha naranja larga y fina empuja el émbolo pequeño; una flecha cian corta y gruesa sale del émbolo grande." caption="Pequeña: mucho recorrido y poca fuerza (flecha larga y fina). Grande: poco recorrido y mucha fuerza (flecha corta y gruesa)." />
+
+<Warn title="Sin agujas, sin golpes y lejos de los enchufes">
+Solo jeringuillas **sin aguja**, sobre una bandeja y **lejos de enchufes y aparatos eléctricos**. Con un émbolo pequeño, un empujón fuerte crea **mucha presión**: empuja **sin golpes** y vigila las uniones del tubo, porque pueden saltar y mojarte.
+</Warn>
+</Block>
+
+<Block kind="concepto">
+## La palanca de los líquidos
+
+En un fluido encerrado la presión es **la misma en todas partes**. Si un émbolo es **10 veces** más grande que otro, la **fuerza** del grande es **10 veces** mayor… pero se mueve **10 veces menos**. Otra vez: lo que ganas en fuerza lo pagas en **recorrido**.
+
+### La fuerza
+
+La presión sale de la jeringuilla pequeña y se aplica al émbolo grande:
+
+1. **presión = fuerza pequeña ÷ área pequeña**
+2. **fuerza grande = presión × área grande**
+
+Ejemplo: empujas con **10 N** un émbolo de **2 cm²**. El otro tiene **20 cm²**.
+
+- Presión: 10 ÷ 2 = **5 N/cm²** (en todo el líquido).
+- Fuerza grande: 5 × 20 = **100 N**. Fuerza × 10.
+
+### El recorrido
+
+El **volumen** que sale de un lado entra por el otro. Para que el grande (20 cm²) suba **1 cm**, el pequeño (2 cm²) debe bajar 2 × (recorrido) = 20 × 1 → **10 cm**.
+
+Si multiplicas fuerza × recorrido (el **trabajo**), sale lo mismo: 10 N × 10 cm = 100 N·cm y 100 N × 1 cm = 100 N·cm. (Esto es lo ideal, sin rozamiento ni fugas.)
+
+**Predice:** si el émbolo grande tiene el **cuádruple de área** que el pequeño, y empujas el pequeño **4 cm**, ¿cuánto se mueve el grande?
+
+<details>
+<summary>Respuesta</summary>
+
+**1 cm**: el recorrido se divide entre 4 (y la fuerza se multiplica por 4).
+</details>
+
+<HydLab />
+
+<Why title="Nada es gratis">
+Un sistema hidráulico **no crea fuerza de la nada**: no suma la fuerza de los dos émbolos ni convierte newtons en julios. Cambia fuerza por recorrido, igual que una palanca o un reductor de engranajes. El **trabajo** (fuerza × distancia) que sale es, como mucho, el que entra.
+</Why>
+
+<Quiz id="q1" q="Empujas con 5 N un émbolo de 1 cm². El otro émbolo tiene 8 cm². ¿Qué fuerza (ideal) da el émbolo grande?" options={["13 N", "40 N", "5 N"]} answer={1}>
+Presión = 5 ÷ 1 = 5 N/cm². En el grande: 5 × 8 = **40 N**. (Sumar las áreas daría 13, pero la fuerza **se multiplica** por la razón de áreas.)
+</Quiz>
+
+<Quiz id="q2" q="El émbolo grande tiene 8 cm² y el pequeño, 1 cm². Para que el grande suba 2 cm, ¿cuánto debe bajar el pequeño?" options={["0,25 cm", "2 cm", "16 cm"]} answer={2}>
+El volumen que sale es el que entra: 1 × (recorrido pequeño) = 8 × 2, así que el pequeño baja **16 cm**.
+</Quiz>
+
+### Un gato hidráulico
+
+Un **gato hidráulico** levanta un coche con poca fuerza de brazo porque un émbolo **pequeño** empuja otro **muy grande**: bombeas muchas veces para subir un poco. Cada bombeo envía un poco de aceite al émbolo grande, que sube poco pero con mucha fuerza.
+
+### Burbujas
+
+Si hay una **burbuja de aire** en el circuito, el movimiento sale «blando» o esponjoso, porque el aire se comprime y absorbe parte de tu empuje. Hay que **purgar** las burbujas llenando el circuito con cuidado.
+
+<Tip title="Sabías que… la prensa de Bramah">
+El inglés **Joseph Bramah** patentó en **1795** una **prensa hidráulica** que aplicaba el principio de Pascal para conseguir fuerzas enormes con un émbolo pequeño. Hoy sus descendientes están en talleres, grúas y frenos.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="La jeringuilla grande, llena" img="fluidos/f_h_s1" alt="Una jeringuilla ancha y transparente, tumbada y llena de agua azul, con el émbolo a mitad de recorrido, apoyada en dos soportes.">
+Llena la jeringuilla **grande** de agua y saca las burbujas empujando un poco con la punta hacia arriba.
+</Step>
+
+<Step n={2} title="La pequeña y el tubo" img="fluidos/f_h_s2" alt="Una jeringuilla delgada llena de agua, colocada en paralelo, y un tubo azul en U que une su punta con la de la jeringuilla ancha.">
+Llena la **pequeña** y el **tubo**, y conéctalos sin burbujas. Apoya las dos en la bandeja.
+</Step>
+
+<Step n={3} title="Empuja la pequeña y mide" img="fluidos/f_h_s3" alt="Las dos jeringuillas unidas. La flecha naranja del émbolo pequeño es larga y fina, y la flecha cian del grande es corta y gruesa. El émbolo grande se ha movido mucho menos.">
+Empuja el émbolo **pequeño 4 cm** y mide cuánto sale el **grande**.
+<Why>El grande sale menos porque su área es mayor: el volumen que desplazas es el mismo, pero se reparte en una sección más ancha.</Why>
+</Step>
+
+<Step n={4} title="Compara con tu cálculo">
+Mide el **diámetro** de cada émbolo. El área de un círculo es proporcional al diámetro al cuadrado, así que **razón de áreas = (D grande ÷ D pequeño)²**. Prevé el recorrido del grande dividiendo entre esa razón y compáralo con lo que mediste.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Intercambia los papeles.** Empuja ahora el émbolo **grande**. **Predice:** ¿el pequeño se mueve más o menos? ¿hace falta más o menos fuerza?
+2. **Sujeta el grande.** Con una mano empuja el pequeño y con el dedo de la otra intenta **frenar** el grande. ¿Cuál de los dos notas que hace más fuerza?
+3. **Cambia la grande por otra aún más ancha.** **Predice:** ¿el recorrido sube o baja?
+
+<details>
+<summary>Respuestas</summary>
+
+1. El pequeño se mueve **más** (recorrido multiplicado) y hace falta **más fuerza**: ahora ganas recorrido y pierdes fuerza, como un multiplicador.
+2. El émbolo **grande** empuja con más fuerza que tu dedo: por eso cuesta frenarlo.
+3. **Baja**: con más área, el mismo volumen se reparte en menos recorrido.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="«El grande se mueve lo mismo»" wrongLabel="Así no: recorridos iguales" rightLabel="Así sí: grande, poco recorrido">
+  <Fig slot="wrong" src="fluidos/f_h_mal" alt="Las dos jeringuillas unidas con dos flechas rojas finas de la misma longitud, como si los dos émbolos se movieran lo mismo." />
+  <Fig slot="right" src="fluidos/f_h_bien" alt="Las dos jeringuillas con una flecha naranja larga y fina en la pequeña y una flecha cian corta y gruesa en la grande." />
+
+Los dos émbolos **no** se mueven lo mismo. El **volumen** que desplazan sí es igual, pero el grande tiene más área, así que su recorrido es más corto. Y a cambio empuja con **más fuerza**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Las dos jeringuillas son sin aguja y trabajo sobre una bandeja lejos de enchufes",
+  "No hay burbujas grandes en el circuito",
+  "He predicho el recorrido del grande y lo he medido",
+  "He calculado la razón de áreas con los diámetros",
+  "Sé explicar por qué este sistema no crea fuerza de la nada",
+]} />
+
+<Quiz id="q3" q="¿Qué regla cumple siempre un sistema hidráulico?" options={["Crea fuerza de la nada", "Lo que ganas en fuerza lo pagas en recorrido: el trabajo (fuerza × distancia) es el mismo", "Suma la fuerza de los dos émbolos"]} answer={1}>
+Es la misma idea que las palancas y los engranajes: ninguna máquina sin pérdidas da más trabajo del que recibe.
+</Quiz>
+
+<Quiz id="q4" q="¿Cómo consigue un gato hidráulico levantar un coche con poca fuerza de brazo?" options={["Porque el aceite pesa mucho", "Con un émbolo pequeño que empuja uno muy grande: bombeas muchas veces para subir un poco", "Porque crea energía"]} answer={1}>
+Cada bombeo empuja un poco de aceite hacia el émbolo grande, que sube poco pero con mucha fuerza.
+</Quiz>
+
+<RegisterPiece piece="Prensa de dos jeringuillas de distinto tamaño" />
+</Block>

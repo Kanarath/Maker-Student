@@ -1,0 +1,95 @@
+---
+// Laboratorio de trabajo y energía: una máquina ideal (palanca, rampa…) cambia fuerza por recorrido, pero el trabajo es el mismo.
+// Trabajo útil = carga × altura. Con ventaja v: fuerza = carga ÷ v y recorrido de tu mano = altura × v. Potencia = trabajo ÷ tiempo.
+// El deslizador de pérdidas muestra que, con rozamiento, tu mano tiene que aportar MÁS trabajo del que sale útil.
+---
+
+<div class="lab" data-trabajo>
+  <div class="head"><b>Laboratorio · Trabajo y energía</b><span class="muted">Cambia la ventaja y mira qué se mantiene</span></div>
+
+  <svg viewBox="0 0 800 230" role="img" aria-label="Tres barras: fuerza de tu mano, recorrido de tu mano y trabajo que hace tu mano">
+    <rect x="0" y="0" width="800" height="230" fill="#05060a" />
+    <g font-family="monospace" font-size="15" fill="#a3a1b4">
+      <text x="14" y="42">Fuerza de tu mano</text>
+      <text x="14" y="112">Recorrido de tu mano</text>
+      <text x="14" y="182">Trabajo de tu mano</text>
+    </g>
+    <rect x="14" y="52" width="772" height="26" rx="4" fill="#161924" />
+    <rect x="14" y="122" width="772" height="26" rx="4" fill="#161924" />
+    <rect x="14" y="192" width="772" height="26" rx="4" fill="#161924" />
+    <rect data-bf x="14" y="52" width="193" height="26" rx="4" fill="#ff8a1f" />
+    <rect data-bd x="14" y="122" width="193" height="26" rx="4" fill="#2de0f2" />
+    <rect data-bw x="14" y="192" width="386" height="26" rx="4" fill="#4ade80" />
+    <text data-tf x="780" y="42" text-anchor="end" fill="#e8e6f2" font-size="15" font-family="monospace"></text>
+    <text data-td x="780" y="112" text-anchor="end" fill="#e8e6f2" font-size="15" font-family="monospace"></text>
+    <text data-tw x="780" y="182" text-anchor="end" fill="#e8e6f2" font-size="15" font-family="monospace"></text>
+  </svg>
+
+  <div class="ctrl">
+    <label>Peso de la carga: <b data-cv>100</b> N<input type="range" min="20" max="200" step="10" value="100" data-c /></label>
+    <label>Altura a subirla: <b data-hv>0,2</b> m<input type="range" min="0.1" max="1" step="0.05" value="0.2" data-h /></label>
+    <label>Ventaja de la máquina: <b data-vv>4</b><input type="range" min="0" max="4" step="1" value="2" data-v aria-valuetext="ventaja 4" /></label>
+    <label>Tiempo que tardas: <b data-tv>10</b> s<input type="range" min="1" max="30" step="1" value="10" data-t /></label>
+    <label>Pérdidas por rozamiento: <b data-lv>0</b> %<input type="range" min="0" max="50" step="5" value="0" data-l /></label>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <p class="note muted">Máquina ideal: sin rozamiento el trabajo de tu mano es igual al trabajo útil. Con pérdidas, tu mano aporta más (el resto se va en calor).</p>
+</div>
+
+<script>
+  const fmt = (n: number, d = 2) => n.toLocaleString("es-ES", { maximumFractionDigits: d });
+  const ADV = [1, 2, 4, 5, 10];
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-trabajo]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const C = q<HTMLInputElement>("[data-c]"), Hh = q<HTMLInputElement>("[data-h]"), V = q<HTMLInputElement>("[data-v]");
+    const T = q<HTMLInputElement>("[data-t]"), Lo = q<HTMLInputElement>("[data-l]");
+    const out = q<HTMLElement>("[data-out]");
+    const bf = q<SVGRectElement>("[data-bf]"), bd = q<SVGRectElement>("[data-bd]"), bw = q<SVGRectElement>("[data-bw]");
+    const tf = q<SVGTextElement>("[data-tf]"), td = q<SVGTextElement>("[data-td]"), tw = q<SVGTextElement>("[data-tw]");
+
+    function update() {
+      const c = +C.value, h = +Hh.value, v = ADV[+V.value], t = +T.value, loss = +Lo.value / 100;
+      const useful = c * h;                // J
+      const hand = useful / (1 - loss);    // J que aporta tu mano
+      const d = h * v;                     // m que recorre tu mano
+      const f = hand / d;                  // N que hace tu mano
+      const pot = hand / t;                // W
+      q("[data-cv]").textContent = String(c);
+      q("[data-hv]").textContent = fmt(h);
+      q("[data-vv]").textContent = String(v);
+      q("[data-tv]").textContent = String(t);
+      q("[data-lv]").textContent = String(Math.round(loss * 100));
+      V.setAttribute("aria-valuetext", `ventaja ${v}`);
+      // barras: fuerza relativa a la carga (con pérdidas puede superar 1/v), recorrido relativo a 10 × h, trabajo relativo a 200 N × 1 m / 0,5
+      bf.setAttribute("width", String(Math.max(4, Math.min(772, (f / 250) * 772))));
+      bd.setAttribute("width", String(Math.max(4, Math.min(772, (d / 10) * 772))));
+      bw.setAttribute("width", String(Math.max(4, Math.min(772, (hand / 400) * 772))));
+      tf.textContent = `${fmt(f)} N`;
+      td.textContent = `${fmt(d)} m`;
+      tw.textContent = `${fmt(hand)} J`;
+      let txt = `Trabajo útil: ${c} N × ${fmt(h)} m = <b>${fmt(useful)} J</b>.<br>`;
+      txt += `Tu mano: <b>${fmt(f)} N</b> a lo largo de <b>${fmt(d)} m</b> = ${fmt(f * d)} J${loss > 0 ? ` (${fmt(hand - useful)} J se pierden en calor)` : ""}.<br>`;
+      txt += `Potencia media: ${fmt(hand)} J ÷ ${t} s = <b>${fmt(pot)} W</b>.`;
+      if (v === 1) txt += `<br>Con ventaja 1 (sin máquina) haces la fuerza completa en el recorrido mínimo.`;
+      else txt += `<br>Ventaja ${v}: ${v} veces menos fuerza que ${fmt(c)} N… a cambio de ${v} veces más camino.`;
+      out.innerHTML = txt;
+    }
+    for (const i of [C, Hh, V, T, Lo]) i.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  label { display: block; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .note { margin: 0; padding: 0 14px 12px; font-size: .88rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

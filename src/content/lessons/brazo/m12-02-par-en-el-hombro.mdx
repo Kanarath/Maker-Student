@@ -1,0 +1,169 @@
+---
+id: m12-02
+unit: brazo
+order: 2
+title: "Cargas en el brazo: el par del hombro"
+summary: "Calcula cuánta fuerza de giro necesita el hombro (peso × distancia), añade el peso propio del brazo y equilíbralo con un contrapeso."
+practice: [l_pares]
+cover: brazo/c_hero
+duration: 35
+status: revisada
+prerequisites: [m12-01, m3-01]
+objectives:
+  - "Calcular el par en el hombro como peso × distancia, incluido el peso propio en el punto medio"
+  - "Convertir entre carga y distancia con los kg·cm de un servo"
+  - "Reducir el par con un brazo corto y ligero, motores cerca de la base y un contrapeso"
+materials:
+  - "Vigas de 9 y 11 agujeros (una de cada) y de 7 agujeros (una); tres vigas de 3 agujeros"
+  - "Pasadores y al menos 5 pesas iguales (piezas o monedas del mismo valor con un colgador)"
+piece:
+  name: "Brazo equilibrado con contrapeso"
+  hint: "Foto de tu brazo horizontal con su carga a un lado y el contrapeso al otro, con la cuenta escrita"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+El motor del **hombro** es el que más sufre en un brazo. Hoy vas a **calcular cuánta fuerza de giro necesita** y a montar un truco para quitársela: un **contrapeso**.
+
+<Fig src="brazo/c_hero" alt="El brazo horizontal y estirado, con una pieza blanca entre los dedos verdes de la pinza. Una flecha naranja baja desde la pieza, una cian más corta baja desde el centro del brazo, una flecha verde curva marca el giro del hombro y dos cotas horizontales muestran la distancia de cada peso al hombro." caption="Dos pesos tiran hacia abajo: la pieza (naranja, lejos) y el propio brazo (cian, en su centro). El hombro tiene que aguantar la suma." />
+
+Mira la distancia de cada flecha al hombro: **cuanto más lejos, más cuesta sostener lo mismo**.
+
+<Tip title="Sabías que… el brazo del transbordador">
+El **Canadarm**, el brazo del transbordador espacial, se diseñó para moverse en ingravidez. En la Tierra, por su propio peso, no podía sostenerse ni levantar casi nada sin ayuda. Es un buen ejemplo de que el **par** depende del peso: en el espacio no pesa.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Par = fuerza × distancia
+
+Es la misma regla que en la palanca (unidad «Ventaja mecánica»): **peso × distancia al eje**. El motor del hombro es el apoyo de una palanca, y debe dar un **par** igual al que hacen los pesos que cuelgan del brazo.
+
+<Fig src="brazo/c_carga" alt="El brazo horizontal con la pinza sujetando una pieza blanca. Una flecha naranja baja desde la pieza y una cota horizontal debajo marca toda la distancia desde el hombro hasta la pieza." caption="Solo la pieza: par = peso de la pieza × distancia al hombro." />
+
+**Ejemplo.** Un brazo horizontal de 0,3 m sostiene en su punta una pieza de 2 N. El motor del hombro debe dar:
+
+**par = 2 N × 0,3 m = 0,6 N·m**
+
+(Sin contar todavía el peso del propio brazo.)
+
+### El peso propio también cuenta
+
+El brazo pesa. Un eslabón uniforme pesa **como si todo su peso estuviera en su punto medio**. Ese peso, multiplicado por la mitad de la longitud, suma par en el hombro.
+
+**Ejemplo.** Brazo horizontal de 0,25 m con 2 N en la punta y un peso propio de 1 N:
+
+**par = 2 N × 0,25 m + 1 N × 0,125 m = 0,5 + 0,125 = 0,625 N·m**
+
+### Los servos hablan en kg·cm
+
+Los **servos** indican su par en **kg·cm**: es **carga × distancia**. Un servo de **12 kg·cm** sostiene **3 kg a 4 cm** de su eje, porque 12 ÷ 4 = 3. **A más distancia, menos carga.** (Equivalencia aproximada: 1 kg·cm ≈ 0,098 N·m.)
+
+**Predice antes de mirar:** con la misma pieza en la punta, **duplicas el largo** de un brazo horizontal. ¿Qué pasa con el par que necesita el hombro?
+
+<details>
+<summary>La respuesta</summary>
+
+**Se duplica**: el par es proporcional a la distancia. (Lo que se multiplica por 8 es la **flecha** del voladizo, no el par: lo verás en la unidad «Estructuras y rigidez».)
+</details>
+
+Pruébalo con tus números. Cambia la longitud, la carga, el peso del brazo y el contrapeso, y mira si llega tu servo:
+
+<ArmTorqueLab />
+
+<Why title="¿Por qué se busca un brazo corto y ligero?">
+Porque el par suma **peso × distancia**. Menos longitud y menos masa lejos de la base significan menos par. Colocar los motores pesados **cerca de la base** hace que su peso cuente casi nada: un peso sobre el eje está a distancia casi cero. Es lo que has visto en las palancas y en los voladizos.
+</Why>
+
+<Quiz id="q1" q="Un servo da un par de 12 kg·cm. ¿Qué carga máxima puede sostener a 4 cm de su eje?" options={["48 kg", "3 kg", "16 kg"]} answer={1}>
+Los kg·cm son carga × distancia: carga = 12 ÷ 4 = **3 kg**. A más distancia, menos carga.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Vas a montar una **viga que gira en su centro** como si fuera un hombro, con una carga a un lado y un **contrapeso** en el otro. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.**
+
+<Step n={1} title="La base" img="brazo/c_s1" alt="Una viga gris de 9 agujeros tumbada en horizontal en la parte baja.">
+Pon una viga de 9 agujeros tumbada. Es el suelo de tu brazo.
+</Step>
+
+<Step n={2} title="La columna y el eje del hombro" img="brazo/c_s2" alt="Una viga azul de 7 agujeros de pie, unida a la base, con un pasador negro largo cruzando su agujero de arriba.">
+Une con un pasador, en un agujero del medio de la base, una viga de 7 agujeros de pie. Pon un **pasador largo** en el agujero de arriba: es el eje del **hombro**.
+<Why>Para que el cálculo sea limpio, el eje debe quedar **justo en el centro** de la viga que vas a colgar: así su peso propio queda repartido por igual a los dos lados y no añade par.</Why>
+</Step>
+
+<Step n={3} title="El brazo y su carga" img="brazo/c_s3" alt="Una viga amarilla de 11 agujeros cruzada por el pasador en su agujero central. A la izquierda, una viga roja pequeña cuelga a cuatro agujeros del eje con una pesa verde; la viga amarilla está inclinada con ese lado hacia abajo.">
+Pasa el pasador por el **agujero central** de la viga de 11. Cuelga un colgador de 3 agujeros **4 pasos a la izquierda** del eje y, de él, **1 pesa**. La viga se inclina: **ese es el par que tendría que sostener un motor**.
+<Warn title="Que gire libre">
+Si aprietas el pasador, la viga roza y falsea la prueba. Debe girar con un empujón suave del dedo.
+</Warn>
+</Step>
+
+<Step n={4} title="El contrapeso" img="brazo/c_s4" alt="La misma viga ahora horizontal. A la derecha del eje, a dos agujeros, cuelgan dos pesas verdes de un colgador rojo, equilibrando la pesa de la izquierda.">
+Cuelga otro colgador **2 pasos a la derecha** del eje y pon **2 pesas**. Haz la cuenta antes de soltar:
+
+- Izquierda: 1 pesa × 4 pasos = **4**
+- Derecha: 2 pesas × 2 pasos = **4**
+
+Si todo está bien, la viga se queda **horizontal**.
+
+<Fig src="brazo/c_contrapeso" alt="La viga equilibrada con una flecha naranja fina en la pesa de la izquierda y una más gruesa en las dos pesas de la derecha. Dos cotas arriba marcan 4 pasos a la izquierda del eje y 2 a la derecha." caption="Poco peso lejos (4 pasos) se equilibra con más peso cerca (2 pasos). El eje no tiene que hacer fuerza." />
+
+<details>
+<summary>Si no se equilibra</summary>
+
+Casi siempre: **a)** las pesas no pesan lo mismo, **b)** el pasador roza, **c)** has contado la distancia desde el borde en vez de desde el eje.
+</details>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Más carga:** pon 2 pesas a 2 pasos a la izquierda. ¿Cuántas pesas necesitas a 2 pasos a la derecha?
+2. **Contrapeso pegado al eje:** deja 1 pesa a 4 pasos a la izquierda y cuelga el contrapeso a **1 paso** a la derecha. ¿Cuántas pesas hacen falta? (Pista: 4 ÷ 1.)
+3. **Sin contrapeso:** quítalo. ¿Hacia dónde se inclina? Esa fuerza es la que tendría que hacer el servo del hombro. ¿Cuántas pesas a 2 pasos eliminan todo el esfuerzo?
+
+Y con el laboratorio, busca un brazo de **14 cm** con **100 g** en la punta y **100 g** de peso propio: ¿qué servo hace falta con **margen de 2**? Después prueba con un **contrapeso**.
+
+<ArmTorqueLab />
+</Block>
+
+<Block kind="errores">
+<Mistake title="Motor pesado lejos del hombro" wrongLabel="Motor en el codo" rightLabel="Motor cerca de la base">
+  <Fig slot="wrong" src="brazo/c_motor_codo" alt="El brazo horizontal con un bloque azul grande sobre el codo. Una flecha roja gruesa baja desde él y una cota roja marca ocho pasos hasta el hombro." />
+  <Fig slot="right" src="brazo/c_motor_base" alt="El mismo brazo con el bloque azul detrás de la columna, cerca del eje. Una flecha verde corta baja desde él y una cota verde marca poco más de un paso hasta el eje." />
+
+El mismo peso a **8 pasos** del hombro pesa ocho veces más que a 1 paso. Si el motor de la articulación siguiente va colgando del extremo, el hombro carga con su peso a distancia grande. Con una **correa, una cadena o varillas** puedes llevar ese motor a la base: la transmisión añade algo de complejidad y de juego, pero **reduce el par que debe aguantar el hombro**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu montaje:
+
+<Checklist items={[
+  "El eje está en el agujero central de la viga y esta gira libre",
+  "He hecho la cuenta (pesas × distancia) de los dos lados ANTES de soltar",
+  "He medido la distancia desde el eje, sin contar su agujero",
+  "Con el contrapeso, la viga se queda horizontal",
+  "Sé decir por qué el hombro es la articulación que más par necesita",
+]} />
+
+<Quiz id="q2" q="Con la misma pieza en la punta, duplicas el largo de un brazo horizontal. ¿Qué pasa con el par que necesita el hombro?" options={["Se duplica (par = fuerza × distancia)", "Se queda igual", "Se reduce a la mitad"]} answer={0}>
+El par es proporcional a la distancia: el doble de largo, el doble de par.
+</Quiz>
+
+<Quiz id="q3" q="Además de la pieza que sostiene, ¿qué más carga el motor del hombro?" options={["Nada: el brazo no pesa", "Solo el peso del motor de la muñeca", "El propio peso del brazo, que actúa aproximadamente en su punto medio"]} answer={2}>
+Un eslabón uniforme pesa como si todo su peso estuviera en el centro. Ese peso, por la distancia, suma par en el hombro. Por eso los brazos se hacen ligeros.
+</Quiz>
+
+<Quiz id="q4" q="Para que un servo pequeño mueva un brazo con más soltura, ¿qué ayuda más?" options={["Hacerlo más largo", "Hacerlo más corto y ligero, y colocar los motores pesados cerca de la base", "Poner más peso en la punta"]} answer={1}>
+Menos longitud y menos masa lejos de la base significan menos par. Es la combinación de lo que viste en palancas y en voladizos.
+</Quiz>
+
+<RegisterPiece piece="Brazo equilibrado con contrapeso" />
+</Block>

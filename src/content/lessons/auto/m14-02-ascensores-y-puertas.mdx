@@ -1,0 +1,187 @@
+---
+id: m14-02
+unit: auto
+order: 2
+title: "Ascensores y puertas: contrapeso, freno y secuencia"
+summary: "Monta un ascensor de bloques con polea y contrapeso, calcula cuánto trabaja realmente el motor y sigue paso a paso la secuencia segura de una puerta automática."
+practice: [l_ascensor]
+cover: auto/a_asc_hero
+duration: 40
+status: revisada
+prerequisites: [m14-01, m3-02]
+objectives:
+  - "Explicar para qué sirve el contrapeso y calcular la diferencia de masa que compensa el motor"
+  - "Describir la secuencia de una puerta automática: detectar, abrir, esperar y cerrar solo si es seguro"
+  - "Decir qué hace el freno de seguridad si se rompe el cable"
+  - "Montar un ascensor de piezas con polea, cabina y contrapeso"
+materials:
+  - "Cuatro vigas largas (dos de 10 agujeros y dos de 8) para el marco"
+  - "Una polea grande con eje, y una viga corta como soporte"
+  - "Cuerda fina y resistente"
+  - "Pesas iguales (piezas o monedas) para la cabina y el contrapeso"
+piece:
+  name: "Ascensor de bloques con contrapeso"
+  hint: "Foto de tu ascensor con la cuenta de pesas de cabina y contrapeso"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **ascensor de bloques**: una **cabina** que cuelga de un lado de una polea y un **contrapeso** que cuelga del otro. Sabrás **calcular cuánto tiene que trabajar el motor** y seguir paso a paso la **secuencia segura de una puerta**.
+
+<Fig src="auto/a_asc_hero" alt="Un marco de vigas grises con una polea roja grande arriba, sostenida por un soporte azul. Una cuerda pasa por la polea: a la izquierda cuelga una cabina amarilla con puerta de dos hojas oscuras; a la derecha, un contrapeso de tres bloques blancos. Dos flechas naranja hacia abajo marcan el peso de cada lado: la del contrapeso es algo más larga. Hay dos finales de carrera rojos en el marco, uno abajo y otro arriba." caption="Cabina a la izquierda, contrapeso a la derecha: es una polea fija con dos cargas colgadas. El contrapeso pesa un poco más." />
+
+<Tip title="Sabías que… el freno de Otis">
+En 1854, Elisha Otis demostró en Nueva York un **ascensor con freno de seguridad**: se subió a una plataforma y ordenó cortar el cable delante del público. El freno la sujetó.
+
+Ese tipo de frenos fue clave para que la gente se fiara de los ascensores.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Un ascensor es una polea gigante
+
+La cabina cuelga de un lado de la cuerda y el **contrapeso**, de otro. Es como el balancín: **el otro niño** del lado contrario ayuda a levantarte.
+
+El **contrapeso** equilibra **parte del peso de la cabina**, así que el motor **solo compensa la diferencia**, no todo el peso.
+
+**Predice antes de calcular.** Una cabina cargada tiene **900 kg** y el contrapeso, **1100 kg**. ¿Qué diferencia de masa debe compensar el motor?
+
+<details>
+<summary>Ver la respuesta</summary>
+
+|1100 − 900| = **200 kg**. No se **suman** (saldrían 2000 kg): se **restan**.
+</details>
+
+Pruébalo tú: mueve las masas y fíjate en cuánto cambia lo que le queda al motor.
+
+<AutoCounterweightLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Cuando cabina y contrapeso valen **lo mismo**, la diferencia es cero: el motor casi solo vence el rozamiento.
+- **Sin contrapeso**, el motor tendría que compensar la cabina entera.
+- Los kilos del laboratorio son una simplificación: la fuerza real es masa × 9,8 m/s², y hay rozamiento.
+</details>
+
+<Fig src="auto/a_asc_con" alt="El mismo ascensor sin finales de carrera. Dos flechas naranja hacia abajo, una en la cabina (más corta) y otra en el contrapeso (más larga), y a la izquierda una flechita cian muy corta hacia abajo marcando la pequeña diferencia que compensa el motor." caption="Con contrapeso, la diferencia es pequeña (flecha cian): eso es lo que añade el motor." />
+
+<Quiz id="q1" q="Un ascensor tiene una cabina cargada de 900 kg y un contrapeso de 1100 kg. ¿Qué diferencia de masa debe compensar el motor?" options={["2000 kg", "200 kg", "100 kg"]} answer={1}>
+El motor solo compensa la diferencia entre los dos lados: 1100 − 900 = **200 kg**.
+</Quiz>
+
+<Quiz id="q2" q="¿Para qué lleva contrapeso un ascensor?" options={["Para equilibrar parte del peso de la cabina y que el motor haga menos fuerza", "Para que la cabina pese más", "Para que suba sin motor"]} answer={0}>
+Cabina y contrapeso cuelgan de la misma cuerda, como en una polea. El motor solo tiene que compensar la diferencia, no todo el peso de la cabina. Sin motor no sube: el contrapeso solo reparte el peso.
+</Quiz>
+
+## El freno de seguridad
+
+Un ascensor lleva un **freno de seguridad** para el caso de que se rompa el cable. Actúa **por sí mismo** y **sujeta la cabina a las guías**: se activa mecánicamente cuando la cabina empieza a caer demasiado deprisa o se pierde la tensión del cable.
+
+<Quiz id="q3" q="¿Qué lleva un ascensor para el caso de que se rompa el cable?" options={["Nada: los cables nunca fallan", "Un motor de repuesto", "Un freno de seguridad que actúa por sí mismo y lo sujeta a las guías"]} answer={2}>
+El freno de seguridad se activa mecánicamente. Fue una de las ideas clave para que la gente se fiara de los ascensores.
+</Quiz>
+
+## La puerta automática: una secuencia
+
+**Detectar, abrir, esperar y cerrar solo cuando es seguro.** Los sensores deciden en cada momento qué debe hacer el actuador.
+
+<Fig src="auto/a_puerta" alt="Una puerta de dos hojas azules abiertas a medias en un marco gris. Arriba hay un sensor rojo con un rayo cian que baja hasta el suelo, justo donde hay una persona sencilla (cuerpo verde y cabeza blanca) en el hueco. Dos flechas naranja sobre las hojas apuntan hacia fuera: la puerta se abre otra vez." caption="Con alguien en el hueco, el sensor de obstáculo impide cerrar y manda abrir otra vez." />
+
+Sigue la secuencia tú mismo, un paso cada vez. **Marca la casilla del obstáculo** antes de cerrar y mira qué pasa:
+
+<AutoElevatorLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- La puerta **no se cierra** si el sensor de obstáculo detecta algo: vuelve a abrirse.
+- La cabina **solo se mueve con la puerta cerrada**, y se para cuando el sensor de planta dice «aquí».
+- Cada estado tiene **un sensor que decide** y **un actuador que trabaja**.
+- Es un modelo sencillo: un ascensor real tiene más comprobaciones.
+</details>
+
+<Quiz id="q4" q="En una puerta automática, ¿qué hace la puerta justo después de abrirse?" options={["El motor la cierra enseguida, haya o no alguien", "La puerta espera mientras haya alguien en la zona", "El sensor detecta a una persona que se acerca"]} answer={1}>
+Primero el sensor detecta, luego el motor abre, la puerta **espera mientras haya alguien** y solo si no hay nadie ni obstáculo, el motor la cierra.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cinco pasos. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.**
+
+<Step n={1} title="El marco" img="auto/a_asc_s1" alt="Un marco de vigas grises: dos postes verticales largos, una viga horizontal en el suelo y otra arriba.">
+Une dos vigas largas **de pie**, paralelas, con una viga horizontal **abajo** y otra **arriba**. Debe quedar un marco rígido.
+<Why>Todo el ascensor cuelga del travesaño de arriba: tiene que aguantar sin torcerse.</Why>
+</Step>
+
+<Step n={2} title="La polea" img="auto/a_asc_s2" alt="En color, un soporte azul corto cuelga del travesaño superior; de él sale un eje con una polea roja grande en el centro y un pequeño cilindro azul delante, que representa el motor. El marco queda gris.">
+Fija un **soporte corto** en el centro del travesaño de arriba y monta en él una **polea con su eje**. Si no tienes motor, déjalo: tú giras la polea con la mano o con una manivela.
+<Why>La polea es **fija**: solo cambia la dirección de la cuerda. Lo que baja de un lado sube del otro.</Why>
+</Step>
+
+<Step n={3} title="Cabina y cuerda" img="auto/a_asc_s3" alt="En color, una cabina amarilla con una puerta de dos hojas oscuras cuelga a la izquierda de la polea de una cuerda clara que sube, pasa por la polea y baja hacia la derecha, donde todavía no hay nada.">
+Haz la **cabina** (una caja ligera con un hueco para las pesas) y cuélgala de un extremo de la cuerda. Pasa la cuerda **por encima de la polea**.
+<Warn title="Que no se escape">
+Ata bien la cuerda a la cabina. Las pesas caen de golpe si el nudo se suelta: trabaja sobre la mesa, no con las manos debajo.
+</Warn>
+</Step>
+
+<Step n={4} title="El contrapeso" img="auto/a_asc_s4" alt="En color, tres bloques blancos apilados cuelgan a la derecha de la polea, atados al otro extremo de la cuerda. La cabina y la polea están en gris.">
+Cuelga del otro extremo el **contrapeso**: **3 pesas**. En la cabina, pon **2 pesas**. Antes de soltar, **predice**: ¿qué lado baja y cuántas pesas de diferencia hay?
+<details>
+<summary>Ver la predicción</summary>
+
+El lado de las **3 pesas** baja (y la cabina sube). La diferencia es **3 − 2 = 1 pesa**: eso es lo que habría que compensar con el motor o con tu mano.
+</details>
+</Step>
+
+<Step n={5} title="Finales de carrera" img="auto/a_asc_s5" alt="En color, dos pequeños interruptores rojos con una palanca plateada fijados a la columna de la izquierda del marco: uno cerca del suelo y otro cerca del travesaño de arriba. El resto del ascensor está en gris.">
+Coloca **dos finales de carrera** en el marco: uno **abajo** y otro **arriba**. Cuando la cabina llega a uno, **avisa de que debe parar**.
+<Why>Sin ellos, el motor sigue tirando contra el tope: se bloquea, consume mucho y se calienta.</Why>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Igualar:** pon **2 pesas en cada lado**. ¿Qué pasa si sueltas la cuerda? ¿Cuánta fuerza hace falta con tu mano para subir o bajar la cabina?
+2. **Sin contrapeso:** quita el contrapeso y deja 2 pesas en la cabina. ¿Cuánto cuesta ahora levantar la cabina con la mano? Compara con el reto 1.
+3. **Sube la carga:** pon 3 pesas en la cabina y 3 en el contrapeso. Añade una pesa más a la cabina: ¿qué lado baja ahora?
+
+<details>
+<summary>Qué deberías ver</summary>
+
+Con las masas **iguales** la cuerda no tiende a moverse: solo notas el rozamiento. **Sin contrapeso** tienes que sostener tú **todo** el peso de la cabina. En el reto 3, con 4 pesas en la cabina contra 3, **baja la cabina**.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Montar el ascensor sin contrapeso" wrongLabel="Sin contrapeso" rightLabel="Con contrapeso">
+  <Fig slot="wrong" src="auto/a_asc_sin" alt="El ascensor con la cabina colgada y nada colgado al otro lado de la cuerda. Una flecha naranja grande hacia abajo marca el peso de la cabina entera y una flecha cian hacia arriba, igual de larga, el esfuerzo del motor." />
+  <Fig slot="right" src="auto/a_asc_con" alt="El ascensor con contrapeso. Las flechas de peso de cabina y contrapeso son parecidas y la flecha cian de la diferencia es muy corta." />
+
+Sin contrapeso, el motor soporta **todo el peso de la cabina**. Con contrapeso solo compensa la **diferencia**. Es el mismo principio que el balancín.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu ascensor:
+
+<Checklist items={[
+  "La polea gira libre y la cuerda no roza el marco",
+  "La cuerda pasa por la polea y las dos cargas cuelgan sin tocar los postes",
+  "He contado las pesas de cabina y contrapeso ANTES de soltar",
+  "Sé calcular la diferencia que debe compensar el motor",
+  "Los finales de carrera están colocados, uno arriba y otro abajo",
+]} />
+
+<Quiz id="q5" q="La puerta de un ascensor se cierra, se vuelve a abrir y repite esto sin parar. ¿Qué comprobarías primero?" options={["Si el ascensor pesa mucho", "Si algo bloquea el borde o el sensor de obstáculo (suciedad, un objeto, un tope)", "Si la pared es de color claro"]} answer={1}>
+El sensor de obstáculo detecta algo y manda abrir de nuevo. Lo primero es ver si hay algo físicamente en el camino o el sensor está sucio. Y si no encuentras la causa, **avisa a quien se ocupa del mantenimiento**: nunca fuerces la puerta ni tapes el sensor, porque anular un sistema de seguridad puede atrapar a alguien.
+</Quiz>
+
+<RegisterPiece piece="Ascensor de bloques con contrapeso" />
+</Block>

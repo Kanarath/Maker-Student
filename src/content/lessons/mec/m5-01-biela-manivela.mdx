@@ -1,0 +1,161 @@
+---
+id: m5-01
+unit: mec
+order: 1
+title: "Tipos de movimiento y biela-manivela: de girar a ir y venir"
+summary: "Aprende los cuatro movimientos básicos y monta una biela-manivela que convierte un giro en un vaivén. Predice la carrera del pistón y compruébala con la regla."
+practice: [l_mov, l_biela]
+cover: mec/bm_hero
+duration: 40
+status: revisada
+prerequisites: [m3-01]
+objectives:
+  - "Distinguir los movimientos rotativo, lineal, alternativo y oscilante"
+  - "Calcular la carrera de un pistón con carrera = 2 × radio de la manivela"
+  - "Explicar qué son los puntos muertos y para qué sirve un volante de inercia"
+materials:
+  - "Vigas (una corta para la manivela, una larga de 8 agujeros para la biela y dos largas para la guía), pasadores, un eje y topes"
+  - "Una regla en milímetros"
+  - "Sin piezas: cartón, un encuadernador o un clip y dos reglas o lápices"
+piece:
+  name: "Biela-manivela con carrera medida"
+  hint: "Foto de tu mecanismo con la carrera medida con la regla y el radio de la manivela"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a construir tu primer **traductor de movimiento**: una **manivela** que gira y hace ir y venir una pieza (el pistón) a través de una **biela**. Antes de girar, **predecirás cuánto recorre** el pistón.
+
+<Fig src="mec/bm_hero" alt="Una viga roja corta (la manivela) gira alrededor de un eje en un soporte gris. Una viga amarilla larga (la biela) la une a un bloque verde (el pistón) que se desliza entre dos vigas grises paralelas. Una flecha naranja curva marca el giro de la manivela y una flecha cian recta marca el movimiento del pistón." caption="La manivela gira (naranja), la biela empuja y tira, y el pistón va y viene en línea recta (cian)." />
+</Block>
+
+<Block kind="concepto">
+## Cuatro movimientos básicos
+
+Casi todo en una máquina es **traducir un movimiento en otro**. Hay cuatro movimientos básicos:
+
+- **Rotativo:** da vueltas alrededor de un eje (una rueda).
+- **Lineal:** avanza recto y en un solo sentido (un tren por una vía recta).
+- **Alternativo:** va y viene en línea recta (la aguja de una máquina de coser).
+- **Oscilante:** se balancea en arco, sin dar la vuelta (un columpio, el limpiaparabrisas).
+
+<Fig src="mec/mv_cuatro" alt="Cuatro escenas. Arriba a la izquierda, una rueda azul con una viga roja y una flecha naranja curva (rotativo). Arriba a la derecha, un bloque verde sobre un carril gris con una flecha naranja larga hacia la derecha (lineal). Abajo a la izquierda, un bloque amarillo entre dos vigas grises con flechas naranja y cian en sentidos opuestos (alternativo). Abajo a la derecha, una viga roja colgando de un pasador con dos flechas curvas que salen hacia los lados (oscilante)." caption="Rotativo, lineal, alternativo y oscilante." />
+
+Un **mecanismo** es el conjunto de piezas que **transforma** un movimiento en otro. Un motor eléctrico corriente solo sabe **girar**: para que algo suba y baje, avance o se balancee, hace falta un mecanismo en medio.
+
+<Quiz id="q1" q="El brazo de un limpiaparabrisas barre el cristal yendo y viniendo en arco, sin dar la vuelta entera. ¿Qué movimiento hace?" options={["Rotativo", "Oscilante", "Alternativo"]} answer={1}>
+Se balancea en arco: **oscilante**. Si diera vueltas completas sería rotativo, y si fuera y viniera en línea recta, alternativo.
+</Quiz>
+
+## Biela-manivela: de girar a ir y venir
+
+La **manivela** gira, la **biela** empuja y tira, y el **pistón** va y viene entre las guías.
+
+**carrera = 2 × radio de la manivela**
+
+La **carrera** es la distancia total que recorre el pistón, de un extremo al otro. **Predice:** si la manivela mide 2 agujeros de radio (16 mm), ¿cuánto recorrerá el pistón de punta a punta?
+
+<Fig src="mec/bm_carrera_bien" alt="El mecanismo con la manivela roja vertical hacia arriba, el pistón verde entre las guías y, a los dos lados de su recorrido, dos pistones fantasma grises que marcan los extremos. Una flecha verde de dos puntas mide la distancia entre los extremos; una flecha cian marca el radio de la manivela." caption="Los pistones grises marcan los dos extremos. La carrera (verde) es el doble del radio de la manivela (cian)." />
+
+Pruébalo con el laboratorio:
+
+<CrankLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- La carrera es **2 × el radio**: con radio 2 agujeros (16 mm), la carrera es de 4 agujeros (**32 mm**).
+- Si **duplicas el radio**, la carrera también se duplica.
+- En los dos extremos (los **puntos muertos**) la biela y la manivela quedan **alineadas** y el empuje del pistón no produce giro.
+</details>
+
+<Why title="¿Por qué la carrera es 2 × el radio?">
+El extremo de la manivela da la vuelta a un círculo de radio r. El pistón llega a un extremo cuando la manivela apunta hacia un lado y al otro extremo cuando apunta al contrario: entre las dos posiciones hay un diámetro entero, 2 × r.
+</Why>
+
+<Quiz id="q2" q="Una manivela de 20 mm de radio mueve un pistón con una biela. ¿Qué carrera tiene el pistón?" options={["20 mm", "80 mm", "40 mm"]} answer={2}>
+Carrera = 2 × radio = 2 × 20 = **40 mm**.
+</Quiz>
+
+<Tip title="Sabías que… el mecanismo de los motores">
+Los motores de pistón de los coches y las máquinas de vapor usan una **biela-manivela**: el pistón empuja y tira, y la manivela (el cigüeñal) convierte ese vaivén en el giro que mueve las ruedas. Es el mismo dibujo, pero en grande y con fuego dentro. Casi todo es traducir giros.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="Soporte y guías" img="mec/bm_s1" alt="Una viga corta vertical a la izquierda y, saliendo de ella hacia la derecha, dos vigas largas paralelas con un hueco entre ellas.">
+Pon una viga corta **vertical** de soporte y, pegadas a ella, **dos vigas paralelas** largas con un hueco entre las dos (la **guía**) del tamaño del pistón.
+<Why>La guía obliga al pistón a moverse **en línea recta**: sin ella, la biela lo empujaría hacia arriba y hacia abajo.</Why>
+</Step>
+
+<Step n={2} title="La manivela" img="mec/bm_s2" alt="Un eje que atraviesa la viga vertical y, delante, una viga roja corta unida a él, con un agujero lejos del eje.">
+Pasa un eje por la viga de soporte con un tope y fija en él una viga **corta** (la manivela). El **radio** es la distancia del eje al agujero donde irá la biela.
+
+**Anótalo:** cuenta los saltos de agujero (cada uno son 8 mm). ¿Cuánto vale tu radio?
+</Step>
+
+<Step n={3} title="El pistón en la guía" img="mec/bm_s3" alt="Un bloque verde situado en el hueco entre las dos vigas paralelas de la guía.">
+Coloca la pieza que hará de **pistón** (un bloque o una viga) dentro de la guía. Comprueba que **se desliza** sin atascarse.
+</Step>
+
+<Step n={4} title="La biela" img="mec/bm_s4" alt="Una viga amarilla larga que une el agujero de la punta de la manivela roja con el pistón verde, con un pasador negro en cada extremo.">
+Une con un pasador la viga **larga** (biela) al agujero de la punta de la manivela y, con otro, al pistón. Gira la manivela con la mano.
+
+**Predice** antes de girar: ¿qué distancia recorrerá el pistón de un extremo al otro?
+
+<details>
+<summary>Respuesta</summary>
+
+**2 × el radio.** Marca los dos extremos del recorrido y mídelos con la regla. Si tu radio son 2 agujeros (16 mm), la carrera es de unos **32 mm**.
+</details>
+
+<Warn title="Dedos en las uniones">
+Las uniones que se mueven pellizcan. Gira despacio y con los dedos lejos de los pasadores.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Esta es la misión de la unidad: **convierte un giro en un vaivén** y compara tu medida con la predicción.
+
+1. **Predice y mide.** Gira la manivela, marca los extremos del recorrido del pistón y mide la carrera. ¿Coincide con 2 × el radio? Si no, ¿qué la cambia: el juego en las uniones, una guía floja, medir mal?
+2. **Cambia el radio.** Pon el pasador de la biela en otro agujero de la manivela (más lejos del eje). **Predice** la nueva carrera y repite la medida.
+3. **Si no tienes piezas:** recorta un disco de cartón (la manivela), marca un punto cerca del borde y une con un encuadernador una tira de cartón (la biela). Haz que el otro extremo de la tira se mueva entre dos reglas o lápices paralelos y mide la distancia entre las marcas. Compárala con 2 × la distancia del punto al centro; luego acércalo al centro y repite.
+
+<details>
+<summary>¿Qué debería pasar?</summary>
+
+La carrera medida debería ser casi **2 × el radio**; con holguras en las uniones saldrá algo mayor. Si duplicas el radio, la carrera también se duplica.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Confundir la carrera con el radio" wrongLabel="Solo medio recorrido" rightLabel="De un extremo al otro">
+  <Fig slot="wrong" src="mec/bm_carrera_mal" alt="El mecanismo con dos pistones fantasma que marcan los extremos y una flecha roja que cubre solo la mitad de la distancia entre ellos, desde el pistón de la izquierda." />
+  <Fig slot="right" src="mec/bm_carrera_bien" alt="El mismo mecanismo con una flecha verde de dos puntas que cubre toda la distancia entre los dos pistones fantasma." />
+
+La **carrera** es el recorrido **entero** del pistón, de un extremo al otro: **2 × el radio**. El radio, medido del eje a la punta de la manivela, es solo la mitad.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "La guía es recta y el pistón se desliza sin atascarse",
+  "He anotado el radio de la manivela y he predicho la carrera con 2 × radio",
+  "He medido la carrera real marcando los dos extremos",
+  "He probado con otro radio y la carrera ha cambiado como esperaba",
+  "Sé nombrar los cuatro movimientos básicos con un ejemplo cada uno",
+]} />
+
+<Quiz id="q3" q="En los dos extremos del recorrido (los puntos muertos) el pistón no puede hacer girar la manivela. ¿Qué ayuda a pasarlos?" options={["Un volante de inercia: una rueda pesada que sigue girando por inercia", "Que la biela sea más corta", "Frenar un poco la manivela"]} answer={0}>
+En un punto muerto la biela y la manivela están alineadas y el empuje no produce giro. El **volante** almacena movimiento y «tira» de la manivela para pasar ese punto.
+</Quiz>
+
+<RegisterPiece piece="Biela-manivela con carrera medida" />
+</Block>

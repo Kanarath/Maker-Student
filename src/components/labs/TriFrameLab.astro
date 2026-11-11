@@ -1,0 +1,134 @@
+---
+// Laboratorio del marco triangulado: empuja un marco de 4 × 3 agujeros con y sin diagonal.
+// Sin diagonal los lados no cambian de longitud, pero los ángulos sí (se «tumba»).
+// Con diagonal haría falta estirar o acortar un lado, y eso no es posible: el marco no se mueve.
+// Cálculo: con la base fija y los lados verticales girados un ángulo θ, la diagonal que antes medía 5 mediría √(25 + 24·sen θ).
+---
+
+<div class="lab" data-triframe>
+  <div class="head"><b>Laboratorio · El marco que se tumba</b><span class="muted">Empuja y mira qué cambia</span></div>
+
+  <svg viewBox="0 0 800 340" role="img" aria-label="Marco de cuatro barras con pines en las esquinas; se puede inclinar con el deslizador y añadir una diagonal">
+    <rect x="0" y="0" width="800" height="340" fill="#05060a" />
+    <rect x="150" y="296" width="500" height="10" rx="3" fill="#232739" />
+    <g data-ghost></g>
+    <g data-bars></g>
+    <g data-pins></g>
+    <g data-label></g>
+  </svg>
+
+  <div class="ctrl">
+    <label>Empuje hacia la derecha: <b data-ang-v>0</b>°
+      <input type="range" min="0" max="40" value="0" data-ang aria-describedby="triframe-out" />
+    </label>
+    <label class="chk"><input type="checkbox" data-diag /> Añadir diagonal (un pin en cada extremo)</label>
+  </div>
+
+  <p class="out" id="triframe-out" aria-live="polite" data-out></p>
+  <p class="ride muted" data-note></p>
+</div>
+
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+  const PX = 62; // píxeles por agujero (un paso = 8 mm)
+  const W = 4, H = 3;
+  const X0 = 270, Y0 = 296; // esquina inferior izquierda
+
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-triframe]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const gBars = q<SVGGElement>("[data-bars]");
+    const gPins = q<SVGGElement>("[data-pins]");
+    const gGhost = q<SVGGElement>("[data-ghost]");
+    const gLabel = q<SVGGElement>("[data-label]");
+    const ang = q<HTMLInputElement>("[data-ang]");
+    const diag = q<HTMLInputElement>("[data-diag]");
+    const out = q<HTMLElement>("[data-out]");
+    const note = q<HTMLElement>("[data-note]");
+
+    const P = (x: number, z: number): [number, number] => [X0 + x * PX, Y0 - z * PX];
+
+    function bar(a: [number, number], b: [number, number], color: string, w = 20) {
+      return mk("line", { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: color, "stroke-width": w, "stroke-linecap": "round" });
+    }
+
+    function draw(deg: number) {
+      const t = (deg * Math.PI) / 180;
+      const s = Math.sin(t), c = Math.cos(t);
+      const A = P(0, 0), B = P(W, 0), C = P(W + H * s, H * c), D = P(H * s, H * c);
+      gBars.replaceChildren(
+        bar(A, B, "#9aa3b5"), bar(D, C, "#9aa3b5"), bar(B, C, "#2f7fe0"), bar(A, D, "#2f7fe0"),
+      );
+      if (diag.checked) gBars.append(bar(A, C, "#d8382f", 14));
+      gPins.replaceChildren();
+      for (const p of [A, B, C, D]) {
+        gPins.append(mk("circle", { cx: p[0], cy: p[1], r: 9, fill: "#2a2c35", stroke: "#0b0d12", "stroke-width": 2 }));
+      }
+      // contorno del marco original (fantasma)
+      gGhost.replaceChildren();
+      if (deg > 0) {
+        const r = P(W, H), l = P(0, H);
+        const path = mk("path", { d: `M${A[0]},${A[1]} L${B[0]},${B[1]} L${r[0]},${r[1]} L${l[0]},${l[1]} Z`, fill: "none", stroke: "#555a68", "stroke-width": 2, "stroke-dasharray": "6 6" });
+        gGhost.append(path);
+      }
+      // ángulo de la esquina de abajo a la izquierda
+      const inner = 90 - deg;
+      gLabel.replaceChildren();
+      const tx = mk("text", { x: A[0] + 26, y: A[1] - 12, fill: "#f2b230", "font-size": 18, "font-family": "monospace" });
+      tx.textContent = `${inner}°`;
+      gLabel.append(tx);
+    }
+
+    function report() {
+      const deg = +ang.value;
+      q("[data-ang-v]").textContent = String(deg);
+      const t = (deg * Math.PI) / 180;
+      const dNeed = Math.sqrt(25 + 24 * Math.sin(t));
+      if (diag.checked) {
+        if (deg > 0) {
+          out.innerHTML = `Para inclinar el marco la diagonal tendría que medir <b>${dNeed.toFixed(2)}</b> en vez de <b>5</b>. Una barra no se estira: <b>el marco no se mueve</b>.`;
+          out.classList.add("ok");
+          draw(0);
+          ang.value = "0";
+          q("[data-ang-v]").textContent = "0";
+        } else {
+          out.innerHTML = "Con la diagonal, el marco son <b>dos triángulos</b> (3-4-5). Intenta empujarlo con el deslizador.";
+          out.classList.remove("ok");
+          draw(0);
+        }
+        note.textContent = "Cada triángulo tiene tres lados fijos: solo existe una forma posible.";
+      } else {
+        draw(deg);
+        out.classList.remove("ok");
+        out.innerHTML = deg === 0
+          ? "Marco sin diagonal: los cuatro lados miden 4, 3, 4 y 3 agujeros. Empuja la parte de arriba."
+          : `Los lados siguen midiendo <b>4 y 3</b>, pero los ángulos han cambiado: <b>${90 - deg}°</b> y <b>${90 + deg}°</b>. El cuadrilátero se ha «tumbado».`;
+        note.textContent = "Con las esquinas articuladas, las barras giran en los pines y el marco cede.";
+      }
+    }
+
+    ang.addEventListener("input", report);
+    diag.addEventListener("change", () => { ang.value = "0"; report(); });
+    report();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; gap: 10px; padding: 12px 14px; }
+  label { display: block; font-size: .95rem; }
+  .chk { display: flex; gap: 10px; align-items: center; min-height: 44px; }
+  .chk input { width: 22px; height: 22px; accent-color: var(--accent); }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .out.ok { background: #4ade8014; border-top-color: #4ade80; }
+  .ride { margin: 0; padding: 0 14px 12px; font-size: .92rem; }
+</style>

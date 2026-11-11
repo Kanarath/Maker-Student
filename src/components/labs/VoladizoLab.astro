@@ -1,0 +1,116 @@
+---
+// Laboratorio del voladizo: un brazo sujeto por un extremo con pesas en la punta.
+//   momento en la base = pesas × distancia (la regla de la palanca)
+//   flecha (cuánto baja la punta) ∝ pesas × largo³   (viga en voladizo con la carga en la punta, material y sección fijos)
+// La flecha se da RELATIVA a la de referencia (1 pesa a 4 agujeros = 1). El dibujo está exagerado y se recorta si se sale.
+---
+
+<div class="lab" data-voladizo>
+  <div class="head"><b>Laboratorio · El voladizo</b><span class="muted">Alarga el brazo y mira cuánto baja la punta</span></div>
+
+  <svg viewBox="0 0 800 340" role="img" aria-label="Brazo horizontal sujeto a una pared por la izquierda, con pesas colgadas de la punta; se curva hacia abajo">
+    <rect x="0" y="0" width="800" height="340" fill="#05060a" />
+    <rect x="60" y="40" width="40" height="260" rx="4" fill="#2a2c35" />
+    <line x1="100" y1="110" x2="780" y2="110" stroke="#555a68" stroke-width="2" stroke-dasharray="6 6" />
+    <path data-beam d="" fill="none" stroke="#f2b230" stroke-width="22" stroke-linecap="round" />
+    <g data-load></g>
+    <g data-dim></g>
+    <text x="68" y="326" fill="#a3a1b4" font-size="14" font-family="monospace">pared</text>
+  </svg>
+
+  <div class="ctrl">
+    <label>Largo del brazo: <b data-l-v>4</b> agujeros
+      <input type="range" min="1" max="8" value="4" data-l />
+    </label>
+    <label>Pesas en la punta: <b data-p-v>1</b>
+      <input type="range" min="1" max="5" value="1" data-p />
+    </label>
+    <button class="btn" type="button" data-double>Duplicar el largo</button>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <p class="ride muted" data-note></p>
+</div>
+
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+  const X0 = 100, Y0 = 110, PX = 78; // 78 px por agujero
+  const REF = 4 ** 3; // flecha de referencia: 1 pesa a 4 agujeros → 1
+
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-voladizo]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const L = q<HTMLInputElement>("[data-l]");
+    const Pw = q<HTMLInputElement>("[data-p]");
+    const beam = q<SVGPathElement>("[data-beam]");
+    const load = q<SVGGElement>("[data-load]");
+    const dim = q<SVGGElement>("[data-dim]");
+    const out = q<HTMLElement>("[data-out]");
+    const note = q<HTMLElement>("[data-note]");
+
+    function update() {
+      const l = +L.value, p = +Pw.value;
+      q("[data-l-v]").textContent = String(l);
+      q("[data-p-v]").textContent = String(p);
+      const moment = p * l;
+      const rel = (p * l ** 3) / REF; // flecha relativa a la de referencia
+      const raw = 10 * rel; // px de la punta si no se recorta
+      const delta = Math.min(raw, 170);
+      const clipped = raw > 170;
+      const len = l * PX;
+      // forma exacta de una viga en voladizo con carga en la punta: y(x) = δ·(3Lx² − x³)/(2L³)
+      let d = "";
+      for (let i = 0; i <= 40; i++) {
+        const x = (len * i) / 40;
+        const y = (delta * (3 * len * x * x - x ** 3)) / (2 * len ** 3);
+        d += (i ? "L" : "M") + (X0 + x).toFixed(1) + "," + (Y0 + y).toFixed(1);
+      }
+      beam.setAttribute("d", d);
+      load.replaceChildren();
+      const tx = X0 + len, ty = Y0 + delta;
+      load.append(mk("line", { x1: tx, y1: ty + 10, x2: tx, y2: ty + 34, stroke: "#d5d9e2", "stroke-width": 3 }));
+      for (let k = 0; k < p; k++) {
+        load.append(mk("rect", { x: tx - 20, y: ty + 34 + k * 24, width: 40, height: 21, rx: 3, fill: "#37b26c", stroke: "#0b0d12", "stroke-width": 2 }));
+      }
+      dim.replaceChildren();
+      if (delta > 6) {
+        dim.append(mk("line", { x1: tx + 36, y1: Y0, x2: tx + 36, y2: ty, stroke: "#ff8a1f", "stroke-width": 3 }));
+        dim.append(mk("path", { d: `M${tx + 30},${ty - 8} L${tx + 36},${ty} L${tx + 42},${ty - 8}`, fill: "none", stroke: "#ff8a1f", "stroke-width": 3 }));
+      }
+      out.innerHTML = `Momento en la base: <b>${p} × ${l} = ${moment}</b> (pesas × agujeros) &nbsp;·&nbsp; Flecha: <b>× ${fmt(rel)}</b> la de referencia`;
+      let extra = `La referencia es 1 pesa con el brazo a 4 agujeros. La flecha crece con <b>pesas × largo³</b>: ${p} × ${l}³ = ${p * l ** 3} (frente a 1 × 4³ = 64).`;
+      if (l % 2 === 0 && l / 2 >= 1) extra += ` Con la mitad del largo (${l / 2}) bajaría <b>8 veces menos</b>.`;
+      note.innerHTML = extra + (clipped ? " <i>El dibujo está recortado: en la realidad bajaría aún más.</i>" : "");
+    }
+
+    function fmt(n: number) {
+      return Number.isInteger(n) ? String(n) : n.toLocaleString("es-ES", { maximumFractionDigits: 2 });
+    }
+
+    q("[data-double]").addEventListener("click", () => {
+      L.value = String(Math.min(8, +L.value * 2));
+      update();
+    });
+    L.addEventListener("input", update);
+    Pw.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; gap: 10px; padding: 12px 14px; }
+  label { display: block; font-size: .95rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .ctrl .btn { justify-self: start; min-height: 44px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .ride { margin: 0; padding: 0 14px 12px; font-size: .92rem; }
+</style>

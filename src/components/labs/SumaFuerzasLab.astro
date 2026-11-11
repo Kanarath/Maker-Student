@@ -1,0 +1,142 @@
+---
+// Laboratorio de fuerzas que se suman: tira de una caja desde los dos lados y mira la resultante.
+// Fuerzas en la misma línea: mismo sentido se suman, sentidos opuestos se restan. Resultante R = derecha − izquierda.
+// Con la masa se ve la inercia (caso ideal, SIN rozamiento): aceleración a = R / m.
+---
+
+<div class="lab" data-suma>
+  <div class="head"><b>Laboratorio · Fuerzas que se suman</b><span class="muted">Tira de los dos lados y cambia la masa</span></div>
+
+  <svg viewBox="0 0 800 270" role="img" aria-label="Una caja con una flecha de tirón a cada lado y debajo la flecha de la resultante">
+    <rect x="0" y="0" width="800" height="270" fill="#05060a" />
+    <line x1="0" y1="206" x2="800" y2="206" stroke="#3a3f52" stroke-width="3" />
+    <g data-ticks stroke="#3a3f52" stroke-width="2"></g>
+    <g data-world>
+      <rect data-box x="340" y="116" width="120" height="90" rx="6" fill="#e9edf5" stroke="#0b0d12" stroke-width="3" />
+      <text data-boxlabel x="400" y="168" text-anchor="middle" fill="#0b0d12" font-size="20" font-family="monospace" font-weight="700">10 kg</text>
+      <g data-arrows>
+        <line data-al x1="340" y1="150" x2="340" y2="150" stroke="#ff8a1f" stroke-width="9" stroke-linecap="round" />
+        <polygon data-alh fill="#ff8a1f" points="0,0 0,0 0,0" />
+        <line data-ar x1="460" y1="150" x2="460" y2="150" stroke="#2de0f2" stroke-width="9" stroke-linecap="round" />
+        <polygon data-arh fill="#2de0f2" points="0,0 0,0 0,0" />
+        <line data-res x1="400" y1="240" x2="400" y2="240" stroke="#4ade80" stroke-width="10" stroke-linecap="round" />
+        <polygon data-resh fill="#4ade80" points="0,0 0,0 0,0" />
+      </g>
+    </g>
+    <text x="14" y="24" fill="#ff8a1f" font-size="15" font-family="monospace">naranja: tirón izquierdo</text>
+    <text x="14" y="44" fill="#2de0f2" font-size="15" font-family="monospace">cian: tirón derecho</text>
+    <text x="14" y="64" fill="#4ade80" font-size="15" font-family="monospace">verde: resultante</text>
+  </svg>
+
+  <div class="ctrl">
+    <label>Tirón a la izquierda: <b data-lv>40</b> N<input type="range" min="0" max="100" step="5" value="40" data-l /></label>
+    <label>Tirón a la derecha: <b data-rv>25</b> N<input type="range" min="0" max="100" step="5" value="25" data-r /></label>
+    <label>Masa de la caja: <b data-mv>10</b> kg<input type="range" min="1" max="50" step="1" value="10" data-m /></label>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <div class="row">
+    <button class="btn" type="button" data-go>Soltar y mirar 2 segundos</button>
+    <button class="btn" type="button" data-back>Volver a empezar</button>
+  </div>
+  <p class="note muted">Es el caso ideal: sin rozamiento. Con la misma resultante, más masa significa menos cambio de movimiento (más inercia).</p>
+</div>
+
+<script>
+  const fmt = (n: number, d = 2) => n.toLocaleString("es-ES", { maximumFractionDigits: d });
+  const PXN = 3; // píxeles por newton
+  const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-suma]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const L = q<HTMLInputElement>("[data-l]"), R = q<HTMLInputElement>("[data-r]"), Mm = q<HTMLInputElement>("[data-m]");
+    const out = q<HTMLElement>("[data-out]");
+    const world = q<SVGGElement>("[data-world]");
+    const box = q<SVGRectElement>("[data-box]");
+    const label = q<SVGTextElement>("[data-boxlabel]");
+    const al = q<SVGLineElement>("[data-al]"), alh = q<SVGPolygonElement>("[data-alh]");
+    const ar = q<SVGLineElement>("[data-ar]"), arh = q<SVGPolygonElement>("[data-arh]");
+    const res = q<SVGLineElement>("[data-res]"), resh = q<SVGPolygonElement>("[data-resh]");
+    const ticks = q<SVGGElement>("[data-ticks]");
+    let raf = 0;
+
+    for (let x = -800; x <= 1600; x += 50) {
+      const t = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      t.setAttribute("x1", String(x)); t.setAttribute("x2", String(x)); t.setAttribute("y1", "206"); t.setAttribute("y2", "218");
+      ticks.append(t);
+    }
+
+    function arrow(line: SVGLineElement, head: SVGPolygonElement, x0: number, y: number, len: number) {
+      // len > 0 hacia la derecha, < 0 hacia la izquierda
+      const x1 = x0 + len;
+      line.setAttribute("x1", String(x0)); line.setAttribute("y1", String(y));
+      line.setAttribute("x2", String(len === 0 ? x0 : x1 - Math.sign(len) * 12)); line.setAttribute("y2", String(y));
+      const s = Math.sign(len);
+      head.setAttribute("points", len === 0 ? "0,0 0,0 0,0" : `${x1},${y} ${x1 - s * 22},${y - 13} ${x1 - s * 22},${y + 13}`);
+    }
+
+    function calc() {
+      const l = +L.value, r = +R.value, m = +Mm.value;
+      const rr = r - l;
+      return { l, r, m, rr, a: rr / m };
+    }
+
+    function draw() {
+      const { l, r, m, rr, a } = calc();
+      q("[data-lv]").textContent = String(l); q("[data-rv]").textContent = String(r); q("[data-mv]").textContent = String(m);
+      label.textContent = `${m} kg`;
+      arrow(al, alh, 340, 150, -l * PXN);
+      arrow(ar, arh, 460, 150, r * PXN);
+      arrow(res, resh, 400, 240, rr * PXN);
+      let txt = `Izquierda ${l} N · Derecha ${r} N → `;
+      if (rr === 0) txt += l === 0 ? "no hay fuerzas." : `<b>resultante 0 N: equilibrio.</b> Hay fuerzas, pero se cancelan.`;
+      else {
+        txt += `se restan: |${r} − ${l}| = <b>${Math.abs(rr)} N hacia la ${rr > 0 ? "derecha" : "izquierda"}</b>.`;
+        txt += `<br>Caso ideal: a = ${Math.abs(rr)} ÷ ${m} = <b>${fmt(Math.abs(a))} m/s²</b>.`;
+      }
+      out.innerHTML = txt;
+      out.classList.toggle("ok", rr === 0 && l > 0);
+    }
+
+    function reset() {
+      cancelAnimationFrame(raf);
+      world.setAttribute("transform", "translate(0 0)");
+    }
+
+    function go() {
+      reset();
+      const { a } = calc();
+      // 2 s de movimiento ideal: x = ½ a t² (metros) → 60 px por metro, limitado al ancho de la escena
+      const target = Math.max(-260, Math.min(260, 0.5 * a * 4 * 60));
+      if (reduce()) { world.setAttribute("transform", `translate(${target} 0)`); return; }
+      const t0 = performance.now();
+      const step = (now: number) => {
+        const t = Math.min((now - t0) / 2000, 1);
+        const x = target * t * t;
+        world.setAttribute("transform", `translate(${x} 0)`);
+        if (t < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    }
+
+    for (const i of [L, R, Mm]) i.addEventListener("input", () => { reset(); draw(); });
+    q("[data-go]").addEventListener("click", go);
+    q("[data-back]").addEventListener("click", reset);
+    draw();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 12px 14px; }
+  label { display: block; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .out.ok { background: #4ade8014; border-top-color: #4ade80; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; padding: 0 14px 12px; }
+  .note { margin: 0; padding: 0 14px 12px; font-size: .88rem; }
+  @media (max-width: 640px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

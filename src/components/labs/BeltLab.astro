@@ -1,0 +1,151 @@
+---
+// Laboratorio de correas: relación = diámetro de la conducida ÷ diámetro de la motriz.
+// Correa abierta: misma dirección de giro. Correa cruzada: sentido contrario. Sin deslizamiento (ideal).
+---
+
+<div class="lab" data-belt>
+  <div class="head"><b>Laboratorio · Correas</b><span class="muted">Cambia los diámetros y cruza la correa</span></div>
+  <svg viewBox="0 0 800 340" role="img" aria-label="Dos poleas unidas por una correa: la motriz a la izquierda y la conducida a la derecha">
+    <rect width="800" height="340" fill="#05060a" />
+    <path data-belt fill="none" stroke="#f4eedd" stroke-width="4" stroke-linejoin="round" />
+    <g data-p1><circle data-c1 fill="#2f7fe0" stroke="#0b0d12" stroke-width="2" /><line data-m1 stroke="#0b0d12" stroke-width="5" stroke-linecap="round" /><circle data-h1 r="6" fill="#0b0d12" /></g>
+    <g data-p2><circle data-c2 fill="#f2b230" stroke="#0b0d12" stroke-width="2" /><line data-m2 stroke="#0b0d12" stroke-width="5" stroke-linecap="round" /><circle data-h2 r="6" fill="#0b0d12" /></g>
+    <text data-t1 text-anchor="middle" fill="#9aa3b5" font-size="15" font-family="monospace"></text>
+    <text data-t2 text-anchor="middle" fill="#9aa3b5" font-size="15" font-family="monospace"></text>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Diámetro de la motriz: <b data-d1-v>2</b> cm</legend>
+      <input type="range" min="1" max="10" step="1" value="2" data-d1 aria-label="Diámetro de la polea motriz en centímetros" />
+    </fieldset>
+    <fieldset>
+      <legend>Diámetro de la conducida: <b data-d2-v>6</b> cm</legend>
+      <input type="range" min="1" max="10" step="1" value="6" data-d2 aria-label="Diámetro de la polea conducida en centímetros" />
+    </fieldset>
+    <fieldset>
+      <legend>Correa</legend>
+      <div class="opts"><button type="button" class="opt" data-cross="0" aria-pressed="true">Abierta</button><button type="button" class="opt" data-cross="1" aria-pressed="false">Cruzada (en 8)</button></div>
+    </fieldset>
+    <fieldset>
+      <legend>Movimiento</legend>
+      <div class="opts"><button type="button" class="opt" data-play aria-pressed="true">Pausa</button></div>
+    </fieldset>
+  </div>
+  <p class="out" aria-live="polite" data-info></p>
+</div>
+
+<script>
+  const fmt = (n: number) => n.toLocaleString("es-ES", { maximumFractionDigits: 2 });
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-belt]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const d1 = q<HTMLInputElement>("[data-d1]");
+    const d2 = q<HTMLInputElement>("[data-d2]");
+    const beltEl = q<SVGPathElement>("[data-belt]");
+    const info = q<HTMLElement>("[data-info]");
+    const playBtn = q<HTMLButtonElement>("[data-play]");
+    const C1 = { x: 190, y: 170 }, C2 = { x: 580, y: 170 };
+    const K = 13; // píxeles por cm de radio (D/2·K·2 → D·K/…)
+    let crossed = false;
+    let ang = 0;
+    let playing = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let r1 = 13, r2 = 39, ratio = 3;
+
+    function arcPts(c: { x: number; y: number }, r: number, a0: number, a1: number) {
+      const out: string[] = [];
+      for (let i = 0; i <= 36; i++) {
+        const a = a0 + ((a1 - a0) * i) / 36;
+        out.push(`${(c.x + r * Math.cos(a)).toFixed(1)},${(c.y - r * Math.sin(a)).toFixed(1)}`);
+      }
+      return out;
+    }
+
+    function layout() {
+      const D1 = +d1.value, D2 = +d2.value;
+      q("[data-d1-v]").textContent = String(D1);
+      q("[data-d2-v]").textContent = String(D2);
+      r1 = (D1 * K) / 2 + 6;
+      r2 = (D2 * K) / 2 + 6;
+      ratio = D2 / D1;
+      const d = C2.x - C1.x;
+      let pts: string[];
+      // el eje y de pantalla crece hacia abajo: usamos -sin para dibujar con el ángulo matemático
+      if (!crossed) {
+        const b = Math.acos((r2 - r1) / d);
+        pts = [...arcPts(C2, r2, -b, b), ...arcPts(C1, r1, b, 2 * Math.PI - b)];
+      } else {
+        const g = Math.acos((r1 + r2) / d);
+        pts = [...arcPts(C2, r2, Math.PI + g, 3 * Math.PI - g), ...arcPts(C1, r1, 2 * Math.PI - g, g)];
+      }
+      beltEl.setAttribute("d", "M" + pts.join(" L") + " Z");
+      for (const [i, c, r] of [[1, C1, r1], [2, C2, r2]] as const) {
+        const ce = q<SVGCircleElement>(`[data-c${i}]`);
+        ce.setAttribute("cx", String(c.x)); ce.setAttribute("cy", String(c.y)); ce.setAttribute("r", String(r - 4));
+        const he = q<SVGCircleElement>(`[data-h${i}]`);
+        he.setAttribute("cx", String(c.x)); he.setAttribute("cy", String(c.y));
+        const t = q<SVGTextElement>(`[data-t${i}]`);
+        t.setAttribute("x", String(c.x)); t.setAttribute("y", String(c.y + r + 24));
+        t.textContent = i === 1 ? `motriz ${D1} cm` : `conducida ${D2} cm`;
+      }
+      const s1 = 1, s2 = crossed ? 1 : -1; // la conducida gira en el mismo sentido (abierta) o contrario (cruzada)
+      info.innerHTML = `Relación = ${D2} ÷ ${D1} = <b>${fmt(ratio)} : 1</b>. Por cada vuelta de la motriz, la conducida da <b>${fmt(1 / ratio)}</b> vueltas. ` +
+        (ratio > 1 ? "Gira más despacio y empuja con más fuerza (reducción)." : ratio < 1 ? "Gira más deprisa y con menos fuerza (multiplicación)." : "Giran igual de rápido.") +
+        ` Correa ${crossed ? "cruzada: la conducida gira en <b>sentido contrario</b>" : "abierta: las dos giran en el <b>mismo sentido</b>"}. Esto es lo ideal: si la correa patina, la relación real es menor.`;
+      void s1; void s2;
+      draw();
+    }
+
+    function draw() {
+      const sgn2 = crossed ? -1 : 1;
+      const a1 = ang, a2 = (sgn2 * ang) / ratio;
+      for (const [i, c, r, a] of [[1, C1, r1, a1], [2, C2, r2, a2]] as const) {
+        const m = q<SVGLineElement>(`[data-m${i}]`);
+        const rr = r - 14;
+        m.setAttribute("x1", String(c.x)); m.setAttribute("y1", String(c.y));
+        m.setAttribute("x2", String(c.x + rr * Math.cos(a))); m.setAttribute("y2", String(c.y + rr * Math.sin(a)));
+      }
+    }
+
+    let last = performance.now();
+    function tick(now: number) {
+      const dt = (now - last) / 1000; last = now;
+      if (playing) { ang += dt * 1.6; draw(); }
+      requestAnimationFrame(tick);
+    }
+
+    d1.addEventListener("input", layout);
+    d2.addEventListener("input", layout);
+    root.querySelectorAll<HTMLButtonElement>("[data-cross]").forEach((b) =>
+      b.addEventListener("click", () => {
+        crossed = b.dataset.cross === "1";
+        root.querySelectorAll("[data-cross]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        layout();
+      }));
+    playBtn.textContent = playing ? "Pausa" : "Girar";
+    playBtn.setAttribute("aria-pressed", String(playing));
+    playBtn.addEventListener("click", () => {
+      playing = !playing;
+      playBtn.textContent = playing ? "Pausa" : "Girar";
+      playBtn.setAttribute("aria-pressed", String(playing));
+    });
+    layout();
+    requestAnimationFrame(tick);
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  .opts { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .opt { min-width: 52px; padding: 10px 12px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 4px; font: 600 .95rem var(--font-mono); cursor: pointer; }
+  .opt[aria-pressed="true"] { background: var(--accent); color: #0b0d12; border-color: var(--accent); }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 8px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

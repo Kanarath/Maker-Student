@@ -1,0 +1,160 @@
+---
+id: m13-01
+unit: cinem
+order: 1
+title: "Ángulos y posición: dónde llega la punta"
+summary: "Monta un brazo plano de dos eslabones, predice dónde queda la punta con el codo en ángulo recto (coordenadas y Pitágoras) y descubre qué puntos puede alcanzar."
+practice: [l_cin_pos]
+cover: cinem/c_p_hero
+duration: 40
+status: revisada
+prerequisites: []
+objectives:
+  - "Distinguir cinemática directa (ángulos → posición) e inversa (posición → ángulos)"
+  - "Dar las coordenadas (x, y) de la punta de un brazo con el codo en ángulo recto"
+  - "Calcular con Pitágoras la distancia en línea recta de la base a la punta"
+  - "Explicar por qué un punto puede tener dos soluciones o ninguna"
+materials:
+  - "Dos tiras rígidas de cartón o plástico (una de 12 cm y otra de 8 cm) con un agujero en cada extremo"
+  - "Dos sujetadores (broches o tornillos con tuerca) como articulaciones, un transportador y una regla"
+  - "Una hoja de papel cuadriculado o milimetrado"
+piece:
+  name: "Brazo plano de dos eslabones con la posición de la punta medida"
+  hint: "Foto del brazo con el codo en ángulo recto sobre papel cuadriculado, con las coordenadas de la punta medidas"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **brazo plano de dos eslabones** sobre papel cuadriculado: una base, un primer eslabón, un codo y un segundo eslabón. Antes de medir, **predecirás dónde queda la punta**.
+
+<Fig src="cinem/c_p_hero" alt="Un brazo de dos eslabones visto de frente: un eslabón amarillo largo sale de un pivote en una base gris hacia arriba a la derecha y un eslabón azul más corto sale del codo con otra inclinación, terminando en una punta verde. Arcos cian y naranja marcan el ángulo del hombro y el del codo, con líneas de referencia a trazos." caption="Dos ángulos (cian en el hombro, naranja en el codo) deciden dónde queda la punta verde. Las proporciones de los eslabones son 3 : 2, como 12 cm y 8 cm." />
+</Block>
+
+<Block kind="concepto">
+## Ángulos ↔ posición
+
+Un brazo tiene articulaciones con **ángulos**, y la punta tiene una **posición**. Hay dos preguntas, una la inversa de la otra:
+
+- **Cinemática directa:** conozco los **ángulos**, calculo **dónde llega** la punta. (Ángulos → posición)
+- **Cinemática inversa:** conozco el **punto**, calculo **qué ángulos** necesito. (Posición → ángulos)
+
+### Con el codo en ángulo recto
+
+Cuando el codo forma un ángulo recto, la posición de la punta se lee casi sin cuentas: los dos eslabones son los **lados** de un ángulo recto. Y la distancia en diagonal desde la base se calcula con **Pitágoras**: **√(a² + b²)**.
+
+**Predice:** el primer eslabón mide **12 cm** y va en horizontal hacia la derecha; el segundo mide **8 cm** y va en vertical hacia arriba. ¿Cuáles son las coordenadas (x, y) de la punta desde la base? ¿Y a qué distancia en línea recta queda?
+
+<details>
+<summary>Respuesta</summary>
+
+Las coordenadas son **(12, 8) cm**: 12 a la derecha y 8 hacia arriba. La distancia en línea recta es √(12² + 8²) = √208 ≈ **14,4 cm**. (No es 12 + 8 = 20: va **en diagonal**.)
+</details>
+
+<Fig src="cinem/c_p_pit" alt="Brazo con el eslabón amarillo horizontal de 6 agujeros y el azul vertical de 8 agujeros unidos en ángulo recto. Una flecha verde diagonal va de la base a la punta." caption="Lados 6 y 8: la diagonal mide 10, porque 6² + 8² = 36 + 64 = 100 = 10²." />
+
+<Quiz id="q1" q="Un brazo plano tiene un eslabón de 9 cm en horizontal y otro de 12 cm en vertical, con el codo en ángulo recto. ¿A qué distancia en línea recta está el extremo de la base?" options={["21 cm", "15 cm", "3 cm"]} answer={1}>
+Pitágoras: √(9² + 12²) = √(81 + 144) = √225 = **15 cm**. (No es 9 + 12 = 21: va en diagonal.)
+</Quiz>
+
+<Quiz id="q2" q="Un brazo tiene el primer eslabón de 10 cm en horizontal hacia la derecha y el segundo, de 5 cm, en vertical hacia arriba. ¿Cuáles son las coordenadas (x, y) del extremo?" options={["(5, 10) cm", "(15, 0) cm", "(10, 5) cm"]} answer={2}>
+El primer eslabón lleva el extremo 10 cm a la derecha y el segundo lo sube 5 cm: **(10, 5)**.
+</Quiz>
+
+### Pruébalo con cualquier ángulo
+
+En el laboratorio mueves el **hombro** y el **codo**; el dibujo calcula dónde llega la punta (por dentro usa seno y coseno, pero tú solo tienes que **leer** las coordenadas en la cuadrícula). Fíjate en que la distancia en línea recta también sale con Pitágoras a partir de (x, y).
+
+<ArmLab />
+
+### Dos soluciones, una, o ninguna
+
+Para un punto dentro del alcance, un brazo plano de dos eslabones suele poder llegar de **dos formas**: con el codo **arriba** o con el codo **abajo**. Elegir una forma parte del diseño. (Márcalo en el laboratorio con la casilla de «la otra forma de llegar».)
+
+<Fig src="cinem/c_p_dos" alt="Un brazo de dos eslabones, amarillo y azul, con el codo hacia arriba, y otro brazo en gris con el codo hacia abajo. Los dos terminan en la misma esfera verde." caption="Mismo punto, dos formas de doblar el codo: arriba (en color) o abajo (en gris)." />
+
+Y hay puntos a los que **no se puede llegar**: si el punto está más lejos de **L1 + L2** (los dos eslabones estirados) o más cerca de **|L1 − L2|**, ninguna combinación de ángulos lo alcanza. Ahí no hay solución: está **fuera del espacio de trabajo**. Con el brazo **totalmente estirado** estás justo en el borde: no puede avanzar más en esa dirección, y por eso los brazos evitan trabajar justo ahí.
+
+<Why title="¿Por qué importa la inversa?">
+Casi siempre quieres decir «lleva la punta *aquí*» y que el brazo averigüe los ángulos. Eso es la cinemática inversa, y tiene su trampa: a veces hay dos respuestas, y a veces ninguna.
+</Why>
+
+<Quiz id="q3" q="Quieres que el extremo de un brazo de 2 eslabones llegue a un punto de su alcance. ¿Cuántas formas suele haber de doblar el codo?" options={["Siempre una sola", "Normalmente dos: codo hacia arriba o hacia abajo", "Ninguna"]} answer={1}>
+Para un punto dentro del alcance, un brazo plano de dos eslabones suele llegar con el codo «arriba» o «abajo».
+</Quiz>
+
+<Tip title="Sabías que… la cinemática inversa en los videojuegos">
+La **cinemática inversa** no solo se usa en robots: en animación y **videojuegos** sirve para que un personaje estire la mano hacia un objeto y el brazo se coloque solo. Es el mismo problema: dado el punto, ¿qué ángulos necesita cada articulación?
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris. Los dibujos usan vigas como eslabones; tú puedes usar tiras de cartón de 12 y 8 cm (**proporción 3 : 2**).
+
+<Step n={1} title="Base y articulación del hombro" img="cinem/c_p_s1" alt="Una viga gris horizontal de base con un soporte vertical y un pasador oscuro en el extremo izquierdo, que será el hombro.">
+Fija una **base** sobre el papel cuadriculado y pon el **primer sujetador** (el hombro). Marca en el papel el punto del hombro como **(0, 0)**.
+</Step>
+
+<Step n={2} title="Primer eslabón" img="cinem/c_p_s2" alt="Un eslabón amarillo largo unido al hombro, inclinado hacia arriba a la derecha.">
+Une el **eslabón de 12 cm** al hombro. Debe girar libre y sin apretar.
+</Step>
+
+<Step n={3} title="Codo y segundo eslabón" img="cinem/c_p_s3" alt="Un segundo eslabón azul más corto unido al extremo del primero con un pasador, con una punta verde al final.">
+En el extremo del primero, pon el **codo** y el **eslabón de 8 cm**. En el extremo libre marca la **punta** con un rotulador.
+</Step>
+
+<Step n={4} title="Marca los ángulos y mide" img="cinem/c_p_s4" alt="Dos arcos de ángulo, uno cian en el hombro y otro naranja en el codo, con líneas de referencia a trazos.">
+Pon el primer eslabón **horizontal** y el codo en **ángulo recto** (compruébalo con un transportador o con la esquina de un folio). **Mide** con la regla las coordenadas (x, y) de la punta y la distancia en línea recta desde el hombro.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Con tu brazo.** Con el codo en ángulo recto y los eslabones de 12 y 8 cm, ¿qué mides? Compáralo con (12, 8) y con 14,4 cm.
+2. **Otra forma de llegar.** Sin mover la punta de sitio en el papel, doblando el codo al **otro lado**, ¿llegas al mismo punto? ¿Con qué ángulos?
+3. **El borde.** Estira el brazo del todo. ¿Cuánto es el máximo que alcanza la punta? ¿Y si quieres llegar a **25 cm** de la base?
+
+<details>
+<summary>Respuestas</summary>
+
+1. **(12, 8) cm** y unos **14,4 cm** en línea recta (con algo de error de medida).
+2. Sí, **al mismo punto**, con el codo al otro lado de la recta base–punta.
+3. El máximo es 12 + 8 = **20 cm**. A 25 cm **no se llega**: está fuera del espacio de trabajo.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Sumar los eslabones en lugar de ir en diagonal" wrongLabel="Así no: 6 + 8 = 14" rightLabel="Así sí: Pitágoras, 10">
+  <Fig slot="wrong" src="cinem/c_p_suma_mal" alt="Brazo en ángulo recto con dos flechas rojas siguiendo cada eslabón, una horizontal y otra vertical, como si la distancia fuera la suma de los dos." />
+  <Fig slot="right" src="cinem/c_p_pit_bien" alt="El mismo brazo con una flecha verde diagonal desde la base hasta la punta." />
+
+La distancia **en línea recta** no es la suma de los eslabones: va **en diagonal**. Con 6 y 8, la diagonal es √(6² + 8²) = **10**, no 14.
+</Mistake>
+
+<Mistake title="Pedirle un punto que no alcanza" wrongLabel="Así no: fuera de alcance" rightLabel="Así sí: dentro de su alcance">
+  <Fig slot="wrong" src="cinem/c_p_fuera" alt="Un brazo totalmente estirado con una esfera roja más allá de su punta, fuera de un círculo verde que marca el alcance máximo." />
+  <Fig slot="right" src="cinem/c_p_dentro" alt="Un brazo con el codo doblado que llega a una esfera verde situada dentro del círculo verde de alcance." />
+
+Si el punto está más lejos de **L1 + L2**, ninguna combinación de ángulos llega: **no hay solución**. Comprueba siempre que el punto está dentro del alcance antes de calcular.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Las articulaciones giran libres y la regla del papel marca (0, 0) en el hombro",
+  "He predicho las coordenadas y la distancia antes de medir",
+  "He medido (x, y) y la distancia en línea recta y las he comparado con el cálculo",
+  "Sé explicar la diferencia entre cinemática directa e inversa",
+  "Sé decir por qué un punto puede tener dos soluciones o ninguna",
+]} />
+
+<Quiz id="q4" q="Pides al brazo llegar a un punto más lejos de su alcance máximo. ¿Qué pasa en la cinemática inversa?" options={["Hay dos soluciones", "No hay solución: el punto está fuera de su espacio de trabajo", "El brazo se alarga solo"]} answer={1}>
+Si el punto está más lejos de L1 + L2 (o más cerca de |L1 − L2|), ninguna combinación de ángulos lo alcanza.
+</Quiz>
+
+<RegisterPiece piece="Brazo plano de dos eslabones con la posición de la punta medida" />
+</Block>

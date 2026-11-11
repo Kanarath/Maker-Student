@@ -1,0 +1,145 @@
+---
+id: m5-02
+unit: mec
+order: 2
+title: "Levas: la forma decide el movimiento"
+summary: "Monta una leva excéntrica con su seguidor, predice cuánto sube y baja y descubre cómo la forma de la leva «programa» cuándo se mueve y cuándo descansa."
+practice: [l_leva]
+cover: mec/lv_hero
+duration: 30
+status: revisada
+prerequisites: [m5-01]
+objectives:
+  - "Calcular cuánto sube y baja el seguidor de una leva excéntrica con 2 × la excentricidad"
+  - "Explicar cuándo está el seguidor en su punto más alto"
+  - "Explicar cómo se consigue que el seguidor descanse mientras la leva sigue girando"
+materials:
+  - "Un disco (una rueda grande, una polea o un círculo de cartón) con un agujero descentrado para el eje"
+  - "Un eje, una viga larga para el seguidor, dos vigas para guiarlo y un soporte"
+  - "Una regla en milímetros"
+piece:
+  name: "Leva excéntrica con seguidor"
+  hint: "Foto de tu leva con el seguidor en el punto más alto y el más bajo, con la medida de la subida"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar una **leva excéntrica**: un disco amarillo con el eje descentrado que, al girar, empuja a su **seguidor** hacia arriba y le deja caer. Antes de girar, **predecirás cuánto sube** el seguidor.
+
+<Fig src="mec/lv_hero" alt="Un disco amarillo con un eje azul oscuro algo descentrado, montado en un soporte gris. Una viga verde vertical, el seguidor, descansa sobre el borde del disco, guiada entre dos vigas grises. Una flecha naranja curva marca el giro del disco y una flecha cian hacia arriba marca la subida del seguidor." caption="El disco gira (naranja) y empuja al seguidor hacia arriba (cian). Al girar más, el seguidor baja otra vez." />
+</Block>
+
+<Block kind="concepto">
+## La forma lo programa todo
+
+Una **leva** es una pieza giratoria cuya forma **empuja** a otra pieza, el **seguidor**, y la hace subir y bajar a su paso.
+
+En una **leva excéntrica** el eje está **descentrado** una distancia **e** (la excentricidad) respecto al centro del disco. El seguidor sube y baja:
+
+**subida total = 2 × excentricidad**
+
+Con una excentricidad de 8 mm, el seguidor sube y baja 2 × 8 = **16 mm**.
+
+**Predice:** ¿cuándo está el seguidor en su punto más alto? Mira las dos imágenes antes de leer la respuesta.
+
+<Fig src="mec/lv_alto" alt="La leva con la parte más alejada del eje hacia arriba. El seguidor verde está en lo más alto, tocando una marca naranja superior. Una flecha cian de dos puntas une la marca de arriba con la de abajo." caption="Arriba: la parte del disco más alejada del eje pasa bajo el seguidor." />
+
+<Fig src="mec/lv_bajo" alt="La misma leva con la parte más alejada del eje hacia abajo. El seguidor verde está en su punto más bajo, tocando la marca naranja inferior." caption="Abajo: la parte más cercana al eje pasa bajo el seguidor." />
+
+<details>
+<summary>Respuesta</summary>
+
+El seguidor está **arriba** cuando la parte **más alejada del eje** pasa bajo él, y **abajo** cuando pasa la parte más cercana. La diferencia entre las dos posiciones es 2 × e.
+</details>
+
+Ahora prueba con la excentricidad que quieras, y cambia a la leva **con reposo**:
+
+<CamLab />
+
+<Why title="¿Qué es el reposo?">
+Si durante un tramo el borde de la leva está **siempre a la misma distancia del eje** (un arco de círculo centrado en el eje), el seguidor no sube ni baja: **descansa** mientras la leva sigue girando. Dando forma a la leva «programas» cuándo se mueve, cuánto y cuándo se queda quieto.
+</Why>
+
+<Quiz id="q1" q="Una leva excéntrica tiene su eje desplazado 8 mm del centro del disco. ¿Cuánto sube y baja el seguidor en total?" options={["8 mm", "16 mm", "32 mm"]} answer={1}>
+El punto más alto del disco sube 8 mm sobre el eje y el más bajo baja 8 mm: en total 2 × 8 = **16 mm**.
+</Quiz>
+
+<Quiz id="q2" q="¿Cómo se consigue que el seguidor se quede un rato quieto mientras la leva sigue girando?" options={["Con una zona que sube más deprisa", "Con una leva más grande", "Con un tramo de la leva a radio constante (un arco centrado en el eje)"]} answer={2}>
+Si durante un tramo el borde está siempre a la misma distancia del eje, el seguidor ni sube ni baja.
+</Quiz>
+
+<Tip title="Sabías que… la forma de la leva es un «programa»">
+En muchos motores de coche, un **árbol de levas** (un eje con varias levas) abre cada válvula con la forma justa: la forma de cada leva decide **cuándo** se abre, **cuánto** y **durante cuánto tiempo**. No hay electrónica: la «instrucción» está tallada en el metal.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Tres pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="Soporte y guías" img="mec/lv_s1" alt="Una viga gris vertical abajo y, por encima, dos vigas grises verticales paralelas con un hueco entre ellas, unidas arriba por una viga azul horizontal.">
+Pon una viga **vertical** de soporte (donde irá el eje) y, más arriba, **dos vigas paralelas** con un hueco entre ellas, unidas por arriba. Es la **guía** del seguidor.
+<Why>La guía obliga al seguidor a subir y bajar **recto**: sin ella, la leva lo empujaría de lado.</Why>
+</Step>
+
+<Step n={2} title="El eje y la leva" img="mec/lv_s2" alt="Un eje que atraviesa el soporte con un disco amarillo descentrado delante, un cubo oscuro en el eje y una marca roja en el borde del disco.">
+Pasa el eje por el soporte y monta el **disco con el agujero descentrado**. Cuando gire, verás que el centro del disco da vueltas alrededor del eje. Un **punto rojo** o una pegatina en el borde te ayuda a seguir el giro.
+<Why>La **excentricidad e** es la distancia entre el eje y el centro del disco: ahí se decide cuánto sube el seguidor.</Why>
+</Step>
+
+<Step n={3} title="El seguidor" img="mec/lv_s3" alt="Una viga verde larga vertical, colocada entre las vigas de la guía, con su extremo inferior apoyado en el borde del disco amarillo.">
+Mete la viga larga en la guía, con su extremo **apoyado en el borde** del disco. Gira el eje con la mano y mira cómo sube y baja.
+
+**Predice:** si el eje está a 1 agujero (8 mm) del centro del disco, ¿cuánto subirá el seguidor en total?
+
+<details>
+<summary>Respuesta</summary>
+
+**2 × 8 mm = 16 mm.** Mide la altura del seguidor cuando está arriba y cuando está abajo; la diferencia debería ser de unos 16 mm.
+</details>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Más excentricidad:** coloca el eje a 2 agujeros (16 mm) del centro. ¿Cuánto sube ahora el seguidor?
+2. **Leva con reposo:** recorta una leva de cartón que tenga un tramo con forma de **arco de círculo centrado en el eje**. ¿Qué hace el seguidor mientras ese tramo pasa por debajo?
+3. **Árbol de levas:** pon dos levas iguales en el mismo eje, una girada media vuelta respecto a la otra. **Predice:** ¿suben los dos seguidores a la vez?
+
+<details>
+<summary>Respuestas</summary>
+
+1. 2 × 16 = **32 mm** (el doble de excentricidad, el doble de subida).
+2. Se queda **quieto** (reposo) mientras la leva sigue girando.
+3. **No**: cuando uno está arriba, el otro está abajo. Así un árbol de levas abre cada válvula en su momento.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Eje en el centro del disco" wrongLabel="Eje centrado: no sube nada" rightLabel="Eje descentrado: sube y baja">
+  <Fig slot="wrong" src="mec/lv_error_mal" alt="La leva con el eje justo en el centro del disco amarillo: el seguidor verde descansa sobre el borde siempre a la misma altura." />
+  <Fig slot="right" src="mec/lv_alto" alt="La leva con el eje descentrado: el seguidor verde está en su punto más alto." />
+
+Si el eje pasa por el **centro** del disco, la excentricidad es **0** y el seguidor **no se mueve** (subida = 2 × 0 = 0). Descentra el eje para que haya movimiento.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "El seguidor sube y baja recto, sin atascarse en la guía",
+  "He medido la excentricidad (distancia del eje al centro del disco)",
+  "He predicho la subida con 2 × excentricidad y la he medido",
+  "Sé decir cuándo está el seguidor arriba y cuándo abajo",
+  "Sé cómo se consigue un reposo en una leva",
+]} />
+
+<Quiz id="q3" q="En muchos motores de coche, ¿qué abre las válvulas en el momento justo?" options={["Un volante de inercia", "Un árbol de levas", "Un tornillo sin fin"]} answer={1}>
+Cada leva del árbol empuja a su válvula con la forma justa: la forma decide cuándo se abre, cuánto y durante cuánto tiempo.
+</Quiz>
+
+<RegisterPiece piece="Leva excéntrica con seguidor" />
+</Block>

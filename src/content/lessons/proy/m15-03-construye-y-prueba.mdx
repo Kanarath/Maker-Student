@@ -1,0 +1,155 @@
+---
+id: m15-03
+unit: proy
+order: 3
+title: "Construye y prueba tu brazo por fases"
+summary: "Monta tu brazo de 2-3 GDL por fases (base, hombro, codo, pinza), prueba cada una antes de añadir la siguiente y anota todo en tu cuaderno."
+practice: [l_proy_build]
+cover: proy/f_hero
+duration: 40
+status: revisada
+prerequisites: [m15-02]
+objectives:
+  - "Montar el brazo por fases y probar cada una antes de añadir la siguiente"
+  - "Subir la carga poco a poco y anotar qué cambias, qué mides y qué ocurre"
+  - "Hacer las comprobaciones de seguridad antes de la primera prueba con motor"
+materials:
+  - "Las piezas elegidas con tu hoja de cálculo: base, columna, dos vigas (eslabones), servos, pinza y pasadores"
+  - "Una pieza ligera de prueba (decenas de gramos), goma para los dedos, bridas y cuaderno"
+piece:
+  name: "Brazo de 2-3 GDL moviendo una pieza ligera"
+  hint: "Foto o vídeo de tu brazo levantando una pieza ligera, con tu cuaderno de pruebas al lado"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Llegó el momento: **montar tu brazo**. La regla es una sola: **por partes**. Monta una, **prueba**, y solo entonces añade la siguiente. Así, cuando algo falle, sabrás **dónde** está el problema.
+
+<Fig src="proy/f_hero" alt="El brazo completo sobre su base gris: disco azul giratorio, columna gris, servo del hombro con la viga amarilla, servo del codo con la viga roja y la pinza verde con un bloque rojo. Tres flechas curvas marcan el giro de la base (naranja), el hombro (cian) y el codo (verde)." caption="El resultado final, con sus tres movimientos. Pero tú no lo montas todo de golpe: lo haces en cinco fases." />
+
+Primero **a mano**, luego con el motor **sin carga**, y la **carga** sube poco a poco. Anota **qué cambias y qué pasa**: así aprendes de cada fallo.
+
+<Tip title="Sabías que… el túnel de viento casero">
+Los **hermanos Wright** construyeron en 1901 un pequeño túnel de viento para probar formas de alas antes de construir el avión. Probar **a pequeña escala y barato** antes de lo grande es una idea que sigue funcionando.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Poco a poco
+
+El orden de pruebas de tu brazo es este:
+
+1. Monta la **base** y comprueba que no se mueve al empujarla.
+2. Monta el **primer eslabón** y gíralo a mano.
+3. Añade el **segundo eslabón** y comprueba el recorrido.
+4. Conecta el motor y pruébalo **sin carga**.
+5. Añade la **pinza** y la carga **poco a poco**.
+6. **Anota** resultados y mejora **una cosa cada vez**.
+
+<Why title="¿Por qué probar cada parte antes de sumar la siguiente?">
+Porque si montas todo y falla, tienes diez sospechosos. Si añades una sola pieza y falla, solo tienes una. La carga se aumenta gradualmente, y se aprende de cada resultado.
+</Why>
+
+**Predice antes de mirar:** tu brazo llega perfectamente al tapón, pero la pinza lo suelta al levantarlo. Los dedos son de plástico liso y el servo es pequeño. ¿Qué ayudaría más?
+
+<details>
+<summary>La respuesta</summary>
+
+**Goma en los dedos**, para aumentar el rozamiento (la pinza sujeta por rozamiento: más μ y más fuerza de agarre ayudan). Y antes de cambiar nada más, **anota** qué has cambiado y qué ha ocurrido. Si cambias todo a la vez, no sabrás qué ha resuelto el problema.
+</details>
+
+### Antes de la primera prueba con motor
+
+<Warn title="Seguridad: un minuto que evita sustos">
+Un brazo puede **pellizcar** al arrancar o **bloquearse y calentar el motor**. Antes de la primera prueba comprueba que: los **cables no se pillan** y nada se engancha; tienes **las manos lejos** del recorrido; y sabes **cómo desconectar rápido**. Usa la alimentación que recomiende la ficha de tus servos. Si usas baterías de litio (LiPo), necesitan su cargador y precauciones propias: si dudas, pide ayuda a un adulto.
+</Warn>
+
+<Quiz id="q1" q="Antes de la primera prueba con motor, ¿qué compruebas?" options={["Que el motor sea lo más potente posible", "Que los cables no se pillan, que nada se engancha, que tienes tus manos lejos y cómo desconectar rápido", "Nada: se prueba y ya"]} answer={1}>
+Un brazo puede pellizcar al arrancar o bloquearse y calentar el motor. Comprobarlo antes lleva un minuto y evita sustos.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cinco fases. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.** Después de cada fase, haz su **prueba** y anótala.
+
+<Step n={1} title="Fase 1: la base y la plataforma" img="proy/f_s1" alt="Una placa gris plana en el suelo con un disco dentado azul encima, la plataforma giratoria.">
+Monta la **placa de base** y la **plataforma giratoria** encima. **Prueba:** empuja la base con la mano. ¿Se mueve o se vuelca? Si no está firme, ensánchala o añade peso. Gira la plataforma: debe girar libre.
+<Why>Todo el brazo se apoya aquí. Una base inestable falsea todas las pruebas posteriores.</Why>
+</Step>
+
+<Step n={2} title="Fase 2: la columna" img="proy/f_s2" alt="Una viga gris vertical de 5 agujeros sobre el disco azul, en gris más oscuro respecto de la fase anterior.">
+Fija la **columna** vertical sobre la plataforma, en su centro. **Prueba:** gira la plataforma con la columna puesta. ¿Se tambalea la columna?
+</Step>
+
+<Step n={3} title="Fase 3: el hombro y el primer eslabón" img="proy/f_s3" alt="Un servo oscuro pegado a la columna, de cuyo eje sale una viga amarilla de 11 agujeros inclinada hacia arriba.">
+Monta el **servo del hombro** pegado a la columna y, en su eje, el **eslabón 1** (la viga de 11 agujeros). **Prueba a mano** el recorrido completo. Luego **conecta el motor y pruébalo sin carga**. Ya tienes **2 GDL** (base y hombro): el brazo básico.
+<Why>Así compruebas el movimiento del hombro **antes** de que el codo pese más. Si funciona bien, ya puedes dar el siguiente paso.</Why>
+</Step>
+
+<Step n={4} title="Fase 4: el codo y el segundo eslabón" img="proy/f_s4" alt="Un segundo servo oscuro sobre el extremo de la viga amarilla, y de su eje sale una viga roja de 9 agujeros que baja en diagonal.">
+Monta el **servo del codo** en el extremo del eslabón 1 y el **eslabón 2**. **Prueba a mano** el recorrido: ¿se golpean los eslabones o los cables con algo? Después, prueba **sin carga** con el motor. Ya tienes **3 GDL**.
+</Step>
+
+<Step n={5} title="Fase 5: la pinza y la carga" img="proy/f_s5" alt="Una palma verde en el extremo de la viga roja con dos dedos verdes paralelos que cuelgan, con almohadillas de goma, y un bloque rojo entre ellos.">
+Monta la **pinza** con **goma** en los dedos. Empieza sin carga. Después coge una pieza **muy ligera** y sube **poco a poco**, anotando en qué momento aparece cada problema.
+
+<Fig src="proy/f_err_bien" alt="El brazo horizontal con una pieza blanca ligera y una flecha verde fina; el servo del hombro, pintado de verde." caption="Con carga ligera, el servo trabaja con holgura." />
+</Step>
+
+Cuando tu brazo mueva la pieza, **anota en tu cuaderno**: qué has cambiado, qué has medido y qué ha pasado.
+</Block>
+
+<Block kind="version">
+Cambia una cosa **cada vez**, **predice** y anota:
+
+1. **Sube la carga:** añade 10 g cada vez. ¿A partir de cuántos gramos empieza a flojear el hombro? Compara con tu hoja de cálculo.
+2. **Mejora el agarre:** cambia la goma por otra más rugosa. ¿Aguanta más peso?
+3. **Contrapeso:** añade un contrapeso detrás del hombro. ¿Aumenta la carga que puedes mover?
+
+Si cambias el brazo, vuelve a hacer los números:
+
+<ArmPlanLab />
+</Block>
+
+<Block kind="errores">
+<Mistake title="Probar con toda la carga de golpe" wrongLabel="Carga máxima desde el principio" rightLabel="Carga ligera y poco a poco">
+  <Fig slot="wrong" src="proy/f_err_mal" alt="El brazo horizontal con una pieza blanca y una flecha roja muy gruesa y larga que baja desde ella. El servo del hombro está pintado de rojo." />
+  <Fig slot="right" src="proy/f_err_bien" alt="El mismo brazo con una flecha verde corta y fina. El servo del hombro está pintado de verde." />
+
+Con una carga alta de golpe, el servo puede **bloquearse y calentarse**, y no sabrás si falla por el motor, la estructura o el agarre. **Sube la carga poco a poco** y anota cada paso.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu brazo:
+
+<Checklist items={[
+  "La base no se mueve al empujarla y la plataforma gira libre",
+  "He probado a mano el recorrido completo de cada articulación",
+  "Los cables no se pillan y sé cómo desconectar rápido",
+  "He subido la carga poco a poco y he anotado qué cambié y qué pasó",
+  "He cambiado una sola cosa cada vez",
+]} />
+
+<Quiz id="q2" q="¿Qué conviene anotar durante las pruebas de tu brazo?" options={["Qué has cambiado, qué has medido y qué ha pasado", "Solo lo que sale bien", "Nada: te acordarás de todo"]} answer={0}>
+Anotar cambios, medidas y resultados te permite aprender de lo que falla y repetir lo que funciona, y es la base del método de inventor.
+</Quiz>
+
+<Quiz id="q3" q="Tu brazo llega al tapón pero la pinza lo suelta al levantarlo (dedos de plástico liso, servo pequeño). ¿Qué ayudaría más?" options={["Alargar el brazo", "Pintar los dedos", "Goma en los dedos para aumentar el rozamiento"]} answer={2}>
+La pinza sujeta por rozamiento: más μ (goma) y más fuerza de agarre ayudan.
+</Quiz>
+
+<Quiz id="q4" q="Has cambiado cosas y por fin funciona. ¿Qué haces antes de seguir?" options={["Cambiar todo a la vez", "Anotar qué has cambiado y qué ha ocurrido", "Quitar la pinza"]} answer={1}>
+Cambiar una cosa cada vez y anotarla te dice qué funcionó. Si cambias todo, no sabrás qué ha resuelto el problema.
+</Quiz>
+
+<Quiz id="q5" q="¿Qué compruebas primero cuando montas el brazo?" options={["Que la base no se mueve al empujarla", "La carga máxima", "La pinza con el objeto"]} answer={0}>
+Se prueba cada parte antes de sumar la siguiente: así, cuando algo falla, sabes dónde está el problema.
+</Quiz>
+
+<RegisterPiece piece="Brazo de 2-3 GDL moviendo una pieza ligera" />
+</Block>

@@ -1,0 +1,96 @@
+---
+// Laboratorio de resolución: cuánto salta la punta con cada paso de una articulación.
+// Regla de la unidad: un grado desplaza la punta unos 0,0175 de la longitud del brazo (el arco es longitud × ángulo en radianes; 1° = 0,01745 rad).
+// El dibujo EXAGERA el ángulo (×8) para que se vea; las cifras son las reales.
+---
+
+<div class="lab" data-res>
+  <div class="head"><b>Laboratorio · Cuánto salta la punta</b><span class="muted">Más largo, menos fino</span></div>
+
+  <svg viewBox="0 0 800 300" role="img" aria-label="Un brazo que gira alrededor de un eje: la punta recorre un arco al dar un paso">
+    <rect width="800" height="300" fill="#05060a" />
+    <g data-scene></g>
+  </svg>
+
+  <div class="ctrl">
+    <label>Longitud del brazo: <b data-l-v>40</b> cm<input type="range" min="10" max="60" step="5" value="40" data-len aria-label="Longitud del brazo en centímetros" /></label>
+    <fieldset>
+      <legend>Paso de la articulación</legend>
+      <div class="opts" data-steps></div>
+    </fieldset>
+    <label>Precisión que quieres en la punta: <b data-e-v>1</b> mm<input type="range" min="1" max="10" step="1" value="1" data-err aria-label="Error máximo aceptable en la punta, en milímetros" /></label>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+  const fmt = (n: number, d = 1) => n.toFixed(d).replace(".", ",").replace(/,0+$/, "");
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-res]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const scene = q<SVGGElement>("[data-scene]");
+    const len = q<HTMLInputElement>("[data-len]");
+    const err = q<HTMLInputElement>("[data-err]");
+    const out = q<HTMLElement>("[data-out]");
+    const stepsBox = q<HTMLElement>("[data-steps]");
+    let step = 1;
+    for (const s of [0.5, 1, 2, 5]) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "opt"; b.textContent = `${String(s).replace(".", ",")}°`;
+      b.setAttribute("aria-pressed", String(s === step));
+      b.addEventListener("click", () => { step = s; for (const o of stepsBox.children) o.setAttribute("aria-pressed", String(o === b)); update(); });
+      stepsBox.append(b);
+    }
+
+    function update() {
+      const L = +len.value, e = +err.value;
+      q("[data-l-v]").textContent = String(L);
+      q("[data-e-v]").textContent = String(e);
+      const mm = L * 10 * step * Math.PI / 180; // desplazamiento de la punta en mm
+      const need = (e / (L * 10)) * 180 / Math.PI; // paso máximo (°) para tener ese error
+      scene.replaceChildren();
+      const cx = 80, cy = 150, R = 8 + L * 11; // px (L hasta 60 cm → 668 px)
+      const Rpx = Math.min(R, 620);
+      const vis = Math.min(step * 8, 60) * Math.PI / 180; // ángulo del dibujo (exagerado ×8)
+      scene.append(mk("line", { x1: cx, y1: cy, x2: cx + Rpx, y2: cy, stroke: "#6b7186", "stroke-width": 10, "stroke-linecap": "round", opacity: 0.55 }));
+      scene.append(mk("line", { x1: cx, y1: cy, x2: cx + Rpx * Math.cos(vis), y2: cy - Rpx * Math.sin(vis), stroke: "#f2b230", "stroke-width": 10, "stroke-linecap": "round" }));
+      scene.append(mk("path", { d: `M ${cx + Rpx} ${cy} A ${Rpx} ${Rpx} 0 0 0 ${cx + Rpx * Math.cos(vis)} ${cy - Rpx * Math.sin(vis)}`, fill: "none", stroke: "#ff8a1f", "stroke-width": 5, "stroke-linecap": "round" }));
+      scene.append(mk("circle", { cx, cy, r: 11, fill: "#2a2c35", stroke: "#d5d9e2", "stroke-width": 3 }));
+      const t = mk("text", { x: cx + Rpx - 10, y: cy + 36, "text-anchor": "end", fill: "#ff8a1f", "font-size": 16, "font-weight": 700 });
+      t.textContent = `un paso de ${String(step).replace(".", ",")}° → la punta salta ${fmt(mm, 1)} mm`;
+      scene.append(t);
+      const n = mk("text", { x: 20, y: 280, fill: "#a3a1b4", "font-size": 13 });
+      n.textContent = "Dibujo exagerado: el ángulo real es 8 veces más pequeño.";
+      scene.append(n);
+      out.innerHTML = `Brazo de <b>${L} cm</b> y pasos de <b>${String(step).replace(".", ",")}°</b>: la punta salta ≈ 0,0175 × ${L} cm × ${String(step).replace(".", ",")} = <b>${fmt(mm / 10, 2)} cm = ${fmt(mm, 1)} mm</b> por paso.<br>` +
+        `Para que la punta no se equivoque más de <b>${e} mm</b> necesitas pasos de unos <b>${fmt(need, 2)}°</b> o menores. ` +
+        (step <= need ? `<b style="color:#4ade80">✓ Tu paso lo cumple.</b>` : `<b style="color:#ff5a4a">✗ Tu paso es demasiado grande:</b> acorta el brazo o añade una reducción más fina.`);
+    }
+    len.addEventListener("input", update);
+    err.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .opt { min-width: 56px; min-height: 40px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel-2); color: var(--text, inherit); font: 600 1rem var(--font-mono); cursor: pointer; }
+  .opt[aria-pressed="true"] { background: var(--accent); color: #05060a; border-color: var(--accent); }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+</style>

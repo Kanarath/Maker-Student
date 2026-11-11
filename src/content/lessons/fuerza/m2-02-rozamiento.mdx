@@ -1,0 +1,149 @@
+---
+id: m2-02
+unit: fuerza
+order: 2
+title: "Rozamiento: por qué cuesta más arrancar que seguir"
+summary: "Arrastra un libro con tu medidor de goma y comprueba que arrancar cuesta más que seguir, que más peso es más rozamiento y que los rodillos lo reducen muchísimo."
+practice: [l_roz]
+cover: fuerza/r_hero
+duration: 35
+status: revisada
+prerequisites: [m2-01]
+objectives:
+  - "Calcular el rozamiento con μ × reacción normal"
+  - "Explicar por qué arrancar cuesta más que mantener el movimiento"
+  - "Comprobar con tu medidor que más peso significa más rozamiento y que rodar roza menos que deslizar"
+materials:
+  - "Tu medidor de goma (la goma y la regla de la lección anterior)"
+  - "Un libro (o dos), una mesa lisa y unos lápices redondos que hagan de rodillos"
+piece:
+  name: "Tabla de rozamiento con goma"
+  hint: "Foto de tu libro con la goma y tus cuatro medidas: arrancar, en marcha, dos libros y rodillos"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a medir el rozamiento con tu **goma elástica**: tiras de un libro y apuntas cuánto se estira la goma en cuatro situaciones. Tu **tabla de medidas** es la pieza de la lección.
+
+<Fig src="fuerza/r_hero" alt="Un libro rojo sobre una mesa de madera, atado a una goma amarilla que sostiene una mano en el otro extremo. Delante hay una regla blanca. Una flecha naranja larga apunta a la derecha (tu tirón) y una flecha roja larga, a la izquierda (el rozamiento)." caption="Tirón (flecha naranja) y rozamiento (flecha roja): van en sentidos opuestos. La goma estirada te dice cuánto vale el tirón." />
+
+Antes de cada prueba, **predice** si la goma se estirará más o menos. Anota la predicción: ahí aprendes.
+
+<Warn title="Cuidado con la goma">
+Usa gomas en buen estado y no las estires cerca de la cara: si se sueltan, pueden dar un latigazo. **Tira despacio.**
+</Warn>
+</Block>
+
+<Block kind="concepto">
+## El freno que está en todas partes
+
+El **rozamiento** se opone a que dos superficies deslicen una sobre otra. En el modelo básico vale:
+
+**rozamiento = μ × reacción normal**
+
+- **Reacción normal:** lo que hace el suelo (o cualquier apoyo) hacia arriba sobre el objeto. Sobre un suelo **horizontal** vale lo mismo que el peso.
+- **μ (coeficiente de rozamiento):** un número sin unidades que dice cuánto «agarran» dos materiales. Hielo sobre hielo: μ muy pequeño. Goma sobre asfalto: grande.
+
+<Fig src="fuerza/r_fbd" alt="Un bloque rojo sobre una plataforma gris con cuatro flechas: una violeta hacia abajo (peso), una cian hacia arriba (reacción normal), una naranja a la derecha (tirón) y una roja a la izquierda (rozamiento)." caption="Cuatro fuerzas sobre un bloque. Violeta: peso (abajo). Cian: reacción normal (arriba). Naranja: tu tirón (derecha). Roja: rozamiento (izquierda)." />
+
+Predice: **una caja de 50 N de peso está en un suelo horizontal y μ vale 0,4. ¿Qué fuerza de rozamiento hay que vencer?**
+
+<details>
+<summary>La respuesta</summary>
+
+En suelo horizontal la normal es igual al peso: **0,4 × 50 = 20 N**. Tienes que tirar con algo más de 20 N para que se mueva y siga moviéndose.
+</details>
+
+## Arrancar cuesta más que seguir
+
+Antes de moverse, las superficies «se agarran» más (**rozamiento al arrancar**); una vez deslizando, el rozamiento es algo menor. El tirón sube hasta que el objeto «se suelta» y luego hace falta **menos** fuerza.
+
+Pruébalo: sube el tirón poco a poco y mira qué pasa justo en el momento de soltarse.
+
+<RozaLab />
+
+<Why title="¿Y si el ladrillo está de plano o de canto?">
+<Fig src="fuerza/r_area" alt="Dos ladrillos rojos iguales: el de la izquierda apoyado de plano (más ancho y bajo) y el de la derecha apoyado de canto (más estrecho y alto). Cada uno tiene un par de flechas idénticas: tirón naranja a la derecha y rozamiento rojo a la izquierda, del mismo largo." caption="En el modelo básico, el rozamiento es el mismo: depende de los materiales y de cuánto aprietan, no del área." />
+
+En el modelo básico, **casi nada**: depende de μ y de la reacción normal, no del área de contacto. (En casos reales, como neumáticos o superficies pegajosas, pueden aparecer diferencias.)
+</Why>
+
+<Tip title="Sabías que… rodar roza mucho menos">
+Los **rodamientos de bolas** (en patines, ruedas de bici o ejes de máquinas) cambian el deslizamiento por **rodadura**, que roza mucho menos. Por eso es mucho más fácil rodar un objeto que arrastrarlo. También se usa aceite o grasa en engranajes y ejes: reduce el rozamiento y la pérdida de fuerza.
+</Tip>
+
+<Quiz id="q1" q="Para empezar a mover un armario pesado hace falta más fuerza que para mantenerlo en movimiento. ¿Por qué?" options={["Porque el armario pesa menos cuando se mueve", "Porque el rozamiento al arrancar suele ser mayor que el que hay una vez deslizando", "Porque el rozamiento desaparece al moverse"]} answer={1}>
+Antes de moverse, las superficies «se agarran» más. Una vez deslizando, el rozamiento es algo menor.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cinco pasos. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.** Las lecturas de la regla son tus unidades de estiramiento: no hace falta convertir a newtons para comparar.
+
+<Step n={1} title="Libro, goma y regla" img="fuerza/r_s1" alt="Un libro rojo sobre la mesa con una goma amarilla atada a su lado derecho y una mano que la sujeta por el otro extremo. Una regla blanca está colocada delante, con el 0 en el borde del libro. La goma está sin estirar." >
+Ata o engancha la goma a un libro apoyado en la mesa. Pon la regla **al lado de la goma**, con el 0 donde acaba la goma sin tirar.
+</Step>
+
+<Step n={2} title="Tira despacio hasta que se mueva" img="fuerza/r_s2" alt="El libro sigue parado, pero la goma está muy estirada: la mano está más lejos. Una flecha naranja larga apunta a la derecha y una flecha roja igual de larga, a la izquierda." >
+Tira **muy despacio** y apunta cuánto se estira la goma **justo antes de que el libro empiece a moverse**. Esa es la medida de **arrancar**.
+<Why>Antes de moverse, el rozamiento se adapta a tu tirón y llega hasta su máximo. Cuando lo superas, el libro «se suelta».</Why>
+</Step>
+
+<Step n={3} title="Con el libro ya en marcha" img="fuerza/r_s3" alt="El libro avanza (una flecha cian pequeña apunta a la derecha). La goma está algo menos estirada que antes y las flechas naranja y roja son más cortas." >
+Sigue tirando con el libro **ya en movimiento a velocidad constante** y apunta cuánto se estira ahora: debería ser **menos** que al arrancar.
+</Step>
+
+<Step n={4} title="Dos libros: más peso" img="fuerza/r_s4" alt="Dos libros rojos apilados atados a una goma muy estirada. Las flechas naranja y roja son mucho más largas que con un solo libro." >
+Pon **otro libro encima** y repite el paso 2. ¿Se estira más? El peso aumenta, y con él la normal y el rozamiento.
+</Step>
+
+<Step n={5} title="Con rodillos" img="fuerza/r_s5" alt="El libro rojo descansa sobre cinco lápices amarillos tumbados que hacen de rodillos. La goma apenas está estirada y las flechas naranja y roja son diminutas." >
+Pon unos **lápices redondos** debajo del libro, como rodillos, y repite. ¿Cuánto se estira ahora?
+<Why>Rodar roza muchísimo menos que deslizar. Es la razón de las ruedas y los rodamientos.</Why>
+</Step>
+</Block>
+
+<Block kind="version">
+Elige un reto, **predice** y comprueba:
+
+1. **Más lisa o más áspera:** prueba el libro sobre otra superficie (un trapo, un papel liso). ¿Qué μ te sale mayor? Predice antes.
+2. **Cantidad de rozamiento:** si arrancar necesita 5 unidades de goma y con dos libros necesitas 10, ¿qué ley acabas de ver? (**Más peso, más rozamiento**: doble de peso, doble de rozamiento.)
+3. **Con el laboratorio:** usa el botón «Con rodillos» y compara la fuerza para arrancar con la de «Superficie áspera». ¿Cuántas veces menor sale?
+
+Anota en tu tabla qué **predecías** y qué **viste**. Si no coinciden, ¡mejor! Ahí hay algo que aprender.
+</Block>
+
+<Block kind="errores">
+<Mistake title="Tirar hacia arriba en vez de en horizontal" wrongLabel="Tirando en diagonal" rightLabel="Tirando en horizontal">
+  <Fig slot="wrong" src="fuerza/r_error_mal" alt="Un libro rojo con una goma que sube en diagonal. Una bolita roja marca el extremo de la goma, en alto, y la flecha naranja del tirón también apunta hacia arriba y a la derecha." />
+  <Fig slot="right" src="fuerza/r_error_bien" alt="El mismo libro con la goma estirada en horizontal sobre la mesa. Una bolita verde marca el extremo y la flecha naranja del tirón va recta a la derecha." />
+
+Si tiras hacia arriba, parte de tu tirón **levanta** el libro, la reacción normal baja y el rozamiento cambia: tu medida **ya no es la del rozamiento**. Mantén la goma **paralela a la mesa**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu tabla:
+
+<Checklist items={[
+  "He apuntado una predicción antes de cada prueba",
+  "Tiré despacio y en horizontal, con la goma paralela a la mesa",
+  "Con el libro en marcha la goma se estiró menos que justo antes de arrancar",
+  "Con dos libros la goma se estiró más que con uno",
+  "Con rodillos el estiramiento fue claramente menor",
+]} />
+
+<Quiz id="q2" q="Una caja de 50 N está sobre un suelo horizontal y el coeficiente de rozamiento es 0,4. ¿Qué rozamiento hay que vencer?" options={["50 N", "125 N", "20 N"]} answer={2}>
+Rozamiento = μ × normal = 0,4 × 50 = **20 N**.
+</Quiz>
+
+<Quiz id="q3" q="En un tren de engranajes real, el esfuerzo es algo mayor que el que calculaste. ¿Por qué?" options={["Porque parte del esfuerzo se pierde en rozamiento, en los dientes y en los ejes", "Porque los engranajes pesan", "Porque la fuerza se crea sola"]} answer={0}>
+Los cálculos de «caso ideal» no cuentan el rozamiento. En la realidad se pierde algo en forma de calor, y por eso se lubrican los engranajes.
+</Quiz>
+
+<RegisterPiece piece="Tabla de rozamiento con goma" />
+</Block>

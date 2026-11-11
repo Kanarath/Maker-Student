@@ -1,0 +1,151 @@
+---
+// Hoja de cálculo de tu brazo de 2-3 GDL (caso más duro: brazo horizontal y estirado).
+// Par en cada articulación = suma de peso × distancia al eje (g·cm; 1000 g·cm = 1 kg·cm).
+//   codo   = peso eslabón 2 × L2/2 + (pinza + carga) × L2
+//   hombro = peso eslabón 1 × L1/2 + servo del codo × L1 + peso eslabón 2 × (L1 + L2/2) + (pinza + carga) × (L1 + L2)
+// Los pesos que aparecen son solo un ejemplo: pesa tus piezas con una báscula de cocina.
+---
+
+<div class="lab" data-plan>
+  <div class="head"><b>Laboratorio · Calcula tu brazo</b><span class="muted">Cambia tus medidas y mira si llegan los servos</span></div>
+
+  <svg viewBox="0 0 800 280" role="img" aria-label="Esquema del brazo estirado en horizontal con el hombro, el codo y la punta, y la distancia de cada tramo">
+    <rect x="0" y="0" width="800" height="280" fill="#05060a" />
+    <rect x="70" y="150" width="12" height="110" fill="#6b7186" />
+    <rect x="40" y="256" width="72" height="10" rx="3" fill="#6b7186" />
+    <line data-b1 x1="76" y1="130" x2="300" y2="130" stroke="#f2b230" stroke-width="18" stroke-linecap="round" />
+    <line data-b2 x1="300" y1="130" x2="500" y2="130" stroke="#d8382f" stroke-width="16" stroke-linecap="round" />
+    <circle cx="76" cy="130" r="12" fill="#2a2c35" stroke="#d5d9e2" stroke-width="3" />
+    <circle data-el cx="300" cy="130" r="10" fill="#2a2c35" stroke="#d5d9e2" stroke-width="3" />
+    <rect data-tip x="496" y="116" width="26" height="28" rx="4" fill="#37b26c" />
+    <g data-dims></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Medidas y objetivo</legend>
+      <label>Eslabón 1: <b data-l1-v>8</b> cm<input type="range" min="3" max="20" step="0.1" value="8" data-l1 /></label>
+      <label>Eslabón 2: <b data-l2-v>6,4</b> cm<input type="range" min="3" max="20" step="0.1" value="6.4" data-l2 /></label>
+      <label>Alcance que necesitas: <b data-goal-v>14</b> cm<input type="range" min="5" max="40" step="1" value="14" data-goal /></label>
+      <label>Carga en la pinza: <b data-load-v>30</b> g<input type="range" min="0" max="300" step="5" value="30" data-load /></label>
+    </fieldset>
+    <fieldset>
+      <legend>Pesos de tus piezas (g)</legend>
+      <label>Eslabón 1: <b data-w1-v>25</b><input type="range" min="0" max="150" step="5" value="25" data-w1 /></label>
+      <label>Eslabón 2: <b data-w2-v>20</b><input type="range" min="0" max="150" step="5" value="20" data-w2 /></label>
+      <label>Servo del codo (va en el extremo del eslabón 1): <b data-ws-v>20</b><input type="range" min="0" max="100" step="5" value="20" data-ws /></label>
+      <label>Pinza (con su servo): <b data-wg-v>30</b><input type="range" min="0" max="150" step="5" value="30" data-wg /></label>
+    </fieldset>
+    <fieldset class="wide">
+      <legend>Servos que tienes (par según su ficha, kg·cm)</legend>
+      <label>Servo del hombro: <b data-sh-v>3</b> kg·cm<input type="range" min="0.5" max="25" step="0.5" value="3" data-sh /></label>
+      <label>Servo del codo: <b data-sc-v>3</b> kg·cm<input type="range" min="0.5" max="25" step="0.5" value="3" data-sc /></label>
+    </fieldset>
+  </div>
+
+  <div class="res" aria-live="polite">
+    <p data-reach></p>
+    <p data-shoulder></p>
+    <p data-elbow></p>
+  </div>
+  <p class="ride muted" data-tip2></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+  const f = (n: number, d = 2) => n.toFixed(d).replace(".", ",");
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-plan]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const names = ["l1", "l2", "goal", "load", "w1", "w2", "ws", "wg", "sh", "sc"] as const;
+    const inp: Record<string, HTMLInputElement> = {};
+    for (const n of names) inp[n] = q<HTMLInputElement>(`[data-${n}]`);
+
+    function verdict(need: number, servo: number) {
+      const ratio = servo / need;
+      if (need < 0.005) return { txt: "casi no pide par", cls: "ok" };
+      if (ratio >= 2) return { txt: `✓ con margen (servo = ${f(ratio, 1)}× lo necesario)`, cls: "ok" };
+      if (ratio >= 1) return { txt: `justo (${f(ratio, 1)}×): sin margen de 2×`, cls: "warn" };
+      return { txt: `✕ no llega (servo = ${f(ratio, 1)}× lo necesario)`, cls: "bad" };
+    }
+
+    function update() {
+      const v: Record<string, number> = {};
+      for (const n of names) {
+        v[n] = +inp[n].value;
+        const lab = root.querySelector(`[data-${n}-v]`);
+        if (lab) lab.textContent = n === "l1" || n === "l2" ? f(v[n], 1).replace(",0", "") : String(v[n]).replace(".", ",");
+      }
+      const { l1, l2, goal, load, w1, w2, ws, wg, sh, sc } = v;
+      const reach = l1 + l2, rmin = Math.abs(l1 - l2);
+      const tipLoad = wg + load;
+      const elbow = (w2 * l2) / 2 + tipLoad * l2;                                   // g·cm
+      const shoulder = (w1 * l1) / 2 + ws * l1 + w2 * (l1 + l2 / 2) + tipLoad * (l1 + l2);
+      const eK = elbow / 1000, sK = shoulder / 1000;
+
+      // esquema
+      const px = Math.min(420 / reach, 20);
+      const x0 = 76, xe = x0 + l1 * px, xt = xe + l2 * px;
+      q("[data-b1]").setAttribute("x2", String(xe));
+      q("[data-b2]").setAttribute("x1", String(xe));
+      q("[data-b2]").setAttribute("x2", String(xt));
+      q("[data-el]").setAttribute("cx", String(xe));
+      q("[data-tip]").setAttribute("x", String(xt - 4));
+      const g = q<SVGGElement>("[data-dims]");
+      g.replaceChildren();
+      const dim = (xa: number, xb: number, y: number, text: string) => {
+        g.append(mk("line", { x1: xa, y1: y, x2: xb, y2: y, stroke: "#e9edf5", "stroke-width": 2 }));
+        for (const x of [xa, xb]) g.append(mk("line", { x1: x, y1: y - 7, x2: x, y2: y + 7, stroke: "#e9edf5", "stroke-width": 2 }));
+        const t = mk("text", { x: (xa + xb) / 2, y: y - 10, "text-anchor": "middle", fill: "#e9edf5", "font-size": 14, "font-family": "monospace" });
+        t.textContent = text;
+        g.append(t);
+      };
+      dim(x0, xe, 200, `L1 = ${f(l1, 1)} cm`);
+      dim(xe, xt, 200, `L2 = ${f(l2, 1)} cm`);
+      dim(x0, xt, 238, `alcance máx. = ${f(reach, 1)} cm`);
+
+      const r = q<HTMLElement>("[data-reach]");
+      r.innerHTML = `<b>Alcance:</b> máximo L1 + L2 = ${f(reach, 1)} cm · mínimo |L1 − L2| = ${f(rmin, 1)} cm. ` +
+        (reach >= goal ? `✓ Llega a tus ${goal} cm.` : `✕ Te faltan ${f(goal - reach, 1)} cm: alarga un eslabón (L2 = ${f(goal - l1, 1)} cm si dejas L1).`);
+      r.className = reach >= goal ? "ok" : "bad";
+
+      const vs = verdict(sK, sh), ve = verdict(eK, sc);
+      const s = q<HTMLElement>("[data-shoulder]"), e = q<HTMLElement>("[data-elbow]");
+      s.innerHTML = `<b>Hombro:</b> necesita ${f(sK)} kg·cm (≈ ${f(sK * 0.0980665)} N·m); con margen 2× → <b>${f(sK * 2)} kg·cm</b>. Tu servo: ${f(sh, 1)} kg·cm → ${vs.txt}.`;
+      s.className = vs.cls;
+      e.innerHTML = `<b>Codo:</b> necesita ${f(eK)} kg·cm (≈ ${f(eK * 0.0980665)} N·m); con margen 2× → <b>${f(eK * 2)} kg·cm</b>. Tu servo: ${f(sc, 1)} kg·cm → ${ve.txt}.`;
+      e.className = ve.cls;
+      const share = sK > 0 ? Math.round((tipLoad * (l1 + l2) / 1000 / sK) * 100) : 0;
+      q("[data-tip2]").textContent = `En el hombro, la pinza y la carga aportan el ${share} % del par: pesan poco, pero están lejos. Acorta el brazo o aligera la punta antes de comprar un servo más fuerte.`;
+    }
+
+    for (const n of names) inp[n].addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  fieldset.wide { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  fieldset.wide legend { grid-column: 1 / -1; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .res { border-top: 1px solid var(--line); padding: 8px 14px; }
+  .res p { margin: 8px 0; padding: 8px 10px; border-left: 4px solid var(--line); background: var(--panel-2); font-size: .98rem; }
+  .res p.ok { border-left-color: #4ade80; }
+  .res p.warn { border-left-color: #f2b230; }
+  .res p.bad { border-left-color: #ff5a4a; }
+  .ride { margin: 0; padding: 0 14px 12px; font-size: .92rem; }
+  @media (max-width: 560px) { .ctrl, fieldset.wide { grid-template-columns: 1fr; } }
+</style>

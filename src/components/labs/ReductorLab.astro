@@ -1,0 +1,122 @@
+---
+// Laboratorio del motor con reducción: velocidad ÷ relación y par × relación (× rendimiento).
+//   rpm de salida = rpm del motor ÷ relación
+//   par de salida = par del motor × relación × rendimiento total
+//   potencia mecánica de salida = par × velocidad angular (la reducción NO crea potencia: si el rendimiento es 100 %, es la misma)
+// El rendimiento por etapa es solo un ejemplo para ver el efecto del rozamiento: en un montaje real se mide.
+---
+
+<div class="lab" data-reductor>
+  <div class="head"><b>Laboratorio · Motor y reducción</b><span class="muted">Más lento, más fuerte</span></div>
+
+  <svg viewBox="0 0 800 280" role="img" aria-label="Un motor pequeño que gira rápido mueve una reducción de engranajes que gira más despacio">
+    <rect x="0" y="0" width="800" height="280" fill="#05060a" />
+    <g transform="translate(190 140)">
+      <circle r="62" fill="#d8382f" stroke="#0b0d12" stroke-width="3" />
+      <g data-spin-in>
+        <line x1="-62" y1="0" x2="62" y2="0" stroke="#fff" stroke-width="5" stroke-linecap="round" />
+        <circle cx="62" cy="0" r="7" fill="#fff" />
+      </g>
+      <text y="100" text-anchor="middle" fill="#a3a1b4" font-size="15" font-family="monospace">motor (rápido)</text>
+    </g>
+    <path d="M270,140 L530,140" stroke="#555a68" stroke-width="3" stroke-dasharray="6 8" fill="none" />
+    <text x="400" y="128" text-anchor="middle" fill="#2de0f2" font-size="16" font-family="monospace" data-ratio-label>reducción 9 : 1</text>
+    <g transform="translate(610 140)">
+      <circle r="92" fill="#f2b230" stroke="#0b0d12" stroke-width="3" />
+      <g data-spin-out>
+        <line x1="-92" y1="0" x2="92" y2="0" stroke="#05060a" stroke-width="6" stroke-linecap="round" />
+        <circle cx="92" cy="0" r="9" fill="#05060a" />
+      </g>
+      <text y="125" text-anchor="middle" fill="#a3a1b4" font-size="15" font-family="monospace">salida (lenta)</text>
+    </g>
+  </svg>
+
+  <div class="ctrl">
+    <label>Velocidad del motor: <b data-rpm-v>3000</b> rpm
+      <input type="range" min="500" max="6000" step="100" value="3000" data-rpm />
+    </label>
+    <label>Par del motor: <b data-par-v>0,04</b> N·m
+      <input type="range" min="1" max="20" value="4" data-par />
+    </label>
+    <label>Relación de reducción: <b data-rel-v>9</b> : 1
+      <input type="range" min="1" max="50" value="9" data-rel />
+    </label>
+    <label>Rendimiento total de la reducción (ejemplo): <b data-eta-v>100</b> %
+      <input type="range" min="50" max="100" step="5" value="100" data-eta />
+    </label>
+    <div class="btns">
+      <button class="btn" type="button" data-p1>Ejemplo 30 : 1</button>
+      <button class="btn" type="button" data-p2>Ejemplo 20 : 1</button>
+    </div>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <p class="ride muted" data-note></p>
+</div>
+
+<script>
+  const f = (n: number, d = 2) => n.toLocaleString("es-ES", { maximumFractionDigits: d });
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-reductor]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const rpm = q<HTMLInputElement>("[data-rpm]");
+    const par = q<HTMLInputElement>("[data-par]");
+    const rel = q<HTMLInputElement>("[data-rel]");
+    const eta = q<HTMLInputElement>("[data-eta]");
+    const spinIn = q<SVGGElement>("[data-spin-in]");
+    const spinOut = q<SVGGElement>("[data-spin-out]");
+    const out = q<HTMLElement>("[data-out]");
+    const note = q<HTMLElement>("[data-note]");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let speedIn = 0, speedOut = 0, a1 = 0, a2 = 0, last = 0;
+
+    function update() {
+      const n = +rpm.value, T = +par.value / 100, R = +rel.value, e = +eta.value / 100;
+      q("[data-rpm-v]").textContent = String(n);
+      q("[data-par-v]").textContent = f(T);
+      q("[data-rel-v]").textContent = String(R);
+      q("[data-eta-v]").textContent = String(+eta.value);
+      q("[data-ratio-label]").textContent = `reducción ${R} : 1`;
+      const nOut = n / R;
+      const tOut = T * R * e;
+      out.innerHTML = `Salida: <b>${f(nOut, 1)} rpm</b> (${n} ÷ ${R}) &nbsp;·&nbsp; Par: <b>${f(tOut)} N·m</b> (${f(T)} × ${R}${e < 1 ? ` × ${f(e)}` : ""})`;
+      const pIn = (T * n * 2 * Math.PI) / 60;
+      const pOut = (tOut * nOut * 2 * Math.PI) / 60;
+      note.innerHTML = e === 1
+        ? `Ideal, sin rozamiento: la potencia mecánica es la misma (${f(pIn)} W entra y ${f(pOut)} W sale). La reducción <b>cambia velocidad por fuerza</b>, no regala energía.`
+        : `Con pérdidas, sale algo menos: ${f(pOut)} W de ${f(pIn)} W. El resto se convierte en calor por el rozamiento entre dientes y en los ejes.`;
+      speedIn = Math.min(n / 60, 100) * 6; // grados por segundo del dibujo (se limita para que se vea)
+      speedOut = speedIn / R;
+    }
+
+    function frame(t: number) {
+      const dt = last ? (t - last) / 1000 : 0;
+      last = t;
+      a1 = (a1 + speedIn * dt) % 360;
+      a2 = (a2 + speedOut * dt) % 360;
+      spinIn.setAttribute("transform", `rotate(${a1})`);
+      spinOut.setAttribute("transform", `rotate(${a2})`);
+      requestAnimationFrame(frame);
+    }
+
+    for (const i of [rpm, par, rel, eta]) i.addEventListener("input", update);
+    q("[data-p1]").addEventListener("click", () => { rpm.value = "3000"; par.value = "4"; rel.value = "30"; eta.value = "100"; update(); });
+    q("[data-p2]").addEventListener("click", () => { rpm.value = "3000"; par.value = "4"; rel.value = "20"; eta.value = "100"; update(); });
+    update();
+    if (!reduce) requestAnimationFrame(frame);
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; gap: 10px; padding: 12px 14px; }
+  label { display: block; font-size: .95rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btns .btn { min-height: 44px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .ride { margin: 0; padding: 0 14px 12px; font-size: .92rem; }
+</style>

@@ -1,0 +1,124 @@
+---
+// Laboratorio de la rampa: fuerza para subir una carga por un plano inclinado (sin rozamiento).
+// fuerza = peso × altura ÷ largo de la rampa. El camino recorrido es el largo, no la altura.
+---
+
+<div class="lab" data-ramp>
+  <div class="head"><b>Laboratorio · Rampa</b><span class="muted">Cambia el peso, la altura y el largo</span></div>
+  <svg viewBox="0 0 800 340" role="img" aria-label="Rampa azul con una carga verde, una flecha cian hacia abajo (el peso) y una flecha naranja a lo largo de la rampa (la fuerza para subirla)">
+    <rect width="800" height="340" fill="#05060a" />
+    <line x1="30" y1="300" x2="780" y2="300" stroke="#3a4054" stroke-width="2" />
+    <polygon data-tri fill="#2f7fe0" stroke="#0b0d12" stroke-width="2" />
+    <line data-hline stroke="#4ade80" stroke-width="3" stroke-dasharray="6 5" />
+    <text data-htxt fill="#4ade80" font-size="16" font-family="monospace" font-weight="700"></text>
+    <g data-block></g>
+    <g data-arrows></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Peso de la carga: <b data-w-v>40</b> N</legend>
+      <input type="range" min="10" max="100" step="10" value="40" data-w aria-label="Peso de la carga en newtons" />
+    </fieldset>
+    <fieldset>
+      <legend>Altura que quieres subir: <b data-h-v>1</b> m</legend>
+      <input type="range" min="0.5" max="2" step="0.5" value="1" data-h aria-label="Altura en metros" />
+    </fieldset>
+    <fieldset class="wide">
+      <legend>Largo de la rampa: <b data-l-v>4</b> m</legend>
+      <input type="range" min="1" max="8" step="0.5" value="4" data-l aria-label="Largo de la rampa en metros" />
+    </fieldset>
+  </div>
+  <p class="out" aria-live="polite" data-info></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+  const fmt = (n: number) => n.toLocaleString("es-ES", { maximumFractionDigits: 1 });
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-ramp]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const w = q<HTMLInputElement>("[data-w]");
+    const h = q<HTMLInputElement>("[data-h]");
+    const l = q<HTMLInputElement>("[data-l]");
+    const tri = q<SVGPolygonElement>("[data-tri]");
+    const hline = q<SVGLineElement>("[data-hline]");
+    const htxt = q<SVGTextElement>("[data-htxt]");
+    const block = q<SVGGElement>("[data-block]");
+    const arrows = q<SVGGElement>("[data-arrows]");
+    const info = q<HTMLElement>("[data-info]");
+    const K = 62; // píxeles por metro
+    const X0 = 70, Y0 = 300;
+
+    function update() {
+      const Wt = +w.value, Hm = +h.value;
+      let Lm = +l.value;
+      if (Lm < Hm) { Lm = Hm; l.value = String(Lm); }
+      q("[data-w-v]").textContent = String(Wt);
+      q("[data-h-v]").textContent = fmt(Hm);
+      q("[data-l-v]").textContent = fmt(Lm);
+      const bx = Math.sqrt(Lm * Lm - Hm * Hm);
+      const px = X0 + bx * K, pz = Y0 - Hm * K;
+      tri.setAttribute("points", `${X0},${Y0} ${px},${Y0} ${px},${pz}`);
+      hline.setAttribute("x1", String(px + 18)); hline.setAttribute("x2", String(px + 18));
+      hline.setAttribute("y1", String(Y0)); hline.setAttribute("y2", String(pz));
+      htxt.setAttribute("x", String(px + 28)); htxt.setAttribute("y", String((Y0 + pz) / 2 + 5));
+      htxt.textContent = `altura ${fmt(Hm)} m`;
+
+      const ang = Math.atan2(Hm * K, bx * K); // rad, hacia arriba
+      const dx = Math.cos(ang), dy = -Math.sin(ang); // dirección de subida en pantalla
+      const nx = dy, ny = -dx; // normal hacia fuera (arriba-izquierda)
+      const s = 0.55 * Lm * K;
+      const cx = X0 + dx * s + nx * 18, cy = Y0 + dy * s + ny * 18;
+      block.replaceChildren();
+      const r = mk("rect", { x: -26, y: -18, width: 52, height: 36, rx: 4, fill: "#37b26c", stroke: "#0b0d12", "stroke-width": 2, transform: `translate(${cx} ${cy}) rotate(${(-ang * 180) / Math.PI})` });
+      block.append(r);
+
+      const F = (Wt * Hm) / Lm;
+      const wl = 60; // la flecha del peso mide siempre 60 px
+      const fl = Math.max(6, wl * (F / Wt));
+      arrows.replaceChildren();
+      const head = (x: number, y: number, ux: number, uy: number, color: string) => {
+        const px2 = -uy, py2 = ux;
+        return mk("polygon", { points: `${x},${y} ${x - ux * 14 + px2 * 7},${y - uy * 14 + py2 * 7} ${x - ux * 14 - px2 * 7},${y - uy * 14 - py2 * 7}`, fill: color });
+      };
+      // peso (hacia abajo)
+      arrows.append(mk("line", { x1: cx, y1: cy, x2: cx, y2: cy + wl - 8, stroke: "#2de0f2", "stroke-width": 5 }));
+      arrows.append(head(cx, cy + wl, 0, 1, "#2de0f2"));
+      const t1 = mk("text", { x: cx + 10, y: cy + wl - 2, fill: "#2de0f2", "font-size": 16, "font-family": "monospace", "font-weight": 700 });
+      t1.textContent = `peso ${Wt} N`;
+      arrows.append(t1);
+      // fuerza a lo largo de la rampa (hacia arriba)
+      const sx = cx + dx * 34, sy = cy + dy * 34;
+      const ex = sx + dx * fl, ey = sy + dy * fl;
+      arrows.append(mk("line", { x1: sx, y1: sy, x2: ex - dx * 8, y2: ey - dy * 8, stroke: "#ff8a1f", "stroke-width": 5 }));
+      arrows.append(head(ex, ey, dx, dy, "#ff8a1f"));
+      const t2 = mk("text", { x: ex + 10, y: ey - 8, fill: "#ff8a1f", "font-size": 16, "font-family": "monospace", "font-weight": 700 });
+      t2.textContent = `fuerza ${fmt(F)} N`;
+      arrows.append(t2);
+
+      info.innerHTML = `Fuerza = peso × altura ÷ largo = ${Wt} × ${fmt(Hm)} ÷ ${fmt(Lm)} = <b>${fmt(F)} N</b>. Subes ${fmt(Hm)} m de altura recorriendo <b>${fmt(Lm)} m</b> de rampa: ${fmt(Lm / Hm)} veces más camino y ${fmt(Wt / F)} veces menos fuerza. Es lo ideal, sin rozamiento: en la vida real hará falta algo más.${Lm === Hm ? " Con el largo igual a la altura la «rampa» es vertical: levantas el peso entero." : ""}`;
+    }
+    for (const el of [w, h, l]) el.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  .wide { grid-column: 1 / -1; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 8px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

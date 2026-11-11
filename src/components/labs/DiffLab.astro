@@ -1,0 +1,121 @@
+---
+// Laboratorio del diferencial abierto. Regla de la unidad: la velocidad del eje de entrada es la MEDIA de las dos ruedas,
+// así que rueda derecha = 2 × entrada − rueda izquierda. Con una rueda sobre hielo (patina) la otra casi no empuja.
+// El dibujo está ralentizado para poder verse; las cifras (rpm = vueltas por minuto) son las reales del ejemplo.
+---
+
+<div class="lab" data-diff>
+  <div class="head"><b>Laboratorio · El diferencial abierto</b><span class="muted">Mueve la rueda izquierda y mira la derecha</span></div>
+
+  <svg viewBox="0 0 800 300" role="img" aria-label="Eje trasero visto desde arriba con una rueda a cada lado y el diferencial en el centro">
+    <rect width="800" height="300" fill="#05060a" />
+    <rect x="130" y="146" width="540" height="8" rx="4" fill="#d5d9e2" />
+    <rect x="340" y="95" width="120" height="110" rx="16" fill="#2f7fe0" stroke="#0b0d12" stroke-width="3" />
+    <text x="400" y="146" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">diferencial</text>
+    <text x="400" y="168" text-anchor="middle" fill="#dbe7ff" font-size="13" font-family="monospace" data-in-label>entrada</text>
+    <g data-wl transform="translate(110 150)">
+      <circle r="62" fill="#3c404e" stroke="#0b0d12" stroke-width="3" />
+      <circle r="38" fill="#aeb6c8" />
+      <g data-spokes-l></g>
+    </g>
+    <g data-wr transform="translate(690 150)">
+      <circle r="62" fill="#3c404e" stroke="#0b0d12" stroke-width="3" />
+      <circle r="38" fill="#aeb6c8" />
+      <g data-spokes-r></g>
+    </g>
+    <text x="110" y="250" text-anchor="middle" fill="#ff8a1f" font-size="20" font-weight="700" data-tl></text>
+    <text x="690" y="250" text-anchor="middle" fill="#2de0f2" font-size="20" font-weight="700" data-tr></text>
+    <text x="110" y="278" text-anchor="middle" fill="#a3a1b4" font-size="13">rueda izquierda</text>
+    <text x="690" y="278" text-anchor="middle" fill="#a3a1b4" font-size="13">rueda derecha</text>
+    <g data-ice hidden>
+      <rect x="40" y="226" width="140" height="10" rx="5" fill="#9fdcf0" />
+    </g>
+  </svg>
+
+  <div class="ctrl">
+    <label>Eje de entrada (el que mueve el motor): <b data-in-v>100</b> rpm<input type="range" min="20" max="200" step="10" value="100" data-in aria-label="Velocidad del eje de entrada en rpm" /></label>
+    <label>Rueda izquierda: <b data-l-v>80</b> rpm<input type="range" min="0" max="200" step="5" value="80" data-l aria-label="Velocidad de la rueda izquierda en rpm" /></label>
+    <div class="btns">
+      <button class="btn" type="button" data-preset="recto">Recto</button>
+      <button class="btn" type="button" data-preset="curva">Curva a la izquierda</button>
+      <button class="btn" type="button" data-preset="hielo">Rueda izquierda sobre hielo</button>
+    </div>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-diff]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const inI = q<HTMLInputElement>("[data-in]");
+    const lI = q<HTMLInputElement>("[data-l]");
+    const out = q<HTMLElement>("[data-out]");
+    const ice = q<SVGGElement>("[data-ice]");
+    const sl = q<SVGGElement>("[data-spokes-l]");
+    const sr = q<SVGGElement>("[data-spokes-r]");
+    for (const g of [sl, sr]) for (let i = 0; i < 4; i++) g.append(mk("rect", { x: -4, y: -36, width: 8, height: 36, fill: i === 0 ? "#ff8a1f" : "#555a68", transform: `rotate(${i * 90})` }));
+    let rl = 80, rr = 120, angL = 0, angR = 0, last = 0, iceOn = false;
+
+    function update(from?: string) {
+      const rin = +inI.value;
+      lI.max = String(2 * rin);
+      if (from === "in" || +lI.value > 2 * rin) lI.value = String(Math.min(+lI.value, 2 * rin));
+      rl = +lI.value;
+      rr = 2 * rin - rl; // entrada = media de las dos ruedas
+      q("[data-in-v]").textContent = String(rin);
+      q("[data-l-v]").textContent = String(rl);
+      q("[data-in-label]").textContent = `${rin} rpm`;
+      q("[data-tl]").textContent = `${rl} rpm`;
+      q("[data-tr]").textContent = `${rr} rpm`;
+      ice.toggleAttribute("hidden", !iceOn);
+      const sum = `Entrada = media de las dos ruedas: (${rl} + ${rr}) ÷ 2 = <b>${(rl + rr) / 2} rpm</b>.`;
+      if (iceOn) out.innerHTML = `${sum}<br>La rueda sobre hielo gira a toda velocidad (${rl} rpm) y la que agarra se queda <b>casi parada</b> (${rr} rpm): el coche apenas avanza. Por eso existen los diferenciales autoblocantes.`;
+      else if (rl === rr) out.innerHTML = `${sum}<br>Van en línea recta: las dos ruedas giran igual.`;
+      else out.innerHTML = `${sum}<br>En una curva a la izquierda la rueda izquierda (la de dentro) recorre menos: gira <b>más lenta</b>; la derecha, <b>más rápida</b>.`;
+    }
+
+    inI.addEventListener("input", () => { iceOn = false; update("in"); });
+    lI.addEventListener("input", () => { iceOn = false; update(); });
+    for (const b of root.querySelectorAll<HTMLButtonElement>("[data-preset]")) {
+      b.addEventListener("click", () => {
+        const rin = +inI.value, k = b.dataset.preset;
+        iceOn = k === "hielo";
+        lI.value = String(k === "recto" ? rin : k === "curva" ? Math.round((rin * 0.8) / 5) * 5 : 2 * rin);
+        update();
+      });
+    }
+
+    function frame(ts: number) {
+      const dt = Math.min(0.05, (ts - last) / 1000 || 0);
+      last = ts;
+      angL += rl * 0.4 * dt * 6; // dibujo ralentizado (≈ 1/2,5)
+      angR += rr * 0.4 * dt * 6;
+      sl.setAttribute("transform", `rotate(${angL})`);
+      sr.setAttribute("transform", `rotate(${-angR})`);
+      requestAnimationFrame(frame);
+    }
+    update();
+    if (!reduce) requestAnimationFrame(frame);
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; gap: 12px; padding: 12px 14px; }
+  label { display: block; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+</style>

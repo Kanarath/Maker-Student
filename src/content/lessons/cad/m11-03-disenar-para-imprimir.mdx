@@ -1,0 +1,180 @@
+---
+id: m11-03
+unit: cad
+order: 3
+title: "Diseñar para imprimir: holguras, radios y paredes"
+summary: "Diseña pensando en la impresora: deja holgura para que las piezas encajen, redondea esquinas, refuerza con paredes y haz una prueba pequeña antes de imprimir en grande."
+practice: [l_diseno_imp]
+cover: cad/c_tol_bien
+duration: 35
+status: revisada
+prerequisites: [m11-02, m3-01]
+objectives:
+  - "Dejar holgura (unas décimas de mm) en un agujero para que un eje encaje"
+  - "Explicar por qué se redondean las esquinas interiores"
+  - "Elegir entre más paredes o más relleno para reforzar una pieza"
+  - "Ordenar el camino de una pieza desde el CAD hasta tenerla en la mano"
+materials:
+  - "Papel, lápiz y regla (mejor, un calibre o pie de rey, si tienes)"
+  - "Un eje o varilla redonda de unos 5 mm para medir (un lápiz o una varilla de plástico sirven para practicar)"
+  - "Opcional: acceso a una impresora FDM para imprimir la tarjeta de pruebas, con alguien que sepa usarla"
+piece:
+  name: "Tarjeta de pruebas de holgura"
+  hint: "Foto de tu diseño con 4 agujeros de distinto tamaño y la tabla de predicciones (o de resultados, si imprimes)"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a diseñar una **tarjeta de pruebas de holgura**: una placa pequeña con **cuatro agujeros** de tamaño ligeramente distinto, para descubrir **cuál encaja** con un eje de 5 mm. Es la «prueba pequeña» que se hace **antes** de imprimir una pieza grande.
+
+<Fig src="cad/c_tol_bien" alt="Una placa cuadrada azul con un agujero en el centro. Un eje amarillo redondo está metido en el agujero, que tiene un aro cian a su alrededor marcando el tamaño dibujado. Una flecha verde apunta hacia abajo, hacia el eje." caption="Se dibuja el agujero un poco más grande (aro cian): aunque la impresora lo saque algo más pequeño, el eje entra." />
+
+<Tip title="Sin impresora también vale">
+Si no puedes imprimir, haz el diseño y la tabla de **predicciones**. Con una impresora, rellenas luego la tabla con lo que de verdad pasó. En los dos casos registras la tarjeta.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Las piezas impresas rara vez salen exactas
+
+Una impresora se desvía **unas décimas de milímetro** del modelo, y los **agujeros suelen salir algo más pequeños**. Por eso un agujero de 5,0 mm para un eje de 5 mm **queda justo o no entra**.
+
+**Tolerancia (holgura)** es el pequeño margen que dejas en el diseño para que dos piezas **encajen sin quedar ni muy apretadas ni muy sueltas**.
+
+**Predice antes de mover nada.** Tu impresora hace los agujeros unos 0,2 mm más pequeños. Para un eje de 5 mm, ¿entra con un agujero de 5,0? ¿Y con uno de 5,4?
+
+<CadToleranceLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Con 0 de holgura y un encogimiento de 0,2 mm, el agujero impreso sale de **4,8 mm**: **no entra**.
+- Con 0,4 mm de holgura sale de **5,2 mm** y el eje entra con un pequeño juego.
+- Cuánta holgura necesitas **depende de tu impresora y del material**: por eso se hace una **prueba pequeña** primero.
+</details>
+
+<Why title="¿Por qué no hay un número mágico?">
+Cada impresora, cada filamento y cada ajuste dejan agujeros ligeramente distintos. Las cifras del laboratorio son solo para ver la idea. El número bueno **lo descubres tú con la tarjeta de pruebas**.
+</Why>
+
+<Quiz id="q1" q="Diseñas un agujero para un eje impreso de 5 mm. Si lo haces exactamente de 5 mm, ¿qué suele pasar?" options={["Entra con total comodidad siempre", "Que queda demasiado justo o no entra: hay que dejar una pequeña holgura (unas décimas de mm)", "El agujero se agranda al imprimir siempre"]} answer={1}>
+Las piezas impresas se desvían unas décimas del modelo y los agujeros suelen salir algo más pequeños. Cuánta holgura necesitas depende de tu impresora: **haz una prueba pequeña primero**.
+</Quiz>
+
+## Esquinas redondeadas
+
+En una esquina interior en **ángulo recto**, las tensiones se **concentran** y la pieza se parte por ahí. Un **radio** (acuerdo) las reparte. Es el mismo principio que redondear las esquinas de una ventana.
+
+<Fig src="cad/c_filete_mal" alt="Una pieza amarilla en forma de L. Una flecha naranja empuja la parte alta del brazo vertical hacia la izquierda, como intentando abrir la L. El rincón interior es un ángulo recto y una bolita roja lo marca."  caption="Esquina interior en ángulo recto: la bolita roja marca el punto donde se concentra la tensión." />
+
+<Fig src="cad/c_filete_bien" alt="La misma L, con el rincón interior redondeado. La bolita verde queda en la curva." caption="Con un radio, la tensión se reparte por la curva." />
+
+<Quiz id="q2" q="Una esquina interior en ángulo recto es el punto por donde se parte tu pieza. ¿Qué la mejora?" options={["Redondearla con un acuerdo (radio)", "Hacerla más afilada", "Pintarla"]} answer={0}>
+En una esquina viva las tensiones se concentran. Un radio las reparte y la pieza aguanta más.
+</Quiz>
+
+## Paredes frente a relleno
+
+Las **paredes** (perímetros) son las capas exteriores de plástico. Trabajan **lejos del centro**, como las alas de una viga en I, y soportan buena parte del esfuerzo. Subir de **dos a tres o cuatro paredes** suele dar más resistencia que subir mucho el relleno.
+
+<Fig src="cad/c_paredes" alt="Dos cuadrados vistos desde arriba, como una capa cortada. El de la izquierda tiene 2 paredes amarillas alrededor y una rejilla azul dentro; el de la derecha tiene 4 paredes amarillas y la misma rejilla azul." caption="Misma rejilla de relleno (azul). A la izquierda 2 paredes; a la derecha, 4. Las paredes extra refuerzan el borde." />
+
+<Quiz id="q3" q="Quieres una pieza más resistente. ¿Qué suele ayudar más: más relleno o más paredes?" options={["Más relleno siempre es mejor que cualquier otra cosa", "Menos paredes y más aire", "Más paredes suele ayudar bastante, porque soportan buena parte del esfuerzo"]} answer={2}>
+Las paredes exteriores trabajan lejos del centro, como las alas de una viga en I. Subir de dos a tres o cuatro suele dar más que subir mucho el relleno.
+</Quiz>
+
+## El camino hasta tener la pieza en la mano
+
+1. **Modelas** la pieza en el programa CAD.
+2. **Exportas** el modelo (por ejemplo, en formato STL).
+3. **Lo preparas** en el programa de impresión: orientación, capas y relleno.
+4. **Imprimes** la pieza.
+5. **Retiras** los soportes, lijas las rebabas y **la pruebas**.
+
+Si algo falla, vuelves al paso que corresponda.
+
+<Warn title="Calor y ventilación">
+La boquilla suele estar a unos **200 °C** y la cama también se calienta: **no las toques**. Ventila el sitio (sobre todo con ciertos plásticos) y **no dejes la impresora sola** mucho tiempo.
+</Warn>
+</Block>
+
+<Block kind="montaje">
+Tu «montaje» es la **tarjeta de pruebas**: una placa con cuatro agujeros. Trabaja en papel o en tu programa CAD.
+
+<Step n={1} title="Mide tu eje">
+Mide el diámetro del eje con el que quieres que encaje. Con un calibre sale con décimas; con una regla, a ojo. Para esta lección usa **5 mm**.
+<Why>Todo el diseño parte de ese número. Si lo mides mal, la prueba no sirve.</Why>
+</Step>
+
+<Step n={2} title="Cuatro agujeros, cuatro holguras">
+Dibuja una placa de unos **50 × 20 mm** con **cuatro agujeros en fila**. Como punto de partida orientativo, hazlos de **5,0 · 5,2 · 5,4 · 5,6 mm**. Escribe el diámetro **al lado de cada agujero** (en el modelo o con rotulador).
+<Why>Cada impresora es distinta. Con cuatro tamaños vas a encontrar **cuál es el tuyo** en una sola impresión.</Why>
+</Step>
+
+<Step n={3} title="Redondea y no te pases">
+Redondea las esquinas de la placa. Mantén las paredes gruesas (tres o cuatro) alrededor de los agujeros. La placa es pequeña: se imprime en poco tiempo.
+</Step>
+
+<Step n={4} title="Predice la tabla">
+Dibuja una tabla con una columna por agujero: **5,0 / 5,2 / 5,4 / 5,6**. Escribe tu predicción: «no entra», «justo», «entra con juego» o «baila».
+<Warn title="Si imprimes">
+Imprime con supervisión de alguien que sepa usar la impresora. No toques la boquilla ni la cama calientes y espera a que la pieza se enfríe.
+</Warn>
+</Step>
+
+<Step n={5} title="Prueba y apunta">
+Si has impreso la tarjeta, prueba el eje en cada agujero y apunta lo que pasó. **Guarda el resultado**: es tu holgura para las piezas siguientes.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa a la vez, **predice** y comprueba:
+
+1. **Otro eje:** repite la prueba con un eje de 3 mm o de 8 mm. ¿Necesita la misma holgura o cambia? Apunta lo que predices antes de probar.
+2. **Las paredes:** si imprimes dos tarjetas, una con 2 y otra con 4 paredes, ¿cuál aguantará mejor si la doblas con cuidado? Predice y comprueba.
+3. **El caso de la palanca:** imprimes una palanca de 12 cm, **de pie, con las capas apiladas a lo largo**. Al empujarla se parte limpiamente entre dos capas. ¿Qué ha pasado y qué cambio haces primero?
+
+<details>
+<summary>Comprueba el reto 3</summary>
+
+La unión **entre capas** es más débil y ha cedido a flexión. Primero la imprimes **tumbada y con más paredes**: tumbada el esfuerzo ya no separa capas y las paredes aportan resistencia. **Cambia una cosa cada vez** para saber qué funciona.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Agujero justo, sin holgura" wrongLabel="Diámetro igual al eje" rightLabel="Con holgura añadida">
+  <Fig slot="wrong" src="cad/c_tol_mal" alt="Placa azul con un agujero más estrecho que el eje amarillo; una flecha roja empuja el eje y no entra." />
+  <Fig slot="right" src="cad/c_tol_bien" alt="Placa azul con un agujero algo mayor que el eje; el eje amarillo está metido y una flecha verde lo acompaña." />
+
+Dibujar el agujero **exactamente igual** que el eje parece lógico, pero la impresora lo saca algo **más pequeño**. Añade unas décimas de milímetro y comprueba con una **tarjeta de pruebas**.
+</Mistake>
+
+<Mistake title="Esquina interior en ángulo recto" wrongLabel="Esquina viva" rightLabel="Esquina con radio">
+  <Fig slot="wrong" src="cad/c_filete_mal" alt="Pieza en L con el rincón interior en ángulo recto y una bolita roja en el rincón." />
+  <Fig slot="right" src="cad/c_filete_bien" alt="Pieza en L con el rincón interior curvo y una bolita verde en la curva." />
+
+En la esquina viva se **concentran las tensiones** y ahí empieza la grieta. Con un **radio** la pieza aguanta más.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu tarjeta:
+
+<Checklist items={[
+  "He medido el eje y he apuntado el diámetro",
+  "Los cuatro agujeros tienen holguras distintas y cada uno lleva su cifra",
+  "La placa tiene las esquinas redondeadas",
+  "He escrito mi predicción para cada agujero",
+  "Si he impreso, no he tocado la boquilla ni la cama calientes",
+]} />
+
+<Quiz id="q4" q="¿Qué precaución tomas con una impresora 3D FDM?" options={["Ninguna: está a temperatura ambiente", "Taparla con una manta para que mantenga el calor", "No tocar la boquilla ni la cama calientes, ventilar y no dejarla funcionando sin supervisión"]} answer={2}>
+La boquilla suele estar a unos 200 °C y la cama también se calienta. Ventila el sitio (sobre todo con ciertos plásticos) y no la dejes sola mucho tiempo.
+</Quiz>
+
+<RegisterPiece piece="Tarjeta de pruebas de holgura" />
+</Block>

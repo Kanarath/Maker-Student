@@ -1,0 +1,153 @@
+---
+id: m4-03
+unit: simples
+order: 3
+title: "Correas y cadenas: engranajes a distancia"
+summary: "Une dos poleas con una correa, predice cuántas vueltas da la grande y comprueba qué cambia si cruzas la correa, si se afloja o si usas una cadena."
+practice: [l_correas]
+cover: simples/co_hero
+duration: 30
+status: revisada
+prerequisites: [m3-03, m3-02]
+objectives:
+  - "Calcular la relación de transmisión con diámetro de la conducida ÷ diámetro de la motriz"
+  - "Saber en qué sentido gira la conducida con una correa abierta y con una cruzada"
+  - "Explicar por qué una cadena no patina y una correa lisa sí puede"
+materials:
+  - "Dos poleas de distinto tamaño (la grande 3 veces el diámetro de la pequeña), dos ejes y una gomita o cuerda gruesa cerrada como correa"
+  - "Una viga larga de soporte con dos agujeros a la distancia de las poleas y, si tienes, una cadena con dos piñones"
+piece:
+  name: "Transmisión por correa 3:1"
+  hint: "Foto de tus dos poleas con la correa y una marca en cada una para contar vueltas"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar una **transmisión por correa**: una polea pequeña (la que mueves) y una grande (la que obedece) unidas por una correa. Antes de girar, **predecirás cuántas vueltas** da la grande por cada una de la pequeña.
+
+<Fig src="simples/co_hero" alt="Un marco de vigas con dos ejes. Una polea azul pequeña a la izquierda y una polea amarilla grande a la derecha están unidas por una correa blanca que las rodea. Una flecha naranja curva marca el giro de la pequeña y una flecha cian curva marca el de la grande." caption="La pequeña gira deprisa y arrastra a la grande, que gira más despacio y con más fuerza." />
+</Block>
+
+<Block kind="concepto">
+## Engranajes a distancia
+
+Con una **correa** o una **cadena** puedes unir dos ejes **lejanos** sin una fila de engranajes en medio. La cuenta es la de los engranajes, pero con diámetros:
+
+**relación = diámetro de la conducida ÷ diámetro de la motriz**
+
+Con una polea motriz de 2 cm y una conducida de 6 cm: 6 ÷ 2 = **3 : 1**. La conducida da **una vuelta por cada 3** de la motriz: va más lenta, pero con más fuerza.
+
+La **motriz** es la que mueves; la **conducida**, la que obedece.
+
+<BeltLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- **Conducida mayor** que la motriz: gira **más despacio** y empuja con **más fuerza** (reducción).
+- **Conducida menor**: gira **más deprisa**, con menos fuerza (multiplicación).
+- Con la correa **abierta** las dos giran en el **mismo sentido**. Si la **cruzas en forma de 8**, la conducida gira al **revés**.
+</details>
+
+<Fig src="simples/co_cruzada" alt="Las mismas dos poleas con la correa blanca cruzada formando un ocho. La flecha naranja de la pequeña gira en un sentido y la flecha cian de la grande gira en el sentido contrario." caption="Correa cruzada: las dos poleas giran en sentidos contrarios." />
+
+<Why title="¿Por qué se parece tanto a los engranajes?">
+La correa avanza la **misma longitud** por el borde de las dos poleas. Una polea grande tiene el borde más largo, así que necesita **menos vueltas** para dejar pasar la misma correa. Es lo mismo que contar dientes en dos engranajes, pero repartido por el borde.
+</Why>
+
+<Quiz id="q1" q="Una polea motriz de 2 cm de diámetro mueve con una correa a otra de 6 cm. ¿Qué relación de transmisión tiene?" options={["0,3 : 1", "3 : 1", "12 : 1"]} answer={1}>
+Relación = diámetro de la conducida ÷ diámetro de la motriz = 6 ÷ 2 = **3 : 1**. La conducida gira 3 veces más despacio.
+</Quiz>
+
+### Correa lisa o cadena
+
+Una **correa lisa** transmite por **rozamiento**: si el esfuerzo supera el agarre, **patina** y la relación real ya no es exacta. Una **cadena** engrana con **dientes** en piñones (como un engranaje a distancia): **no resbala** y aguanta más esfuerzo, pero necesita engrase y hace más ruido.
+
+<Fig src="simples/co_cadena" alt="Un piñón azul pequeño y otro amarillo grande de dientes unidos por una cadena de eslabones grises y plateados alternados." caption="Una cadena engrana con los dientes: no patina." />
+
+<Quiz id="q2" q="Una polea motriz de 4 cm gira a 60 vueltas por minuto y mueve una conducida de 2 cm con una correa. ¿A cuántas vueltas por minuto gira la conducida (sin patinar)?" options={["120", "30", "60"]} answer={0}>
+Relación = 2 ÷ 4 = 0,5 : 1. La conducida es más pequeña, así que gira **más deprisa**: 60 ÷ 0,5 = **120 vueltas por minuto**.
+</Quiz>
+
+<Tip title="Sabías que… la correa de distribución">
+En muchos motores de coche, una **correa dentada** une el cigüeñal con el árbol de levas para que giren **sincronizados**. Si se rompe, el motor puede estropearse. Por eso esa correa lleva dientes: **no puede patinar**.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="El marco y los ejes" img="simples/co_s1" alt="Una viga gris horizontal arriba sostenida por dos vigas azules verticales, con dos ejes que salen hacia delante en agujeros separados.">
+Monta un marco con una viga horizontal arriba y dos patas. Pasa **dos ejes** por dos agujeros de la viga, bastante separados.
+<Why>Los ejes deben quedar **paralelos** y a una distancia que permita estirar la correa un poco.</Why>
+</Step>
+
+<Step n={2} title="La polea pequeña (motriz)" img="simples/co_s2" alt="Una polea azul pequeña montada en el eje de la izquierda.">
+Pon la polea **pequeña** en el eje de la izquierda: será la **motriz**. Mídele el diámetro (por ejemplo, 2 cm).
+</Step>
+
+<Step n={3} title="La polea grande (conducida)" img="simples/co_s3" alt="Una polea amarilla grande montada en el eje de la derecha.">
+Pon la polea **grande** en el otro eje: será la **conducida**. Mide su diámetro (por ejemplo, 6 cm).
+
+**Predice:** ¿cuántas vueltas dará la grande por cada vuelta de la pequeña?
+</Step>
+
+<Step n={4} title="La correa" img="simples/co_s4" alt="Una correa blanca cerrada rodeando las dos poleas por la garganta.">
+Pasa la correa por las gargantas de las dos poleas. Debe quedar **tensa pero sin forzar**. Marca cada polea con una pegatina o un rotulador y cuenta vueltas.
+
+<details>
+<summary>Respuesta</summary>
+
+Una vuelta por cada **3** de la pequeña (6 ÷ 2 = 3). Si cuentas menos, la correa **patina**.
+</details>
+
+<Warn title="Dedos y pelo">
+La correa en marcha pellizca entre la polea y la correa. Gira despacio y sin acercar los dedos ni el pelo.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Cruza la correa** formando un 8. ¿Gira la grande en el mismo sentido o al revés?
+2. **Intercambia las poleas:** mueve ahora con la grande. ¿Cuántas vueltas da la pequeña por cada una de la grande? ¿Qué pasa con la fuerza?
+3. **Afloja la correa** y gira con una carga (frena un poco la grande con la mano). ¿Qué ocurre? ¿Cómo lo arreglas sin tensar de más?
+
+<details>
+<summary>Respuestas</summary>
+
+1. **Al revés**: la correa cruzada invierte el sentido.
+2. La pequeña da **3 vueltas** por cada una de la grande: gira más rápido, pero con menos fuerza.
+3. La correa **patina**. Lo adecuado es la **mínima tensión que no patine**; si tensas muchísimo cargas los ejes y los rodamientos y se desgastan antes.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Correa floja" wrongLabel="Floja: patina" rightLabel="Tensa justa">
+  <Fig slot="wrong" src="simples/co_error_mal" alt="Las dos poleas con una correa cuyo tramo de arriba cuelga combado en el centro, floja." />
+  <Fig slot="right" src="simples/co_error_bien" alt="Las mismas poleas con la correa recta y tensa entre ellas." />
+
+Una correa floja **resbala** y la relación ya no es exacta. Pero no la tenses de más: una tensión excesiva empuja los ejes de lado y los desgasta. Busca la **mínima tensión que no patine**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Los dos ejes son paralelos y las poleas están alineadas",
+  "He medido los dos diámetros y he calculado la relación antes de girar",
+  "He contado vueltas de las dos poleas con una marca",
+  "He comprobado qué pasa con el sentido si cruzo la correa",
+  "La correa está tensa sin forzar y no patina",
+]} />
+
+<Quiz id="q3" q="Dos poleas unidas por una correa abierta (sin cruzar). ¿En qué sentido gira la conducida?" options={["En el sentido contrario", "No gira", "En el mismo sentido que la motriz"]} answer={2}>
+Con la correa abierta las dos giran en el **mismo sentido**. Si cruzas la correa en forma de 8, la conducida gira al revés.
+</Quiz>
+
+<RegisterPiece piece="Transmisión por correa 3:1" />
+</Block>

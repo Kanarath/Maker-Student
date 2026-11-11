@@ -1,0 +1,140 @@
+---
+id: m9-04
+unit: vehiculo
+order: 4
+title: "Diagnostica un coche: mira, mide, cambia una cosa"
+summary: "Monta un coche completo con dirección y motor con reducción, pruébalo despacio y arregla sus fallos (no gira, patina, va flojo) cambiando una sola cosa cada vez."
+practice: [l_coche_diag]
+cover: vehiculo/v_diag_hero
+duration: 45
+status: revisada
+prerequisites: [m9-01, m9-02, m9-03, m3-03]
+objectives:
+  - "Ordenar el montaje de un coche: chasis, ejes, dirección y, al final, el motor"
+  - "Relacionar cada síntoma (no gira, holgura, patina, va flojo) con su causa más probable"
+  - "Elegir el arreglo que cambia una sola cosa y probar después"
+  - "Explicar por qué una reducción da más par a cambio de menos velocidad"
+materials:
+  - "Lo de la lección de dirección (chasis, ejes, ruedas, piñón y cremallera)"
+  - "Un motor con pilas o batería, un engranaje de 8 dientes y otro de 24, ejes y pasadores"
+  - "Pesas pequeñas (monedas, arandelas) y cinta o gomas para probar neumáticos"
+piece:
+  name: "Coche con dirección y motor, con su informe de pruebas"
+  hint: "Foto del coche completo y una nota con el fallo que encontraste y lo único que cambiaste"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **coche completo**: chasis rígido, dos ejes, dirección y un motor con reducción hacia el eje trasero. Lo probarás **a poca velocidad** y, si falla algo, lo arreglarás **cambiando una sola cosa cada vez**.
+
+<Fig src="vehiculo/v_diag_hero" alt="Coche visto desde arriba con chasis gris y azul, diagonales amarillas, dirección con volante rojo en la parte delantera y, debajo del chasis en la parte trasera, un motor gris con un engranaje azul pequeño que mueve uno amarillo grande en el eje trasero." caption="Un coche completo. El motor (gris) mueve el eje trasero a través de una reducción de 8 a 24 dientes." />
+</Block>
+
+<Block kind="concepto">
+## Casi siempre el fallo es de lo que ya sabes
+
+Un coche que falla rara vez tiene un misterio nuevo: casi siempre es **juego** en la dirección, **poco agarre**, **poca reducción** o **poco peso** donde debe estar. El método es siempre el mismo:
+
+1. **Mira**: ¿dónde roza, dónde se atasca, qué ruedas patinan?
+2. **Mide**: cuenta vueltas, mide ángulos, anota.
+3. **Cambia una sola cosa** y vuelve a probar.
+
+Si cambias dos cosas a la vez, no sabrás cuál arregló el problema.
+
+| Síntoma | Causa más probable | Qué mirar o cambiar |
+| --- | --- | --- |
+| Las ruedas casi no giran con el volante | Roce o un tope puesto de más | Mueve a mano y busca dónde se atasca |
+| El volante «bailotea» antes de mover las ruedas | Juego en uniones y dientes | Menos uniones, ajustar cremallera y piñón |
+| Las ruedas motrices giran en seco | Poco peso encima y poco μ | Más peso sobre las motrices; neumáticos de goma |
+| Va rápido pero se para en una pendiente | Falta reducción | Añade engranajes: menos velocidad, más par |
+
+<Quiz id="q1" q="Has montado un coche con dirección de piñón y cremallera. Al girar el volante, las ruedas casi no se mueven y la cremallera se atasca en un extremo. ¿Qué revisas primero?" options={["Que el color de las piezas coincida", "Que la cremallera y las varillas no rocen con el chasis y que no haya un tope mal puesto", "Que el motor sea más potente"]} answer={1}>
+Un roce o un tope de más bloquea el recorrido. Antes de tocar nada más, mueve a mano y busca dónde se atasca.
+</Quiz>
+
+<Why title="¿Por qué una reducción ayuda en una pendiente?">
+Un motor pequeño gira **rápido y flojo**. Una reducción (por ejemplo, 8 dientes mueven 24) cambia **velocidad por fuerza**: las ruedas giran 3 veces más despacio, pero con unas 3 veces más par (en teoría, sin pérdidas). Justo lo que necesitas para subir una pendiente.
+</Why>
+
+<Quiz id="q2" q="Tu coche con motor conectado directamente a las ruedas va rápido pero se para con cualquier pendiente. ¿Qué le falta?" options={["Menos reducción", "Más velocidad", "Una reducción: menos velocidad y más par"]} answer={2}>
+Un motor pequeño gira rápido y flojo. Una reducción de engranajes o correa cambia velocidad por fuerza.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cinco pasos, **en este orden**. Lo nuevo sale en color; lo anterior, en gris. El dibujo es un esquema: tu coche puede llevar otras piezas.
+
+<Step n={1} title="Chasis rígido con diagonales" img="vehiculo/v_diag_s1" alt="Dos vigas grises paralelas unidas por una viga azul trasera y dos diagonales amarillas cruzadas en el centro.">
+Dos vigas largas en paralelo, un travesaño y **dos diagonales** cruzadas.
+<Why>Un chasis que se tuerce cambia cómo giran las ruedas y desalinea los engranajes. Las diagonales forman triángulos, que no se deforman.</Why>
+</Step>
+
+<Step n={2} title="Ejes y ruedas libres" img="vehiculo/v_diag_s2" alt="El chasis en gris con un eje trasero y dos ruedas, y delante una viga azul con pivotes verticales y dos ruedas.">
+Monta el eje trasero y el delantero con sus cuatro ruedas. **Compruébalo:** las ruedas deben girar **libres**, sin rozar.
+<Why>Si ya rozan ahora, con el motor puesto el roce se confunde con «poca fuerza». Mejor arreglarlo aquí.</Why>
+</Step>
+
+<Step n={3} title="La dirección delantera" img="vehiculo/v_diag_s3" alt="Se añaden al coche una cremallera roja, dos brazos verdes con varillas, un piñón azul y un volante rojo en la parte delantera.">
+Añade la **dirección** (la de la lección anterior): cremallera, brazos, varillas, piñón y volante. Gira el volante a tope a cada lado y **revisa que nada roza**.
+</Step>
+
+<Step n={4} title="Motor con reducción" img="vehiculo/v_diag_s4" alt="Se añade un bloque gris de motor bajo el chasis, con un engranaje azul pequeño de 8 dientes que engrana con un engranaje amarillo grande de 24 en el eje trasero.">
+Pon el **motor** bajo el chasis. Un **engranaje de 8 dientes** en su eje mueve uno de **24** en el eje trasero (ejes a (8 + 24) ÷ 16 = **2 agujeros**). Pruébalo **a poca velocidad**.
+<Warn title="Pilas y batería">
+Monta con el motor **desconectado**. Si usas pilas o batería, no cortocircuites los cables y desconéctalas si algo se calienta. Mantén los dedos y el pelo lejos de los engranajes.
+</Warn>
+</Step>
+
+<Step n={5} title="Prueba y corrige, una cosa cada vez">
+Haz rodar el coche y apunta qué falla. Elige **una sola** de las causas de la tabla, cámbiala y prueba otra vez. Anota qué cambiaste y qué mejoró.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Quita la reducción.** Conecta el motor directo a las ruedas (sin los engranajes de 8 y 24). **Predice:** ¿irá más rápido? ¿qué pasa en una rampa suave?
+2. **Mueve el peso.** Pon unas monedas sobre el eje **trasero** (el que mueve el motor) y luego sobre el **delantero**. ¿Dónde patina menos al arrancar?
+3. **Cambia los neumáticos.** Pon gomas elásticas alrededor de las ruedas motrices. **Predice:** ¿agarra más o menos?
+
+<details>
+<summary>Respuestas</summary>
+
+1. Más **rápido**, pero con poco par: se para en cuanto hay pendiente.
+2. Con el peso **sobre las ruedas motrices** (el eje trasero): más normal, más agarre.
+3. Más: la goma tiene mayor μ que el plástico liso.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Peso sobre las ruedas que no mueve el motor" wrongLabel="Así no: peso en las ruedas delanteras" rightLabel="Así sí: peso sobre las ruedas motrices">
+  <Fig slot="wrong" src="vehiculo/v_diag_peso_mal" alt="Coche visto desde arriba con un bloque de peso blanco sobre el eje delantero. Dos flechas rojas apuntan hacia abajo a las ruedas delanteras, que no mueve el motor." />
+  <Fig slot="right" src="vehiculo/v_diag_peso_bien" alt="El mismo coche con el bloque de peso sobre el eje trasero. Dos flechas verdes apuntan hacia abajo a las ruedas traseras, las que mueve el motor." />
+
+El empuje máximo es **μ × reacción normal**. Si el peso descansa sobre las ruedas que **no** mueve el motor, las motrices tienen poco agarre y giran en seco. Pon el peso **encima de las que empujan**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Montado en orden: chasis, ejes, dirección y, al final, el motor",
+  "Las ruedas giran libres y la dirección no roza a tope en ningún lado",
+  "He probado a poca velocidad antes de dar más",
+  "He cambiado una sola cosa cada vez y he anotado el resultado",
+  "Sé relacionar mi fallo con una causa (juego, agarre, reducción o peso)",
+]} />
+
+<Quiz id="q3" q="Tu coche tiene ruedas de plástico liso y casi todo el peso detrás, sobre las ruedas que no mueve el motor. Al acelerar, las motrices giran en seco. ¿Qué cambio es más eficaz?" options={["Poner peso sobre las ruedas motrices y neumáticos de goma", "Alargar el coche", "Quitar la dirección"]} answer={0}>
+Más normal y más μ dan más agarre: es la misma regla del rozamiento.
+</Quiz>
+
+<Quiz id="q4" q="¿Qué mejora más la precisión de la dirección?" options={["Hacer las ruedas más grandes", "Añadir más peso al volante", "Reducir el juego en las uniones y ajustar la cremallera al piñón"]} answer={2}>
+Menos holgura significa que el giro del volante llega entero a las ruedas.
+</Quiz>
+
+<RegisterPiece piece="Coche con dirección y motor, con su informe de pruebas" />
+</Block>

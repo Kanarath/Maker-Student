@@ -1,0 +1,143 @@
+---
+id: m13-03
+unit: cinem
+order: 3
+title: "Trayectorias: mover la punta con suavidad"
+summary: "Planifica el camino de la punta de un brazo de dos eslabones, comprueba que los puntos están a su alcance y descubre por qué una recta exige mover las articulaciones a la vez y con suavidad."
+practice: [l_cin_tray]
+cover: cinem/c_t_hero
+duration: 40
+status: revisada
+prerequisites: [m13-01, m13-02]
+objectives:
+  - "Explicar por qué mover una sola articulación hace que la punta dibuje un arco"
+  - "Explicar por qué una trayectoria recta exige mover varias articulaciones a la vez, a velocidades cambiantes"
+  - "Planificar un movimiento en el orden: puntos, alcance, ángulos, movimiento suave, medida"
+  - "Diagnosticar un brazo que llega corto cuando los ángulos pedidos son los correctos"
+materials:
+  - "El brazo plano de dos eslabones de la lección anterior, sobre papel cuadriculado"
+  - "Un lápiz atado a la punta (o un rotulador), una regla y un transportador"
+piece:
+  name: "Trayectoria recta dibujada por tu brazo"
+  hint: "Foto del papel con el camino que dibujó la punta, entre los puntos de salida y de llegada"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a hacer que la **punta de tu brazo dibuje un camino** entre un punto de salida y uno de llegada, primero **a mano** y comprobando que los dos puntos están a su alcance. Antes de moverlo, **predecirás** qué dibuja la punta si mueves solo una articulación.
+
+<Fig src="cinem/c_t_hero" alt="Un brazo de dos eslabones en cuatro posiciones, las tres primeras en gris y la última en color, con la punta moviéndose en línea recta de una esfera naranja (salida) a una esfera verde (llegada), unidas por una línea verde." caption="Para que la punta vaya en recta, las dos articulaciones se mueven a la vez y a velocidades que van cambiando." />
+</Block>
+
+<Block kind="concepto">
+## Mover bien es mover suave
+
+La **trayectoria** es el camino que sigue el extremo del brazo al ir de un punto a otro. Puede ser **recta, curva o a saltos**.
+
+**Predice:** si mueves **solo el hombro** y dejas el codo quieto, ¿qué camino dibuja la punta?
+
+<details>
+<summary>Respuesta</summary>
+
+Un **arco**: cada articulación gira trazando un círculo. Para que la punta vaya en **recta** hay que combinar varios giros coordinados.
+</details>
+
+<Fig src="cinem/c_t_arco" alt="Un brazo en varias posiciones moviendo solo el hombro: la punta recorre un arco curvo rojo entre la esfera naranja de salida y la esfera roja de llegada." caption="Solo el hombro: la punta dibuja un arco (rojo)." />
+<Fig src="cinem/c_t_recta" alt="El mismo brazo moviendo el hombro y el codo a la vez: la punta recorre una línea recta verde entre la esfera naranja de salida y la esfera verde de llegada." caption="Hombro y codo a la vez: la punta va recta (verde)." />
+
+Para que la punta vaya en **recta**, las articulaciones se mueven **a la vez**, con **velocidades que cambian** (una más deprisa, otra más despacio, y se van intercambiando).
+
+Y conviene **arrancar y frenar poco a poco**: un arranque brusco pide mucha aceleración (fuerza, par) y **excita las vibraciones** del brazo por su inercia y su flexión. Una rampa suave lo evita.
+
+<Why title="¿Por qué los puntos se juntan en los extremos?">
+En el dibujo del cuarto paso, los puntos de la trayectoria están **apretados en los extremos** y **separados en el medio**: significa que la punta va **despacio** al salir y al llegar y **más deprisa** en el medio. Es una arrancada y una frenada suaves.
+</Why>
+
+### Encuentra los ángulos probando
+
+Calcular los ángulos exactos de una recta lleva trigonometría. Aquí los encuentras **probando**: en el laboratorio, mueve el hombro y el codo hasta que la punta llegue a **(15, 5) cm** y luego a **(10, 12) cm**. Fíjate en cómo cambian **a la vez** los dos ángulos.
+
+<ArmLab />
+
+<Quiz id="q1" q="Quieres que la punta de un brazo de articulaciones se mueva en línea recta. ¿Qué debe ocurrir en las articulaciones?" options={["Basta mover una sola articulación", "Todas a la misma velocidad constante", "Deben moverse a la vez, a velocidades que van cambiando"]} answer={2}>
+Cada articulación gira trazando un arco, así que una recta exige combinar varios giros coordinados. Mover una sola articulación hace que la punta dibuje un arco.
+</Quiz>
+
+<Quiz id="q2" q="¿Por qué conviene arrancar y frenar el brazo de forma gradual?" options={["Porque gasta más energía", "Para reducir tirones y vibraciones: la inercia y la flexión hacen que los cambios bruscos lo hagan temblar", "Porque es más ruidoso"]} answer={1}>
+Un arranque brusco pide mucha aceleración (fuerza, par) y excita las vibraciones del brazo. Una rampa suave lo evita.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cinco pasos, en el **orden de planificación** de un movimiento. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="Decide salida y llegada" img="cinem/c_t_s1" alt="Un tablero de madera con una esfera naranja (punto de salida) y una esfera verde (punto de llegada), cada una marcada con una línea vertical hacia el tablero.">
+Marca en el papel **dos puntos**: la **salida** y la **llegada**. Escribe sus coordenadas desde el hombro (por ejemplo (6, 14) y (14, 6) cm si tus eslabones miden 12 y 8).
+</Step>
+
+<Step n={2} title="Comprueba el alcance" img="cinem/c_t_s2" alt="Dos círculos verdes concéntricos alrededor del hombro marcan el alcance máximo y el mínimo, con los dos puntos dentro de la corona entre los círculos.">
+Mide la **distancia** de cada punto al hombro (Pitágoras con sus coordenadas). Debe estar **entre |L1 − L2| y L1 + L2**; con 12 y 8 cm, entre **4 y 20 cm**. Si no, el punto está fuera del espacio de trabajo y hay que cambiarlo.
+<Why>Comprobarlo antes ahorra intentar mover el brazo a un sitio imposible.</Why>
+</Step>
+
+<Step n={3} title="Calcula (o busca) los ángulos" img="cinem/c_t_s3" alt="El brazo colocado en el punto de salida, con un arco cian en el hombro y otro naranja en el codo, y la esfera naranja en la punta.">
+Busca los **ángulos** de hombro y codo para el punto de salida y para el de llegada (con el laboratorio, o con el transportador sobre el papel). Anótalos.
+</Step>
+
+<Step n={4} title="Mueve con arranque y frenada suaves" img="cinem/c_t_s4" alt="Nueve puntos cian a lo largo de la recta entre salida y llegada, más juntos en los extremos y más separados en el centro. El brazo está en el punto medio.">
+Con el lápiz en la punta, lleva el brazo de un punto al otro **moviendo hombro y codo a la vez**, despacio al principio y al final.
+</Step>
+
+<Step n={5} title="Mide el resultado y corrige">
+Mira el camino que ha dibujado el lápiz. ¿Es recta? ¿Llega al punto marcado? Anota la diferencia y, si es grande, cambia **una cosa** (el cero, el juego…) y repite.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Solo el hombro.** Repite el movimiento moviendo únicamente el hombro. **Predice:** ¿qué dibuja el lápiz?
+2. **Brusco contra suave.** Mueve el brazo de golpe y luego con arranque suave. ¿Notas la diferencia en el temblor de la punta?
+3. **El brazo que llega corto.** Imagina que tu brazo debería llegar a 20 cm de la base pero se queda a 18 cm, con los ángulos pedidos correctos. ¿Qué causas sospechas?
+
+<details>
+<summary>Respuestas</summary>
+
+1. Un **arco**.
+2. Con arranque brusco, la punta **tiembla**; con arranque suave, mucho menos.
+3. **Juego en las uniones, flexión de los eslabones y una calibración del cero mal hecha.** Todas hacen que el brazo no siga exactamente el ángulo pedido. Primero comprueba el cero y el juego.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Mover una sola articulación" wrongLabel="Así no: solo el hombro" rightLabel="Así sí: hombro y codo a la vez">
+  <Fig slot="wrong" src="cinem/c_t_arco" alt="Brazo en varias posiciones moviendo solo el hombro: la punta dibuja un arco rojo entre la esfera naranja y la roja." />
+  <Fig slot="right" src="cinem/c_t_recta" alt="Brazo en varias posiciones moviendo hombro y codo a la vez: la punta dibuja una línea verde recta entre la esfera naranja y la verde." />
+
+Con una sola articulación la punta traza un **arco**. Para una recta hay que **coordinar** las dos.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Los dos puntos están dentro del alcance del brazo",
+  "He anotado los ángulos de salida y de llegada",
+  "He movido el brazo con arranque y frenada suaves",
+  "He mirado si el camino dibujado es recto y si llega al punto marcado",
+  "Cuando algo falla, cambio una sola cosa y vuelvo a medir",
+]} />
+
+<Quiz id="q3" q="Ordena mentalmente los pasos para mover el brazo a un punto. ¿Cuál es el primero?" options={["Mover con arranque suave", "Decidir el punto de salida y el de llegada", "Medir el resultado"]} answer={1}>
+Orden correcto: decide salida y llegada, comprueba que están dentro del alcance, calcula los ángulos, mueve con arranque y frenada suaves y mide para corregir.
+</Quiz>
+
+<Quiz id="q4" q="Tu brazo debería llegar a 20 cm de la base pero se queda a 18 cm, y los ángulos pedidos son los correctos. ¿Qué mides primero?" options={["Los ángulos reales con un transportador y la posición del cero", "El color de las piezas", "La temperatura"]} answer={0}>
+Comparar el ángulo pedido con el ángulo real te dice si el error viene del cero, de la holgura o de la flexión.
+</Quiz>
+
+<RegisterPiece piece="Trayectoria recta dibujada por tu brazo" />
+</Block>

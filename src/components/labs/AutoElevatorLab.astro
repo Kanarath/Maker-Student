@@ -1,0 +1,143 @@
+---
+// Laboratorio de la secuencia de un ascensor: una máquina de estados paso a paso.
+// Cada estado dice qué sensor decide y qué actuador trabaja. Con el obstáculo marcado, la puerta no se cierra:
+// el sensor de seguridad la manda abrir otra vez.
+// Es un modelo didáctico: un ascensor real tiene muchas más comprobaciones de seguridad.
+---
+
+<div class="lab" data-elev>
+  <div class="head"><b>Laboratorio · Secuencia del ascensor</b><span class="muted">Pide una planta y avanza paso a paso</span></div>
+
+  <svg viewBox="0 0 800 340" role="img" aria-label="Hueco del ascensor con tres plantas, la cabina y su puerta, y la lista de estados de la secuencia">
+    <rect x="0" y="0" width="800" height="340" fill="#05060a" />
+    <g data-shaft></g>
+    <g data-states></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Llamar a una planta</legend>
+      <div class="btns">
+        <button class="btn" type="button" data-call="0">Planta 1</button>
+        <button class="btn" type="button" data-call="1">Planta 2</button>
+        <button class="btn" type="button" data-call="2">Planta 3</button>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Avanzar</legend>
+      <div class="btns">
+        <button class="btn" type="button" data-next>Siguiente paso</button>
+        <button class="btn" type="button" data-reset>Reiniciar</button>
+      </div>
+      <label class="chk"><input type="checkbox" data-obs /> Hay alguien o algo en el hueco de la puerta</label>
+    </fieldset>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+  type St = "OPEN" | "CLOSING" | "MOVING" | "ARRIVED" | "OPENING";
+  const STATES: { id: St; name: string; sensor: string; act: string }[] = [
+    { id: "OPEN", name: "Puerta abierta, esperando", sensor: "Sensor de presencia y botones de llamada", act: "Ninguno (motor parado)" },
+    { id: "CLOSING", name: "Cerrando la puerta", sensor: "Sensor de obstáculo de la puerta", act: "Motor de la puerta (cierra)" },
+    { id: "MOVING", name: "Moviendo la cabina", sensor: "Sensor de planta (¿he llegado?)", act: "Motor principal" },
+    { id: "ARRIVED", name: "Llegada: parar y frenar", sensor: "Sensor de planta: ¡aquí!", act: "Motor principal parado + freno" },
+    { id: "OPENING", name: "Abriendo la puerta", sensor: "Posición de la puerta (final de carrera)", act: "Motor de la puerta (abre)" },
+  ];
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-elev]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const shaft = q<SVGGElement>("[data-shaft]");
+    const list = q<SVGGElement>("[data-states]");
+    const out = q<HTMLElement>("[data-out]");
+    const obs = q<HTMLInputElement>("[data-obs]");
+    const FY = [260, 160, 60]; // arriba de cada planta
+    const CH = 70;
+    let floor = 0, target = 0, st: St = "OPEN", doorOpen = 1, msg = "Estás en la planta 1, con la puerta abierta. Pide una planta.";
+
+    function draw() {
+      shaft.replaceChildren();
+      shaft.append(mk("rect", { x: 70, y: 40, width: 200, height: 270, fill: "#0b0d12", stroke: "#3a3f55", "stroke-width": 3 }));
+      for (let i = 0; i < 3; i++) {
+        shaft.append(mk("line", { x1: 40, y1: FY[i] + CH + 4, x2: 300, y2: FY[i] + CH + 4, stroke: "#3a3f55", "stroke-width": 2 }));
+        const t = mk("text", { x: 300, y: FY[i] + CH, fill: "#a3a1b4", "font-size": 14, "font-family": "monospace", "text-anchor": "end", dx: 32 });
+        t.textContent = `P${i + 1}`;
+        shaft.append(t);
+      }
+      const y = st === "MOVING" ? FY[target] : FY[floor];
+      const cab = mk("g", { class: "cab", style: `transform: translateY(${y}px)` });
+      cab.append(mk("rect", { x: 100, y: 0, width: 140, height: CH, fill: "#f2b230", stroke: "#0b0d12", "stroke-width": 3, rx: 4 }));
+      const gap = 52 * doorOpen; // hueco central
+      const leaf = (140 - gap) / 2;
+      cab.append(mk("rect", { x: 106, y: 6, width: leaf - 6 > 0 ? leaf - 6 : 0, height: CH - 12, fill: "#2a2c35" }));
+      cab.append(mk("rect", { x: 100 + 140 - leaf, y: 6, width: leaf - 6 > 0 ? leaf - 6 : 0, height: CH - 12, fill: "#2a2c35" }));
+      shaft.append(cab);
+      // lista de estados
+      list.replaceChildren();
+      STATES.forEach((s, i) => {
+        const on = s.id === st;
+        list.append(mk("rect", { x: 360, y: 40 + i * 58, width: 410, height: 40, rx: 6, fill: on ? "#ff8a1f22" : "#0b0d12", stroke: on ? "#ff8a1f" : "#3a3f55", "stroke-width": on ? 3 : 1.5 }));
+        const t1 = mk("text", { x: 376, y: 66 + i * 58, fill: on ? "#ffffff" : "#a3a1b4", "font-size": 16, "font-weight": on ? "700" : "400", "font-family": "sans-serif" });
+        t1.textContent = `${i + 1}. ${s.name}`;
+        list.append(t1);
+      });
+    }
+
+    function render() {
+      draw();
+      const s = STATES.find((x) => x.id === st)!;
+      out.innerHTML = `<b>${s.name}.</b> ${msg}<br><span class="muted">Sensor: ${s.sensor} · Actuador: ${s.act}</span>`;
+    }
+
+    function next() {
+      if (st === "OPEN") {
+        if (target === floor) { msg = "No has pedido otra planta: elige una arriba."; return; }
+        st = "CLOSING"; msg = `Alguien pidió la planta ${target + 1}: primero hay que cerrar.`;
+      } else if (st === "CLOSING") {
+        if (obs.checked) { st = "OPENING"; msg = "El sensor de obstáculo detecta algo: la puerta NO se cierra y vuelve a abrirse. Quita el obstáculo para seguir."; doorOpen = 1; }
+        else { doorOpen = 0; st = "MOVING"; msg = "Puerta cerrada y libre: ya se puede mover."; }
+      } else if (st === "MOVING") {
+        floor = target; st = "ARRIVED"; msg = `El sensor de planta dice que ya estás en la planta ${floor + 1}.`;
+      } else if (st === "ARRIVED") {
+        st = "OPENING"; msg = "Cabina parada y frenada: se abre la puerta.";
+      } else if (st === "OPENING") {
+        doorOpen = 1; st = "OPEN"; msg = floor === target ? `Puerta abierta en la planta ${floor + 1}. Espera mientras haya gente.` : "Puerta abierta de nuevo. Quita el obstáculo y pulsa «Siguiente paso» para volver a intentar cerrar.";
+      }
+      render();
+    }
+
+    root.querySelectorAll<HTMLButtonElement>("[data-call]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const f = +b.dataset.call!;
+        if (st !== "OPEN") { msg = "El ascensor está en marcha: termina la secuencia antes de pedir otra planta."; render(); return; }
+        target = f;
+        msg = f === floor ? "Ya estás en esa planta." : `Planta ${f + 1} pedida. Pulsa «Siguiente paso».`;
+        render();
+      }),
+    );
+    q("[data-next]").addEventListener("click", next);
+    q("[data-reset]").addEventListener("click", () => { floor = 0; target = 0; st = "OPEN"; doorOpen = 1; obs.checked = false; msg = "Estás en la planta 1, con la puerta abierta. Pide una planta."; render(); });
+    render();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .chk { display: block; margin-top: 12px; font-size: .92rem; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

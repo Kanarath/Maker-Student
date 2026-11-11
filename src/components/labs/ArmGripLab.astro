@@ -1,0 +1,112 @@
+---
+// Laboratorio de la pinza: una pieza colgando entre dos dedos se sostiene por rozamiento.
+// Condición para que no resbale (pieza quieta, agarre vertical): 2 × μ × N ≥ peso, con N = fuerza con la que aprieta cada dedo.
+// Los valores de μ son orientativos: dependen mucho de los materiales y de si están limpios.
+---
+
+<div class="lab" data-grip>
+  <div class="head"><b>Laboratorio · Agarre por rozamiento</b><span class="muted">¿Sujeta o resbala?</span></div>
+
+  <svg viewBox="0 0 800 320" role="img" aria-label="Pieza agarrada entre dos dedos de una pinza, con las fuerzas de apriete, de rozamiento y el peso">
+    <rect x="0" y="0" width="800" height="320" fill="#05060a" />
+    <rect x="250" y="24" width="300" height="24" rx="12" fill="#37b26c" />
+    <rect data-fl x="244" y="30" width="24" height="230" rx="12" fill="#37b26c" />
+    <rect data-fr x="532" y="30" width="24" height="230" rx="12" fill="#37b26c" />
+    <rect data-pl x="268" y="110" width="8" height="120" fill="#2a2c35" />
+    <rect data-pr x="524" y="110" width="8" height="120" fill="#2a2c35" />
+    <rect data-obj x="276" y="110" width="248" height="120" rx="6" fill="#e9edf5" stroke="#0b0d12" stroke-width="2" />
+    <g data-arrows></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>La pieza</legend>
+      <label>Peso (masa): <b data-m-v>200</b> g<input type="range" min="10" max="1000" step="10" value="200" data-m /></label>
+      <label>Superficie de los dedos
+        <select data-u>
+          <option value="0.3">Plástico liso (μ ≈ 0,3)</option>
+          <option value="0.5">Plástico rugoso (μ ≈ 0,5)</option>
+          <option value="0.9" selected>Goma (μ ≈ 0,9)</option>
+        </select>
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend>La pinza</legend>
+      <label>Fuerza de apriete de cada dedo: <b data-n-v>1,5</b> N<input type="range" min="0.2" max="10" step="0.1" value="1.5" data-n /></label>
+      <p class="muted small">1 N es, más o menos, lo que pesan unos 100 g.</p>
+    </fieldset>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <p class="ride muted" data-ride></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+  const f = (n: number, d = 2) => n.toFixed(d).replace(".", ",");
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-grip]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const M = q<HTMLInputElement>("[data-m]"), U = q<HTMLSelectElement>("[data-u]"), N = q<HTMLInputElement>("[data-n]");
+    const out = q<HTMLElement>("[data-out]"), ride = q<HTMLElement>("[data-ride]"), arrows = q<SVGGElement>("[data-arrows]");
+    const obj = q<SVGRectElement>("[data-obj]");
+
+    function update() {
+      const m = +M.value, mu = +U.value, n = +N.value;
+      q("[data-m-v]").textContent = String(m);
+      q("[data-n-v]").textContent = f(n, 1);
+      const weight = (m / 1000) * 9.81;       // N
+      const fric = 2 * mu * n;                // N, máximo posible con dos dedos
+      const need = weight / (2 * mu);         // N por dedo
+      const ok = fric >= weight;
+      const ratio = fric / weight;
+      obj.setAttribute("y", ok ? "110" : "150");
+      arrows.replaceChildren();
+      const arr = (x: number, y1: number, y2: number, color: string, w: number) => {
+        const dir = y2 > y1 ? 1 : -1;
+        arrows.append(mk("line", { x1: x, y1, x2: x, y2: y2 - dir * 10, stroke: color, "stroke-width": w, "stroke-linecap": "round" }));
+        arrows.append(mk("polygon", { points: `${x - 3 * w},${y2 - dir * 14} ${x + 3 * w},${y2 - dir * 14} ${x},${y2}`, fill: color }));
+      };
+      const oy = ok ? 170 : 210;
+      arr(400, oy - 10, oy + 20 + weight * 18, "#ff8a1f", 6);                       // peso
+      const fl = Math.min(fric * 18, 110);
+      arr(330, oy + 40, oy + 40 - fl, ok ? "#4ade80" : "#2de0f2", 5);               // rozamiento izquierdo
+      arr(470, oy + 40, oy + 40 - fl, ok ? "#4ade80" : "#2de0f2", 5);               // rozamiento derecho
+      const sq = Math.min(n * 6, 45);
+      arrows.append(mk("line", { x1: 244 - sq, y1: 120, x2: 240, y2: 120, stroke: "#e9edf5", "stroke-width": 4 }));
+      arrows.append(mk("line", { x1: 556 + sq, y1: 120, x2: 560, y2: 120, stroke: "#e9edf5", "stroke-width": 4 }));
+      out.innerHTML = `Peso = ${m} g → <b>${f(weight)} N</b> · Rozamiento máximo = 2 × ${f(mu, 1)} × ${f(n, 1)} N = <b>${f(fric)} N</b><br>` +
+        (ok ? `✓ <b>Sujeta</b> (${f(ratio, 1)} veces lo necesario).` : `✕ <b>Resbala</b>: el rozamiento no llega a sostener el peso.`);
+      out.className = "out " + (ok ? (ratio >= 2 ? "ok" : "warn") : "bad");
+      ride.textContent = `Para que no resbale haría falta apretar al menos ${f(need)} N con cada dedo; mejor el doble (${f(2 * need)} N) por si hay vibraciones o el rozamiento es peor de lo previsto.`;
+    }
+
+    for (const i of [M, U, N]) i.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  select { display: block; width: 100%; margin-top: 6px; min-height: 36px; background: var(--panel-2); color: inherit; border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
+  .small { font-size: .85rem; margin: 8px 0 0; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .out.ok { background: #4ade8014; border-top-color: #4ade80; }
+  .out.warn { background: #f2b23014; border-top-color: #f2b230; }
+  .out.bad { background: #ff5a4a14; border-top-color: #ff5a4a; }
+  .ride { margin: 0; padding: 0 14px 12px; font-size: .92rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

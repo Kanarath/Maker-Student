@@ -1,0 +1,181 @@
+---
+id: m6-03
+unit: estr
+order: 3
+title: "Voladizos: un brazo que no se dobla"
+summary: "Mide cómo se dobla un brazo sujeto por un extremo, descubre por qué el largo manda y monta un brazo triangulado con las uniones bien reforzadas."
+practice: [l_voladizo, l_refuerzo]
+cover: estr/v_hero
+duration: 40
+status: revisada
+prerequisites: [m6-01, m6-02, m3-01]
+objectives:
+  - "Calcular el momento en la base de un voladizo (fuerza × distancia)"
+  - "Explicar por qué al doblar el largo la punta baja unas 8 veces más"
+  - "Reforzar un brazo con diagonales, dos pines por unión y el peso cerca de la base"
+materials:
+  - "Vigas con agujeros: 1 de 7, 2 de 9, 2 de 4 y 2 de 6 (piezas tipo Technic), y pasadores (varios largos)"
+  - "Pesas o monedas iguales y una regla"
+  - "Sin piezas: regla de plástico, un libro pesado y unas monedas con cinta"
+piece:
+  name: "Brazo en voladizo triangulado"
+  hint: "Foto de tu brazo con la carga en la punta y la cuenta del momento anotada"
+xp: { concept: 10, build: 25, piece: 45 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Un brazo, una grúa, un trampolín… son **voladizos**: vigas sujetas por un solo extremo. Vas a montar un **brazo triangulado** que sobresale de una pared y colgarle una carga en la punta.
+
+<Fig src="estr/v_hero" alt="Brazo montado con dos vigas amarillas horizontales, una arriba y otra abajo, unidas por dos montantes azules y dos diagonales rojas, sujeto a una viga gris vertical pegada a una pared oscura a la izquierda. De la punta cuelga una pesa verde con una flecha naranja hacia abajo. Una flecha cian doble mide el largo y un arco cian junto a la pared marca el giro." caption="Un brazo de 8 agujeros con una carga en la punta. La flecha doble cian es la distancia; el arco cian, el giro que la pared tiene que aguantar." />
+
+Al terminar sabrás **calcular cuánto se esfuerza la base** y **por qué un brazo corto es mucho más rígido** que uno largo.
+
+<Tip title="Sin piezas también vale">
+Una regla de plástico sujeta con un libro pesado en el borde de la mesa y unas monedas pegadas con cinta en la punta hacen el mismo experimento. Sujeta bien el libro para que no caiga sobre tus dedos ni tus pies.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Un brazo es un voladizo
+
+Un **voladizo** es una viga o brazo sujeto solo por un extremo, con el otro libre en el aire. Tu brazo extendido, un trampolín y la pluma de una grúa lo son.
+
+El esfuerzo de **doblado** en la base se llama **momento** y es la regla de la palanca otra vez:
+
+**momento = fuerza × distancia a la base** (se mide en N·m)
+
+<Fig src="estr/v_largo_corto" alt="Una pared oscura a la izquierda con dos brazos amarillos que salen de ella, uno corto arriba y uno largo abajo, con la misma pesa verde colgada en la punta. El corto casi no se curva; el largo se curva mucho hacia abajo. Una línea gris fina marca el nivel sin carga y una flecha cian marca cuánto baja la punta del largo." caption="Misma carga, mismo material: el brazo largo baja muchísimo más. Dibujo exagerado para que se vea." />
+
+**Predice antes de mirar:** duplicas el largo del brazo, con la misma carga en la punta. ¿Cuánto más baja la punta: el doble, 4 veces o 8 veces?
+
+<details>
+<summary>Mira la respuesta</summary>
+
+Unas **8 veces más**. La flecha (cuánto baja la punta) crece con el **cubo** de la longitud: al doble de largo, 2³ = 8. Por eso acortar un brazo, aunque sea poco, lo rigidiza mucho.
+</details>
+
+Pruébalo tú: alarga el brazo y cambia las pesas.
+
+<VoladizoLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- El **momento** es pesas × agujeros: el mismo número que en la palanca (m3-01).
+- La **flecha** no sube igual: crece con **pesas × largo³**. Al duplicar el largo con la misma carga, ×8.
+- El esfuerzo de doblado es **mayor en la base** (el «hombro»), donde la distancia es toda la longitud del brazo.
+</details>
+
+<Why title="¿Dónde pongo el motor?">
+Una masa lejos de la base **multiplica el momento** (peso × distancia) y la inercia. Si quieres que tu brazo se doble lo menos posible, coloca el motor pesado **lo más cerca de la base** y mueve el brazo con una **correa, una cadena o varillas**.
+</Why>
+
+<Fig src="estr/v_motor" alt="Dos brazos amarillos salen de una pared oscura con la misma pesa verde en la punta. El de arriba lleva el bloque rojo del motor junto a la pared y se curva poco. El de abajo lleva el motor en la punta y se curva bastante más. Líneas grises finas marcan el nivel sin carga." caption="Mismo brazo, mismo motor: cerca de la base el brazo casi no baja; en la punta, mucho más." />
+
+<Quiz id="q1" q="Un brazo horizontal sostiene en su punta una pieza que pesa 4 N, a 0,5 m de la base. ¿Qué momento hay en la base?" options={["4,5 N·m", "2 N·m", "8 N·m"]} answer={1}>
+Momento = fuerza × distancia = 4 N × 0,5 m = **2 N·m**.
+</Quiz>
+
+<Quiz id="q2" q="Duplicas el largo de un brazo en voladizo, con la misma carga en la punta y el mismo material. ¿Cuánto más baja la punta, aproximadamente?" options={["El doble", "Unas 4 veces más", "Unas 8 veces más"]} answer={2}>
+En una viga en voladizo con la carga en la punta, la flecha es proporcional a L³: al duplicar L, 2³ = **8**.
+</Quiz>
+
+<Tip title="Sabías que… la grúa se equilibra con un contrapeso">
+Una **grúa torre** lleva bloques de hormigón como contrapeso al otro lado de la pluma. Trabajan como una palanca: el **momento** de la carga (peso × distancia) se compensa con el del contrapeso. Por eso su límite de carga baja cuando la carga se aleja de la torre: más distancia, más momento.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos de montaje y uno de prueba. **En cada imagen, lo nuevo sale en color y lo anterior, en gris.**
+
+<Step n={1} title="La pared" img="estr/v_s1" alt="Un bloque oscuro a la izquierda a modo de pared y, delante de él, una viga gris de 7 agujeros en vertical.">
+Fija una viga de **7 agujeros en vertical** a algo pesado (un libro, una caja, el borde de la mesa). Es la pared de la que saldrá el brazo.
+<Warn title="Que no se mueva">
+Si la base se mueve, tus medidas no valen nada. Comprueba que está firme antes de seguir.
+</Warn>
+</Step>
+
+<Step n={2} title="Las dos vigas largas" img="estr/v_s2" alt="Dos vigas amarillas de 9 agujeros en horizontal salen de la viga vertical, una a 3 agujeros por encima de la otra, unidas a ella con un pasador cada una.">
+Une dos vigas de **9 agujeros** a la pared, una arriba y otra abajo, **separadas 3 agujeros**. Cada una va a un agujero distinto de la pared: así **la unión no puede girar**.
+<Why>Un solo pin es una **bisagra**. Con dos puntos de unión separados, la pieza ya no puede girar alrededor de ninguno.</Why>
+</Step>
+
+<Step n={3} title="Los montantes" img="estr/v_s3" alt="Dos vigas azules de 4 agujeros en vertical unen la viga de arriba con la de abajo, una a la mitad del brazo y otra en la punta.">
+Une las dos vigas largas con dos vigas verticales de **4 agujeros**: una a la mitad y otra en la punta. Usa **pasadores largos** en las uniones donde luego irán diagonales.
+</Step>
+
+<Step n={4} title="Las diagonales" img="estr/v_s4" alt="Dos vigas rojas de 6 agujeros en diagonal. La primera va desde la esquina de arriba junto a la pared hasta el montante central, abajo. La segunda, desde la parte de arriba del montante central hasta la punta, abajo.">
+Pon **dos diagonales** de 6 agujeros, una por cada panel de 4 × 3, bajando hacia la punta. Cada diagonal va **fija por sus dos extremos**.
+<Why>Cada panel de 4 × 3 con diagonal es un triángulo 3-4-5: la diagonal mide justo 5 y cae sobre los agujeros. Ahora el brazo son **triángulos**, no rectángulos que se tumban.</Why>
+</Step>
+
+<Step n={5} title="Carga y mide" img="estr/v_hero" alt="El brazo terminado con una pesa verde colgada de la punta y una flecha naranja hacia abajo.">
+Antes de colgar nada, **calcula el momento**: pesas × agujeros hasta la pared. Cuelga las pesas de la punta, mira cuánto baja y **mídelo con la regla**.
+
+Quita las diagonales y repite. **Predice** primero: ¿baja más o menos?
+</Step>
+</Block>
+
+<Block kind="version">
+Usa la misión de la unidad. **Predice** antes de medir:
+
+1. **El largo manda:** con una regla de plástico sujeta con un libro pesado, deja **10 cm** fuera de la mesa. Pega unas monedas en la punta y mide cuánto baja.
+2. **Al doble:** repite con **20 cm** fuera y las mismas monedas. Antes de medir, predice si baja el doble o mucho más. Las medidas caseras tienen error: no pasa nada si no sale justo 8.
+3. **Brazo Technic:** acorta tu brazo a la mitad y compara con el original, con la misma carga.
+4. **Refuerza un montaje que se tambalea:** (a) empuja con suavidad y observa dónde se deforma; (b) busca el cuadrilátero que cambia de forma; (c) añade una diagonal con un pin en cada extremo; (d) vuelve a empujar para comprobar que ya no se deforma.
+
+<Quiz id="q3" q="Quieres que tu brazo se doble lo menos posible. ¿Dónde conviene colocar un motor pesado?" options={["Lo más cerca posible de la base, moviendo el brazo con una correa, una cadena o varillas", "En la punta del brazo, para empujar mejor", "Da igual dónde esté"]} answer={0}>
+Una masa lejos de la base multiplica el momento que debe aguantar el brazo (peso × distancia) y su inercia.
+</Quiz>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Unir dos vigas con un solo pin" wrongLabel="Un solo pin: bisagra" rightLabel="Dos pines: unión rígida">
+  <Fig slot="wrong" src="estr/v_error_mal" alt="Dos vigas, una amarilla y otra azul, solapadas tres agujeros y unidas con un solo pasador. La azul se ha girado hacia abajo alrededor del pasador. Un arco rojo marca el giro." />
+  <Fig slot="right" src="estr/v_error_bien" alt="Dos vigas, una amarilla y otra azul, solapadas tres agujeros y unidas con dos pasadores en agujeros distintos. Quedan alineadas, con dos esferas verdes marcando los pasadores." />
+
+Un solo pin en un agujero es una **articulación**: deja girar. Con **dos pines en dos agujeros distintos**, la pieza ya no puede girar y la unión es rígida. No sirve apretar más ni usar un pin más largo.
+</Mistake>
+
+<Warn title="Aunque lo triangules, algo «baila»">
+Ningún montaje es perfectamente rígido: los pines entran con **juego** (holgura) y esos pequeños márgenes se **suman** a lo largo de la cadena de piezas. No lo arregles apretando: usa **menos uniones y más cortas**, y haz el brazo lo más corto que puedas.
+</Warn>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu brazo:
+
+<Checklist items={[
+  "La pared está firme y no se mueve al cargar",
+  "Las uniones llevan dos puntos de sujeción, no un solo pin",
+  "Cada diagonal está fija por sus dos extremos",
+  "He calculado el momento (pesas × distancia) antes de cargar",
+  "He medido la bajada de la punta con y sin diagonales",
+  "El motor o los pesos pesados están cerca de la base",
+]} />
+
+<Quiz id="q4" q="Tu estructura Technic está bien triangulada pero todavía «baila» un poco. ¿Qué lo explica?" options={["Que los triángulos no sirven en Technic", "Que la gravedad cambia", "El juego: los pines entran con holgura y se suma en cada unión"]} answer={2}>
+Cada unión tiene algo de juego y esos pequeños márgenes se acumulan. Menos uniones, y más cortas, reducen el bailoteo.
+</Quiz>
+
+<Quiz id="q5" q="Has montado un brazo con un pin en cada unión y el motor en la punta. Se dobla y vibra al parar. ¿Qué dos cambios mejoran más la rigidez?" options={["Alargar el brazo para ganar alcance", "Pegar una pegatina en cada viga", "Acortar el brazo y pasar el motor cerca de la base"]} answer={2}>
+Acortar el brazo baja mucho la flecha (crece con el cubo de la longitud) y quitar peso de la punta reduce el momento en la base. Después, las **diagonales** que formen triángulos arreglan los cuadriláteros que se tumban.
+</Quiz>
+
+<Tip title="Sabías que… un cuadro de bici son dos triángulos">
+El cuadro clásico de una bicicleta (el «cuadro de diamante») está formado por **dos triángulos** unidos, uno delantero y otro trasero. Es el mismo truco de la diagonal, con tubos huecos y ligeros. Se usa desde hace más de un siglo.
+</Tip>
+
+**Receta antitambaleo** para cualquier montaje:
+
+1. Usa **dos pines** en cada unión para que no gire.
+2. Busca los **cuadriláteros** y añade una **diagonal**.
+3. **Acorta** los voladizos y pon el peso **cerca de la base**.
+4. Un poco de **juego** siempre queda: menos uniones y más cortas.
+
+<RegisterPiece piece="Brazo en voladizo triangulado" />
+</Block>

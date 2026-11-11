@@ -1,0 +1,182 @@
+---
+id: m11-01
+unit: cad
+order: 1
+title: "Del boceto a la pieza: tu primer modelo"
+summary: "Planifica una pieza sencilla con boceto, cotas y extrusión, calcula su volumen y entiende qué es un STL y qué programa conviene para empezar."
+practice: [l_cad_idea, l_cad_tools]
+cover: cad/c_hero
+duration: 30
+status: revisada
+prerequisites: []
+objectives:
+  - "Ordenar los pasos para modelar una pieza: boceto, cotas, extrusión, detalles y exportación"
+  - "Calcular el volumen de una pieza extruida (área de la base × grosor)"
+  - "Explicar por qué un modelo con cotas se puede cambiar sin empezar de cero"
+  - "Decir qué guarda un STL y por qué conservas también el proyecto original"
+materials:
+  - "Papel y lápiz (vale papel cuadriculado) y una regla"
+  - "Opcional: un programa CAD sencillo en el navegador, para pasar tu plano al ordenador"
+piece:
+  name: "Plano de mi primera pieza"
+  hint: "Foto de tu boceto con las cotas y la lista de pasos para modelarla"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a planificar tu **primera pieza para imprimir**: una placa de **40 × 24 mm**, de **5 mm de grosor**, con un **agujero de 6 mm** y las esquinas redondeadas. Servirá para colgar o sujetar algo.
+
+<Fig src="cad/c_hero" alt="A la izquierda, el dibujo plano de una placa rectangular con esquinas redondeadas y un círculo, en líneas cian sobre el suelo, con una flecha naranja de medida debajo. A la derecha, la misma placa ya con grosor, de color amarillo y con el agujero. Una flecha naranja grande va del dibujo a la pieza." caption="De un dibujo plano con medidas a una pieza con grosor: ese es todo el truco del CAD." />
+
+Tu **producto** de esta lección es el **plano**: un dibujo con sus medidas y la lista de pasos para modelarla. Si tienes un programa CAD, lo puedes pasar luego al ordenador; si no, el plano ya vale como registro.
+
+<Tip title="Sin ordenador también vale">
+Todo lo importante de esta lección (boceto, cotas, extrusión) se entiende dibujando en papel cuadriculado. El programa es solo la herramienta.
+</Tip>
+
+<Tip title="Sabías que… el abuelo del CAD se llamó Sketchpad">
+En 1963, Ivan Sutherland creó **Sketchpad**, un programa que permitía dibujar en una pantalla con un lápiz óptico y que se considera un antecesor del diseño asistido por ordenador.
+
+Hoy dibujas en tu navegador lo que entonces ocupaba un ordenador de laboratorio.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Casi todo modelo sencillo sigue el mismo camino
+
+1. **Boceto**: un dibujo plano (2D) de la forma.
+2. **Cotas**: las medidas que fijas en el dibujo.
+3. **Extrusión**: «estirar» el dibujo hacia arriba para darle grosor. Es como un molde de galletas: primero la forma, luego la altura.
+4. **Detalles**: agujeros y redondeos.
+5. **Exportar** el archivo para imprimir.
+
+<Fig src="cad/c_s2" alt="La placa amarilla con su agujero flota sobre su dibujo plano, que queda en gris sobre el suelo. Cuatro líneas finas grises suben desde las esquinas del dibujo hasta las esquinas de la placa, y una flecha naranja apunta hacia arriba." caption="La extrusión: el dibujo gris del suelo sube y se convierte en un sólido con grosor." />
+
+**Predice antes de mirar.** Extruyes un cuadrado de **20 mm de lado** hasta darle **5 mm de grosor**. ¿Qué volumen tiene?
+
+<details>
+<summary>Ver la respuesta</summary>
+
+**Volumen = área de la base × grosor.**
+
+Base: 20 × 20 = 400 mm². Con 5 mm de grosor: 400 × 5 = **2000 mm³**.
+
+Si te salió 400 o 100, te has quedado a medias: has calculado solo la base o has sumado en vez de multiplicar.
+</details>
+
+<Quiz id="q1" q="Extruyes un cuadrado de 20 mm de lado hasta darle 5 mm de grosor. ¿Qué volumen tiene el sólido?" options={["400 mm³", "2000 mm³", "8000 mm³"]} answer={1}>
+Volumen = área de la base × grosor = (20 × 20) × 5 = **2000 mm³**. Los 8000 mm³ saldrían de un cubo de 20 mm de lado: aquí solo tiene 5 mm de alto.
+</Quiz>
+
+## Cotas: el dibujo que se adapta
+
+Una **cota** es una medida que fijas para que el dibujo tenga un tamaño exacto. Si trabajas con cotas, el modelo es **paramétrico**: cambias un número y **toda la pieza se actualiza**.
+
+<Why title="¿Por qué importa?">
+Imagina que tu agujero sale justo y necesitas que sea un poco mayor. Con cotas cambias un número y listo. Sin cotas tendrías que borrar y dibujar otra vez. Lo verás en la lección de **diseñar para imprimir**.
+</Why>
+
+<Quiz id="q2" q="¿Qué ventaja tiene un modelo paramétrico (con cotas) en un programa CAD?" options={["Que la pieza se imprime más rápido", "Que al cambiar una cota, la pieza se actualiza sola", "Que la pieza pesa menos"]} answer={1}>
+Si una medida es un parámetro, cambiarla redibuja la pieza entera. Así adaptas un diseño (por ejemplo, un agujero un poco mayor) **sin empezar de cero**. No cambia ni la velocidad de impresión ni el peso.
+</Quiz>
+
+## ¿Qué programa uso?
+
+- **Tinkercad**: funciona **en el navegador** y se modela con formas básicas que se suman y se restan. Es muy visual y suficiente para soportes, adaptadores y piezas sencillas. **Perfecto para empezar.**
+- **FreeCAD**: **gratuito y de código abierto**, trabaja con cotas (paramétrico). Es más potente, pero tarda más en aprenderse.
+- Algunos programas de empresa ofrecen **licencias de uso personal**: **comprueba las condiciones** el día que los uses, porque pueden cambiar.
+
+Para algo sencillo, **el programa más fácil es el mejor**. Cuando necesites cotas o cambios frecuentes, pasas a uno paramétrico.
+
+<Quiz id="q3" q="Tienes que diseñar un soporte sencillo para un servo. ¿Con qué empiezas?" options={["Con el programa más complicado que exista", "Con una pieza comprada ya hecha, sin diseñar", "Con un programa fácil como Tinkercad: para algo sencillo no hace falta más"]} answer={2}>
+Para piezas sencillas, el programa más fácil es el mejor. Si más adelante necesitas cotas o cambios frecuentes, pasas a uno paramétrico.
+</Quiz>
+
+## Del modelo a la impresora: el STL
+
+El formato **STL** describe la **superficie** de la pieza con **triángulos**. Es la «foto final» de la pieza, **no sus planos**: no guarda las cotas ni el historial de modelado.
+
+<Fig src="cad/c_stl" alt="La placa con su agujero dibujada solo con líneas cian que forman triángulos sobre un cuerpo oscuro. Hay triángulos largos en las caras planas y muchos triángulos estrechos alrededor del agujero y de las esquinas redondeadas." caption="Un STL es solo una malla de triángulos. Se ve la forma, pero ya no hay medidas." />
+
+<Tip title="Sabías que… STL viene de «estereolitografía»">
+El formato **STL** nació en los años 80 para la **estereolitografía**, una de las primeras técnicas de impresión 3D. Describe la superficie con triángulos.
+
+Por eso, hoy, casi cualquier impresora lo entiende.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Hoy el «montaje» es **planificar tu pieza paso a paso**. Haz cada paso en papel; si tienes programa CAD, repítelo allí.
+
+<Step n={1} title="Boceto y cotas" img="cad/c_s1" alt="En líneas cian sobre el suelo: un rectángulo con esquinas redondeadas y, dentro, un círculo cerca de la izquierda. Dos flechas naranja con rayas de referencia marcan el largo, debajo, y el ancho, a la derecha.">
+Dibuja un **rectángulo de 40 × 24 mm** con las esquinas redondeadas y, dentro, un **círculo de 6 mm** con el centro a **10 mm del borde izquierdo** y a media altura. Escribe cada medida (cota) en el dibujo.
+<Why>Con las medidas escritas, otra persona (o tú dentro de un mes) puede rehacer la pieza igual. Y si cambias una, sabes qué más se mueve.</Why>
+</Step>
+
+<Step n={2} title="Extruye" img="cad/c_s2" alt="La placa amarilla flotando sobre su dibujo gris, con una flecha naranja hacia arriba.">
+Decide el **grosor**: **5 mm**. Eso es extruir el boceto. Escribe el volumen que tendría (sin descontar el agujero): 40 × 24 × 5 = **4800 mm³**.
+<Why>El volumen te sirve para hacerte una idea del plástico que gastarás: más volumen, más material y más tiempo.</Why>
+</Step>
+
+<Step n={3} title="Detalles: agujero y redondeos" img="cad/c_s3" alt="La placa amarilla terminada. Un aro cian rodea el agujero y una flecha cian baja hasta él; otra flecha naranja apunta a una esquina redondeada.">
+Comprueba que el **agujero** está donde quieres y que las **esquinas** tienen un radio pequeño. En muchos programas el agujero se puede dibujar ya en el boceto o añadir después: el orden exacto **depende del programa**.
+<Why>Redondear las esquinas evita puntos donde la pieza se parte con facilidad. Lo verás a fondo en la tercera lección de la unidad.</Why>
+</Step>
+
+<Step n={4} title="Exporta y guarda el original" img="cad/c_stl" alt="La misma placa convertida en una malla de triángulos cian.">
+Apunta en tu plano: «**Exportar a STL para imprimir**». Y debajo, en grande: «**Guardar también el proyecto original**», el archivo con las cotas.
+<Warn title="Solo el STL no basta">
+Con solo el STL podrás imprimir la pieza, pero **será difícil cambiar sus cotas**. Guarda siempre el proyecto original.
+</Warn>
+</Step>
+
+<Step n={5} title="Ordena tu lista y haz la foto">
+Escribe los cinco pasos en orden en una hoja: **boceto, cotas, extrusión, detalles, exportar**. Haz una foto del plano con la lista. Esa foto es tu pieza.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una medida, **predice** el resultado y comprueba con la cuenta:
+
+1. **Más larga:** la placa pasa de 40 a **50 mm de largo**, con el mismo ancho y grosor. ¿Qué volumen tiene sin descontar el agujero? *(Pista: 50 × 24 × 5.)*
+2. **Más fina:** vuelve a 40 mm de largo, pero con **3 mm de grosor**. ¿Cuánto vale ahora el volumen? ¿Gastará más o menos plástico?
+3. **Tu propia pieza:** elige un objeto sencillo que te falte (un gancho, un soporte, un tapón) y escribe sus cinco pasos con sus medidas.
+
+<details>
+<summary>Comprueba los dos primeros cálculos</summary>
+
+- Reto 1: 50 × 24 × 5 = **6000 mm³**.
+- Reto 2: 40 × 24 × 3 = **2880 mm³**, menos que los 4800 mm³ de antes: gasta menos plástico.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Quedarte solo con el STL" wrongLabel="Solo la malla de triángulos" rightLabel="Proyecto con cotas (más el STL)">
+  <Fig slot="wrong" src="cad/c_stl" alt="La placa convertida en una malla de triángulos cian, sin ninguna medida." />
+  <Fig slot="right" src="cad/c_s1" alt="El dibujo plano de la placa en cian con sus dos cotas en naranja." />
+
+El STL es perfecto para **imprimir**, pero no guarda las **cotas** ni los **pasos** del modelado. Guarda siempre el **proyecto original** para poder cambiar la pieza más adelante.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu plano:
+
+<Checklist items={[
+  "Mi boceto tiene todas las cotas escritas (largo, ancho, agujero y su posición)",
+  "He calculado el volumen con área de la base × grosor",
+  "Los cinco pasos están en orden: boceto, cotas, extrusión, detalles, exportar",
+  "Sé por qué un modelo con cotas se puede cambiar sin empezar de cero",
+  "He anotado que guardaré el proyecto original, no solo el STL",
+]} />
+
+<Quiz id="q4" q="Guardas solo el STL de tu pieza y pierdes el proyecto original. ¿Qué pasa?" options={["Podrás imprimirla, pero será difícil cambiar sus cotas", "No podrás imprimirla", "El STL guarda todos los pasos del modelado"]} answer={0}>
+El STL solo contiene la **superficie**. Se puede imprimir, pero para cambiar medidas necesitas el proyecto original.
+</Quiz>
+
+<RegisterPiece piece="Plano de mi primera pieza" />
+</Block>

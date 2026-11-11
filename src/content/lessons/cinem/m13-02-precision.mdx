@@ -1,0 +1,151 @@
+---
+id: m13-02
+unit: cinem
+order: 2
+title: "Resolución y precisión: cuánto salta la punta"
+summary: "Mide cuánto se mueve la punta de un brazo con un paso de un grado, prueba un final de carrera para encontrar el cero y entiende por qué más largo es menos fino."
+practice: [l_cin_prec]
+cover: cinem/c_r_hero
+duration: 35
+status: revisada
+prerequisites: [m13-01]
+objectives:
+  - "Explicar qué son la resolución y la repetibilidad de un brazo"
+  - "Calcular con la regla «0,0175 × longitud × grados» cuánto salta la punta"
+  - "Montar un final de carrera que marque el cero del brazo"
+  - "Explicar por qué la flexión y el juego hacen que la punta llegue más abajo de lo esperado"
+materials:
+  - "Un brazo de tira de cartón o madera de unos 30 cm con un eje en un extremo (el del lección anterior sirve)"
+  - "Un microinterruptor (final de carrera) o un pulsador, un transportador y una regla"
+piece:
+  name: "Tabla de mm por grado de tu brazo con su final de carrera"
+  hint: "Foto del brazo tocando el final de carrera y una nota: cuántos mm saltó la punta con un paso de 1° o de 2°"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a medir **cuánto salta la punta de tu brazo** cuando la articulación avanza un paso pequeño, y vas a darle un **cero** con un final de carrera. Antes de medir, **predecirás** la respuesta con una regla sencilla.
+
+<Fig src="cinem/c_r_hero" alt="Dos brazos desde el mismo pivote, uno largo amarillo y otro corto azul, girados el mismo ángulo. El arco que recorre la punta del largo (flecha naranja) es el doble de largo que el del corto (flecha cian)." caption="Mismo ángulo, distinto arco: la punta del brazo largo recorre más. Dibujo exagerado: el paso real es mucho más pequeño." />
+</Block>
+
+<Block kind="concepto">
+## Más largo, menos fino
+
+La **resolución** es el cambio más pequeño de posición que el sistema puede hacer, por ejemplo **un grado** de giro de un servo. Cuanto más pequeño el paso, más fino el control.
+
+Pero la punta no se mueve lo mismo en todos los brazos: **el mismo grado de giro mueve más la punta cuanto más largo es el brazo**. Una regla muy útil:
+
+**un grado desplaza la punta unos 0,0175 de la longitud del brazo**
+
+(Es el arco de un círculo: longitud × ángulo en radianes; 1° ≈ 0,0175 rad.)
+
+**Predice:** un brazo de **40 cm** se mueve en pasos de **1°**. ¿Cuánto salta la punta con cada paso?
+
+<details>
+<summary>Respuesta</summary>
+
+0,0175 × 40 cm = 0,7 cm = **7 mm**. Con un brazo de 20 cm serían unos 3,5 mm: la mitad.
+</details>
+
+<ResLab />
+
+<Quiz id="q1" q="Un brazo mide 30 cm y su articulación se mueve en pasos de 2°. Aproximadamente, ¿cuánto se mueve la punta con cada paso? (un grado desplaza la punta unos 0,0175 de la longitud)" options={["1 mm", "10 mm", "60 mm"]} answer={1}>
+0,0175 × 30 cm × 2 = 1,05 cm ≈ **10 mm**. Cuanto más largo el brazo, más salta la punta con cada grado.
+</Quiz>
+
+<Why title="Por eso los brazos precisos son cortos o llevan reducciones">
+Para colocar la punta con precisión, o acortas el brazo, o usas una reducción más fina en la articulación (pasos más pequeños). Es el mismo cambio de velocidad por fuerza de los engranajes, esta vez para ganar **finura**.
+</Why>
+
+### Resolución no es repetibilidad
+
+La **repetibilidad** es la capacidad de volver una y otra vez al mismo punto con casi el mismo resultado: no es lo mismo que acertar al primer intento, sino **acertar siempre igual**.
+
+### Encontrar el cero
+
+Al encender tu brazo, **no sabe en qué ángulo está** cada articulación. Lo soluciona moviéndolas hasta un **final de carrera** que marca una posición de referencia (el **«cero»**). Al llegar a él sabe dónde está y, a partir de ahí, cuenta pasos.
+
+### Cuando llega siempre un poco más abajo
+
+Si tu brazo llega **siempre unos milímetros por debajo** del punto esperado, la causa más probable es la **flexión** de los eslabones y el **juego** de las uniones, que se suman a lo largo del brazo. Un eslabón largo se dobla bajo carga y las uniones tienen holgura. Es la misma flecha y el mismo juego que viste en las estructuras.
+
+<Quiz id="q2" q="Quieres colocar la punta con la máxima precisión. ¿Cómo influye la longitud del brazo?" options={["Cuanto más largo, más precisa", "Cuanto más largo, menos precisa es la punta para el mismo paso del motor", "No influye"]} answer={1}>
+El mismo ángulo mueve más la punta cuanto más lejos está del eje.
+</Quiz>
+
+<Tip title="Sabías que… las especificaciones de un brazo industrial">
+Los brazos industriales indican su **repetibilidad**, normalmente de **décimas o centésimas de milímetro**: no que acierten un punto cualquiera, sino que **vuelvan una y otra vez al mismo**. Para eso necesitan estructuras muy rígidas y poco juego.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="Base y eje" img="cinem/c_r_s1" alt="Una viga gris horizontal de base con un pasador oscuro en el extremo izquierdo, que es el eje del brazo.">
+Fija la **base** y pon el **eje** del brazo en un extremo.
+</Step>
+
+<Step n={2} title="El final de carrera" img="cinem/c_r_s2" alt="Un bloque oscuro con un botón rojo en la parte superior, colocado en la base bajo el recorrido del brazo.">
+Pon el **final de carrera** (un pulsador) en la base, justo donde el brazo debería quedar al llegar a su posición de referencia.
+</Step>
+
+<Step n={3} title="El brazo toca el cero" img="cinem/c_r_s3" alt="Un brazo amarillo largo, horizontal, apoyado sobre el botón rojo del final de carrera.">
+Monta el **brazo** (unos 30 cm) y gíralo hasta que **pulse** el final de carrera. Esa es tu posición **cero**: marca 0° en el transportador.
+<Why>Con una referencia conocida, el brazo puede empezar a contar ángulos desde un punto fijo.</Why>
+</Step>
+
+<Step n={4} title="Un paso y mide" img="cinem/c_r_s4" alt="El brazo amarillo levantado un ángulo pequeño sobre el botón. Una flecha curva naranja marca el arco que recorre la punta y una línea a trazos marca la posición cero.">
+Levanta el brazo **1°** (con el transportador) y **mide con la regla** cuánto se ha movido la punta. Repite con **2°** y con **5°**.
+
+**Compara** con la regla 0,0175 × longitud × grados.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Acorta el brazo a la mitad.** ¿Cuánto salta la punta con 1°?
+2. **Repite el cero 5 veces.** Aleja el brazo del final de carrera y vuelve a pulsarlo cinco veces: ¿la punta acaba siempre en el mismo punto? Esa es tu **repetibilidad**.
+3. **Con carga.** Cuelga una moneda de la punta del brazo. **Predice:** ¿la punta queda más arriba, igual o más abajo? ¿por qué?
+
+<details>
+<summary>Respuestas</summary>
+
+1. **La mitad**: el desplazamiento es proporcional a la longitud.
+3. **Más abajo**: el brazo se flexiona bajo la carga y las uniones tienen juego.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="«Un brazo más largo es más preciso»" wrongLabel="Así no: brazo largo" rightLabel="Así sí: brazo corto">
+  <Fig slot="wrong" src="cinem/c_r_largo" alt="Un brazo largo amarillo y otro en gris girado un ángulo. Una flecha roja larga marca el arco grande que recorre la punta." />
+  <Fig slot="right" src="cinem/c_r_corto" alt="Un brazo corto amarillo y otro en gris girado el mismo ángulo. Una flecha verde corta marca el arco pequeño que recorre la punta." />
+
+Con el **mismo paso** de la articulación, el brazo largo mueve la punta **más**. Si buscas finura, acorta el brazo o usa una reducción más fina.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "El brazo pulsa el final de carrera en su posición cero y el transportador marca 0°",
+  "He medido cuánto salta la punta con 1° y con 2°",
+  "He comparado mis medidas con 0,0175 × longitud × grados",
+  "He repetido el cero varias veces y anotado cuánto varía la punta",
+  "Sé explicar la diferencia entre resolución y repetibilidad",
+]} />
+
+<Quiz id="q3" q="Al encender tu brazo, no sabe en qué ángulo está cada articulación. ¿Cómo lo soluciona?" options={["Adivinando", "Moviéndolas hasta un final de carrera que marca una posición de referencia (el «cero»)", "Girando siempre 360°"]} answer={1}>
+Sin sensores de posición absolutos, el brazo necesita una referencia conocida: al llegar al final de carrera sabe dónde está y a partir de ahí cuenta pasos.
+</Quiz>
+
+<Quiz id="q4" q="Tu brazo llega siempre unos milímetros por debajo del punto esperado. ¿Qué podría explicarlo?" options={["La flexión de los eslabones y el juego de las uniones, que se suman a lo largo del brazo", "Que la gravedad sube", "Que la regla ha cambiado"]} answer={0}>
+Un eslabón largo se dobla bajo carga y las uniones tienen holgura: la punta cae un poco.
+</Quiz>
+
+<RegisterPiece piece="Tabla de mm por grado de tu brazo con su final de carrera" />
+</Block>

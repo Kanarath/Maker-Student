@@ -1,0 +1,127 @@
+---
+// Laboratorio de rozamiento: tira de un bloque y mira cuánto cuesta arrancar y cuánto seguir.
+// Modelo básico: rozamiento máximo en reposo = μ arranque × normal; en movimiento = μ movimiento × normal.
+// Sobre suelo horizontal la normal vale lo mismo que el peso. Valores de μ: ejemplos, no medidas de materiales reales.
+---
+
+<div class="lab" data-roza>
+  <div class="head"><b>Laboratorio · Rozamiento</b><span class="muted">Sube el tirón poco a poco</span></div>
+
+  <svg viewBox="0 0 800 250" role="img" aria-label="Un bloque sobre el suelo con la flecha del tirón a la derecha y la del rozamiento a la izquierda">
+    <rect x="0" y="0" width="800" height="250" fill="#05060a" />
+    <line x1="0" y1="190" x2="800" y2="190" stroke="#3a3f52" stroke-width="3" />
+    <g data-ticks stroke="#3a3f52" stroke-width="2"></g>
+    <rect x="330" y="100" width="140" height="90" rx="6" fill="#d8382f" stroke="#0b0d12" stroke-width="3" />
+    <line data-pull x1="470" y1="145" x2="470" y2="145" stroke="#ff8a1f" stroke-width="9" stroke-linecap="round" />
+    <polygon data-pullh fill="#ff8a1f" points="0,0 0,0 0,0" />
+    <line data-fric x1="330" y1="145" x2="330" y2="145" stroke="#ff5a4a" stroke-width="9" stroke-linecap="round" />
+    <polygon data-frich fill="#ff5a4a" points="0,0 0,0 0,0" />
+    <text x="14" y="24" fill="#ff8a1f" font-size="15" font-family="monospace">naranja: tu tirón</text>
+    <text x="14" y="44" fill="#ff5a4a" font-size="15" font-family="monospace">rojo: rozamiento</text>
+  </svg>
+
+  <div class="ctrl">
+    <label>Tu tirón: <b data-pv>0</b> N<input type="range" min="0" max="80" step="1" value="0" data-pull-in /></label>
+    <label>Peso del bloque: <b data-wv>50</b> N<input type="range" min="10" max="100" step="5" value="50" data-w /></label>
+    <label>μ al arrancar: <b data-sv>0,5</b><input type="range" min="0.05" max="1" step="0.05" value="0.5" data-ms /></label>
+    <label>μ en movimiento: <b data-kv>0,4</b><input type="range" min="0.02" max="1" step="0.01" value="0.4" data-mk /></label>
+  </div>
+  <div class="row">
+    <span class="muted">Ejemplos:</span>
+    <button class="btn" type="button" data-pre="0.8,0.6">Superficie áspera</button>
+    <button class="btn" type="button" data-pre="0.5,0.4">Libro sobre mesa</button>
+    <button class="btn" type="button" data-pre="0.3,0.2">Superficie lisa</button>
+    <button class="btn" type="button" data-pre="0.05,0.03">Con rodillos</button>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <p class="note muted">Modelo básico e ideal. La realidad cambia con la superficie, el polvo o la humedad; por eso los μ de arriba son solo ejemplos para jugar.</p>
+</div>
+
+<script>
+  const fmt = (n: number, d = 2) => n.toLocaleString("es-ES", { maximumFractionDigits: d });
+  const PXN = 3.5; // píxeles por newton
+  const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-roza]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const P = q<HTMLInputElement>("[data-pull-in]"), Wt = q<HTMLInputElement>("[data-w]");
+    const Ms = q<HTMLInputElement>("[data-ms]"), Mk = q<HTMLInputElement>("[data-mk]");
+    const out = q<HTMLElement>("[data-out]");
+    const pull = q<SVGLineElement>("[data-pull]"), pullh = q<SVGPolygonElement>("[data-pullh]");
+    const fric = q<SVGLineElement>("[data-fric]"), frich = q<SVGPolygonElement>("[data-frich]");
+    const ticks = q<SVGGElement>("[data-ticks]");
+    let moving = false;
+    let raf = 0, off = 0, last = 0, speed = 0;
+
+    for (let x = -100; x <= 1000; x += 50) {
+      const t = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      t.setAttribute("x1", String(x)); t.setAttribute("x2", String(x)); t.setAttribute("y1", "190"); t.setAttribute("y2", "202");
+      ticks.append(t);
+    }
+
+    function arrow(line: SVGLineElement, head: SVGPolygonElement, x0: number, len: number) {
+      const y = 145, s = Math.sign(len), x1 = x0 + len;
+      line.setAttribute("x1", String(x0)); line.setAttribute("y1", String(y));
+      line.setAttribute("x2", String(len === 0 ? x0 : x1 - s * 12)); line.setAttribute("y2", String(y));
+      head.setAttribute("points", len === 0 ? "0,0 0,0 0,0" : `${x1},${y} ${x1 - s * 20},${y - 12} ${x1 - s * 20},${y + 12}`);
+    }
+
+    function loop(now: number) {
+      const dt = Math.min((now - last) / 1000, 0.05); last = now;
+      off = (off - speed * dt) % 50;
+      ticks.setAttribute("transform", `translate(${off} 0)`);
+      if (moving) raf = requestAnimationFrame(loop);
+    }
+
+    function update(fromPull = true) {
+      const w = +Wt.value;
+      let ms = +Ms.value, mk = +Mk.value;
+      if (mk > ms) { mk = ms; Mk.value = String(mk); }
+      const p = +P.value;
+      const fe = ms * w, fm = mk * w;
+      q("[data-pv]").textContent = String(p);
+      q("[data-wv]").textContent = String(w);
+      q("[data-sv]").textContent = fmt(ms);
+      q("[data-kv]").textContent = fmt(mk);
+      if (!moving && p > fe) moving = true;
+      else if (moving && p <= fm) moving = false;
+      const f = moving ? fm : Math.min(p, fe);
+      arrow(pull, pullh, 470, p * PXN);
+      arrow(fric, frich, 330, -f * PXN);
+      let txt = `Normal = peso = ${w} N. Para arrancar hacen falta <b>${fmt(fe)} N</b> (${fmt(ms)} × ${w}); ya moviéndose, <b>${fmt(fm)} N</b> (${fmt(mk)} × ${w}).<br>`;
+      if (moving) txt += `<b>Se mueve.</b> El rozamiento baja a ${fmt(fm)} N: sobran ${fmt(p - fm)} N y el bloque acelera. Si bajas el tirón de ${fmt(fm)} N, se para.`;
+      else if (p === 0) txt += "Quieto: no tiras, no hay rozamiento.";
+      else txt += `<b>Quieto.</b> El rozamiento se adapta a tu tirón (${fmt(f)} N) hasta llegar a ${fmt(fe)} N: es una fuerza que solo responde, no inventa.`;
+      out.innerHTML = txt;
+      out.classList.toggle("ok", moving);
+      cancelAnimationFrame(raf);
+      if (moving && !reduce()) { speed = Math.min(300, 40 + (p - fm) * 8); last = performance.now(); raf = requestAnimationFrame(loop); }
+      else { speed = 0; if (!moving) { off = 0; ticks.setAttribute("transform", "translate(0 0)"); } }
+    }
+
+    for (const i of [P, Wt, Ms, Mk]) i.addEventListener("input", () => update());
+    for (const b of root.querySelectorAll<HTMLButtonElement>("[data-pre]")) {
+      b.addEventListener("click", () => {
+        const [s, k] = b.dataset.pre!.split(",");
+        Ms.value = s; Mk.value = k; P.value = "0"; moving = false; update();
+      });
+    }
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  label { display: block; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 0 14px 12px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .out.ok { background: #4ade8014; border-top-color: #4ade80; }
+  .note { margin: 0; padding: 0 14px 12px; font-size: .88rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

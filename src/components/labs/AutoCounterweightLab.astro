@@ -1,0 +1,95 @@
+---
+// Laboratorio del contrapeso: cabina y contrapeso cuelgan de la misma cuerda sobre una polea.
+// El motor solo compensa la DIFERENCIA de masa. Se compara con un ascensor sin contrapeso.
+// Se habla en kg para simplificar; la fuerza real es masa × 9,8 (≈ 10) m/s². Sin rozamiento ni aceleración.
+---
+
+<div class="lab" data-cw>
+  <div class="head"><b>Laboratorio · El contrapeso</b><span class="muted">Cambia las masas y mira cuánto trabaja el motor</span></div>
+
+  <svg viewBox="0 0 800 320" role="img" aria-label="Una polea arriba con una cuerda: la cabina cuelga a la izquierda y el contrapeso a la derecha. El tamaño de cada bloque es proporcional a su masa.">
+    <rect x="0" y="0" width="800" height="320" fill="#05060a" />
+    <circle cx="400" cy="120" r="110" fill="#d8382f" stroke="#0b0d12" stroke-width="3" />
+    <circle cx="400" cy="120" r="12" fill="#0b0d12" />
+    <path d="M 290 120 A 110 110 0 0 1 510 120" fill="none" stroke="#f4eedd" stroke-width="4" />
+    <g data-cab></g>
+    <g data-cwt></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Cabina con su carga</legend>
+      <label>Masa: <b data-a-v>900</b> kg
+        <input type="range" min="200" max="1500" step="50" value="900" data-a />
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend>Contrapeso</legend>
+      <label>Masa: <b data-b-v>1100</b> kg
+        <input type="range" min="200" max="1500" step="50" value="1100" data-b />
+      </label>
+    </fieldset>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+  const fmt = (n: number) => n.toLocaleString("es-ES");
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-cw]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const a = q<HTMLInputElement>("[data-a]");
+    const b = q<HTMLInputElement>("[data-b]");
+    const out = q<HTMLElement>("[data-out]");
+    const cab = q<SVGGElement>("[data-cab]");
+    const cwt = q<SVGGElement>("[data-cwt]");
+
+    function block(g: SVGGElement, cx: number, mass: number, color: string, label: string) {
+      g.replaceChildren();
+      const side = 40 + (mass / 1500) * 80; // el lado crece con la masa
+      const top = 175;
+      g.append(mk("line", { x1: cx, y1: 120, x2: cx, y2: top, stroke: "#f4eedd", "stroke-width": 3 }));
+      g.append(mk("rect", { x: cx - side / 2, y: top, width: side, height: side * 0.8, rx: 5, fill: color, stroke: "#0b0d12", "stroke-width": 3 }));
+      const t = mk("text", { x: cx, y: top + side * 0.8 + 22, fill: "#a3a1b4", "font-size": 15, "font-family": "monospace", "text-anchor": "middle" });
+      t.textContent = `${label} ${fmt(mass)} kg`;
+      g.append(t);
+    }
+
+    function update() {
+      const ma = +a.value, mb = +b.value;
+      q("[data-a-v]").textContent = fmt(ma);
+      q("[data-b-v]").textContent = fmt(mb);
+      block(cab, 290, ma, "#f2b230", "cabina");
+      block(cwt, 510, mb, "#e9edf5", "contrapeso");
+      const d = Math.abs(ma - mb);
+      const who = ma === mb ? "Están igualadas: el motor casi solo vence el rozamiento." : mb > ma ? "El contrapeso pesa más." : "La cabina pesa más.";
+      const force = Math.round(d * 9.8);
+      const sin = ma > 0 ? `Sin contrapeso, el motor tendría que compensar los <b>${fmt(ma)} kg</b> de la cabina entera, en vez de ${fmt(d)} kg.` : "";
+      out.innerHTML = `Diferencia: |${fmt(mb)} − ${fmt(ma)}| = <b>${fmt(d)} kg</b> (≈ ${fmt(force)} N). ${who}<br>${sin}`;
+    }
+    a.addEventListener("input", update);
+    b.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

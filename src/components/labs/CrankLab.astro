@@ -1,0 +1,136 @@
+---
+// Laboratorio de la biela-manivela: la carrera del pistón es 2 × el radio de la manivela.
+// La biela mide 7 pasos entre centros (viga de 8 agujeros). 1 agujero = 8 mm (medida tipo Technic).
+---
+
+<div class="lab" data-crank>
+  <div class="head"><b>Laboratorio · Biela-manivela</b><span class="muted">Cambia el radio y gira la manivela</span></div>
+  <svg viewBox="0 0 800 340" role="img" aria-label="Una manivela que gira, una biela y un pistón que va y viene entre dos guías">
+    <rect width="800" height="340" fill="#05060a" />
+    <line x1="110" y1="148" x2="780" y2="148" stroke="#6b7186" stroke-width="6" />
+    <line x1="110" y1="192" x2="780" y2="192" stroke="#6b7186" stroke-width="6" />
+    <circle data-orbit cx="130" cy="170" fill="none" stroke="#3a4054" stroke-width="2" stroke-dasharray="5 5" />
+    <line data-minl y1="120" y2="225" stroke="#4ade80" stroke-width="2" stroke-dasharray="5 4" />
+    <line data-maxl y1="120" y2="225" stroke="#4ade80" stroke-width="2" stroke-dasharray="5 4" />
+    <g data-bracket></g>
+    <line data-rod stroke="#f2b230" stroke-width="12" stroke-linecap="round" />
+    <rect data-piston y="154" width="70" height="32" rx="4" fill="#37b26c" stroke="#0b0d12" stroke-width="2" />
+    <line data-crank x1="130" y1="170" stroke="#d8382f" stroke-width="12" stroke-linecap="round" />
+    <circle cx="130" cy="170" r="9" fill="#0b0d12" />
+    <circle data-tip r="7" fill="#0b0d12" />
+    <circle data-pp cy="170" r="7" fill="#0b0d12" />
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Radio de la manivela: <b data-r-v>2</b> agujeros</legend>
+      <input type="range" min="1" max="4" step="1" value="2" data-r aria-label="Radio de la manivela en agujeros" />
+    </fieldset>
+    <fieldset>
+      <legend>Ángulo de la manivela: <b data-a-v>40</b>°</legend>
+      <input type="range" min="0" max="359" step="1" value="40" data-a aria-label="Ángulo de la manivela en grados" />
+    </fieldset>
+    <fieldset class="wide">
+      <legend>Movimiento</legend>
+      <div class="opts"><button type="button" class="opt" data-play aria-pressed="false">Girar</button></div>
+    </fieldset>
+  </div>
+  <p class="out" aria-live="polite" data-info></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-crank]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const rIn = q<HTMLInputElement>("[data-r]");
+    const aIn = q<HTMLInputElement>("[data-a]");
+    const playBtn = q<HTMLButtonElement>("[data-play]");
+    const info = q<HTMLElement>("[data-info]");
+    const rod = q<SVGLineElement>("[data-rod]");
+    const crank = q<SVGLineElement>("[data-crank]");
+    const piston = q<SVGRectElement>("[data-piston]");
+    const tip = q<SVGCircleElement>("[data-tip]");
+    const pp = q<SVGCircleElement>("[data-pp]");
+    const orbit = q<SVGCircleElement>("[data-orbit]");
+    const minl = q<SVGLineElement>("[data-minl]");
+    const maxl = q<SVGLineElement>("[data-maxl]");
+    const bracket = q<SVGGElement>("[data-bracket]");
+    const U = 40, LR = 7, CX = 130, CY = 170, MM = 8;
+    let playing = false;
+
+    const pos = (r: number, a: number) => {
+      const th = (a * Math.PI) / 180;
+      const tx = CX + r * U * Math.cos(th), ty = CY - r * U * Math.sin(th);
+      const xp = CX + r * U * Math.cos(th) + Math.sqrt((LR * U) ** 2 - (r * U * Math.sin(th)) ** 2);
+      return { tx, ty, xp };
+    };
+
+    function update() {
+      const r = +rIn.value, a = +aIn.value;
+      q("[data-r-v]").textContent = String(r);
+      q("[data-a-v]").textContent = String(Math.round(a));
+      const { tx, ty, xp } = pos(r, a);
+      crank.setAttribute("x2", String(tx)); crank.setAttribute("y2", String(ty));
+      rod.setAttribute("x1", String(tx)); rod.setAttribute("y1", String(ty));
+      rod.setAttribute("x2", String(xp)); rod.setAttribute("y2", String(CY));
+      tip.setAttribute("cx", String(tx)); tip.setAttribute("cy", String(ty));
+      pp.setAttribute("cx", String(xp));
+      piston.setAttribute("x", String(xp - 35));
+      orbit.setAttribute("r", String(r * U));
+      // medida real de la carrera barriendo todas las posiciones
+      let mn = Infinity, mx = -Infinity;
+      for (let d = 0; d < 360; d += 1) { const p = pos(r, d).xp; if (p < mn) mn = p; if (p > mx) mx = p; }
+      for (const [el, x] of [[minl, mn], [maxl, mx]] as const) { el.setAttribute("x1", String(x)); el.setAttribute("x2", String(x)); }
+      bracket.replaceChildren();
+      bracket.append(mk("line", { x1: mn, y1: 232, x2: mx, y2: 232, stroke: "#4ade80", "stroke-width": 3 }));
+      bracket.append(mk("line", { x1: mn, y1: 224, x2: mn, y2: 240, stroke: "#4ade80", "stroke-width": 3 }));
+      bracket.append(mk("line", { x1: mx, y1: 224, x2: mx, y2: 240, stroke: "#4ade80", "stroke-width": 3 }));
+      const t = mk("text", { x: (mn + mx) / 2, y: 262, "text-anchor": "middle", fill: "#4ade80", "font-size": 18, "font-family": "monospace", "font-weight": 700 });
+      t.textContent = "carrera";
+      bracket.append(t);
+      const carrera = Math.round(((mx - mn) / U) * 10) / 10;
+      const dead = Math.abs(Math.sin((a * Math.PI) / 180)) < 0.04;
+      info.innerHTML = `Radio = ${r} agujeros (${r * MM} mm). Carrera medida en el dibujo = <b>${carrera} agujeros = ${Math.round(carrera * MM)} mm</b>, que es <b>2 × ${r} = ${2 * r} agujeros</b> (2 × ${r * MM} mm).` +
+        (dead ? " <b>Punto muerto:</b> la biela y la manivela están alineadas y el pistón no puede hacer girar la manivela; un volante de inercia ayuda a pasarlo." : "");
+    }
+
+    let last = performance.now();
+    function tick(now: number) {
+      const dt = (now - last) / 1000; last = now;
+      if (playing) { aIn.value = String((+aIn.value + dt * 60) % 360); update(); }
+      requestAnimationFrame(tick);
+    }
+    rIn.addEventListener("input", update);
+    aIn.addEventListener("input", update);
+    playBtn.addEventListener("click", () => {
+      playing = !playing;
+      playBtn.textContent = playing ? "Pausa" : "Girar";
+      playBtn.setAttribute("aria-pressed", String(playing));
+    });
+    update();
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) requestAnimationFrame(tick);
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  .wide { grid-column: 1 / -1; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  .opts { display: flex; gap: 8px; margin-top: 4px; }
+  .opt { min-width: 52px; padding: 10px 12px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 4px; font: 600 .95rem var(--font-mono); cursor: pointer; }
+  .opt[aria-pressed="true"] { background: var(--accent); color: #0b0d12; border-color: var(--accent); }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 8px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

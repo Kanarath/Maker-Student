@@ -1,0 +1,134 @@
+---
+// Laboratorio del brazo de dos eslabones (plano). Cinemática DIRECTA: tú eliges los ángulos y el dibujo te dice dónde llega la punta.
+// Lectura para principiantes: mira las coordenadas (x, y) de la punta en la cuadrícula y la distancia en línea recta con Pitágoras: √(x² + y²).
+// Por dentro el ordenador usa seno y coseno para colocar la punta; no hace falta que los uses tú para entender la unidad.
+// Con la casilla «otra forma de llegar» se dibuja el codo al otro lado de la recta base–punta: llega al MISMO punto (cinemática inversa: dos soluciones).
+---
+
+<div class="lab" data-arm>
+  <div class="head"><b>Laboratorio · Brazo de dos eslabones</b><span class="muted">Mueve los ángulos y lee dónde llega la punta</span></div>
+
+  <svg viewBox="0 0 800 440" role="img" aria-label="Brazo plano de dos eslabones sobre una cuadrícula, con la base a la izquierda">
+    <rect width="800" height="440" fill="#05060a" />
+    <g data-scene></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Eslabones (cm)</legend>
+      <label>Primer eslabón (base → codo): <b data-l1-v>12</b> cm<input type="range" min="4" max="15" step="1" value="12" data-l1 aria-label="Longitud del primer eslabón en centímetros" /></label>
+      <label>Segundo eslabón (codo → punta): <b data-l2-v>8</b> cm<input type="range" min="4" max="15" step="1" value="8" data-l2 aria-label="Longitud del segundo eslabón en centímetros" /></label>
+    </fieldset>
+    <fieldset>
+      <legend>Ángulos</legend>
+      <label>Hombro (respecto a la horizontal): <b data-t1-v>30</b>°<input type="range" min="-30" max="150" step="1" value="30" data-t1 aria-label="Ángulo del hombro en grados" /></label>
+      <label>Codo (cuánto se dobla): <b data-t2-v>60</b>°<input type="range" min="-150" max="150" step="1" value="60" data-t2 aria-label="Ángulo del codo en grados" /></label>
+    </fieldset>
+  </div>
+  <div class="bar">
+    <button class="btn" type="button" data-right>Codo en ángulo recto (como en el ejemplo)</button>
+    <label class="chk"><input type="checkbox" data-mirror /> Mostrar la otra forma de llegar (codo al otro lado)</label>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+  const rad = (d: number) => (d * Math.PI) / 180;
+  const OX = 150, OY = 340, S = 11; // base en (150, 340) · 11 px por cm
+  const fmt = (n: number) => (Math.round(n * 10) / 10).toString().replace(".", ",");
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-arm]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const scene = q<SVGGElement>("[data-scene]");
+    const I = { l1: q<HTMLInputElement>("[data-l1]"), l2: q<HTMLInputElement>("[data-l2]"), t1: q<HTMLInputElement>("[data-t1]"), t2: q<HTMLInputElement>("[data-t2]") };
+    const mirror = q<HTMLInputElement>("[data-mirror]");
+    const out = q<HTMLElement>("[data-out]");
+    const X = (x: number) => OX + x * S;
+    const Y = (y: number) => OY - y * S;
+
+    function link(ax: number, ay: number, bx: number, by: number, color: string, op = 1) {
+      const l = mk("line", { x1: X(ax), y1: Y(ay), x2: X(bx), y2: Y(by), stroke: color, "stroke-width": 14, "stroke-linecap": "round", opacity: op });
+      scene.append(l);
+    }
+    function joint(x: number, y: number, r = 7) {
+      scene.append(mk("circle", { cx: X(x), cy: Y(y), r, fill: "#2a2c35", stroke: "#d5d9e2", "stroke-width": 2.5 }));
+    }
+
+    function update() {
+      const L1 = +I.l1.value, L2 = +I.l2.value, T1 = +I.t1.value, T2 = +I.t2.value;
+      q("[data-l1-v]").textContent = String(L1);
+      q("[data-l2-v]").textContent = String(L2);
+      q("[data-t1-v]").textContent = String(T1);
+      q("[data-t2-v]").textContent = String(T2);
+      scene.replaceChildren();
+      // cuadrícula cada 5 cm
+      for (let c = -10; c <= 40; c += 5) {
+        scene.append(mk("line", { x1: X(c), y1: 0, x2: X(c), y2: 440, stroke: c === 0 ? "#4a4e60" : "#171a24", "stroke-width": c === 0 ? 2 : 1 }));
+        if (c > 0) { const t = mk("text", { x: X(c) + 3, y: OY + 16, fill: "#6b7186", "font-size": 11, "font-family": "monospace" }); t.textContent = String(c); scene.append(t); }
+      }
+      for (let c = -5; c <= 20; c += 5) {
+        scene.append(mk("line", { x1: 0, y1: Y(c), x2: 800, y2: Y(c), stroke: c === 0 ? "#4a4e60" : "#171a24", "stroke-width": c === 0 ? 2 : 1 }));
+        if (c > 0) { const t = mk("text", { x: X(0) + 4, y: Y(c) - 3, fill: "#6b7186", "font-size": 11, "font-family": "monospace" }); t.textContent = String(c); scene.append(t); }
+      }
+      // alcance máximo y mínimo
+      scene.append(mk("circle", { cx: X(0), cy: Y(0), r: (L1 + L2) * S, fill: "none", stroke: "#37b26c", "stroke-width": 1.5, "stroke-dasharray": "5 6", opacity: 0.7 }));
+      if (Math.abs(L1 - L2) > 0) scene.append(mk("circle", { cx: X(0), cy: Y(0), r: Math.abs(L1 - L2) * S, fill: "none", stroke: "#37b26c", "stroke-width": 1.5, "stroke-dasharray": "5 6", opacity: 0.7 }));
+      const a1 = rad(T1), a2 = rad(T1 + T2);
+      const ex = L1 * Math.cos(a1), ey = L1 * Math.sin(a1);
+      const tx = ex + L2 * Math.cos(a2), ty = ey + L2 * Math.sin(a2);
+      if (mirror.checked) {
+        // reflejo del codo respecto a la recta base–punta: llega al mismo punto
+        const d2 = tx * tx + ty * ty;
+        if (d2 > 1e-6) {
+          const k = (ex * tx + ey * ty) / d2;
+          const mx = 2 * k * tx - ex, my = 2 * k * ty - ey;
+          link(0, 0, mx, my, "#2f7fe0", 0.35);
+          link(mx, my, tx, ty, "#f2b230", 0.35);
+          joint(mx, my, 6);
+        }
+      }
+      // distancia en línea recta (Pitágoras)
+      scene.append(mk("line", { x1: X(0), y1: Y(0), x2: X(tx), y2: Y(ty), stroke: "#2de0f2", "stroke-width": 2, "stroke-dasharray": "7 5" }));
+      // proyecciones x e y
+      scene.append(mk("line", { x1: X(tx), y1: Y(0), x2: X(tx), y2: Y(ty), stroke: "#ff8a1f", "stroke-width": 1.5, "stroke-dasharray": "3 4" }));
+      scene.append(mk("line", { x1: X(0), y1: Y(ty), x2: X(tx), y2: Y(ty), stroke: "#ff8a1f", "stroke-width": 1.5, "stroke-dasharray": "3 4" }));
+      link(0, 0, ex, ey, "#2f7fe0");
+      link(ex, ey, tx, ty, "#f2b230");
+      joint(0, 0, 9); joint(ex, ey); joint(tx, ty, 5);
+      scene.append(mk("circle", { cx: X(tx), cy: Y(ty), r: 10, fill: "none", stroke: "#4ade80", "stroke-width": 3 }));
+      const d = Math.hypot(tx, ty);
+      const reach = d <= L1 + L2 + 1e-9 && d >= Math.abs(L1 - L2) - 1e-9;
+      out.innerHTML = `Punta en <b>(x, y) = (${fmt(tx)}, ${fmt(ty)}) cm</b> desde la base.<br>` +
+        `Distancia en línea recta (Pitágoras): √(${fmt(tx)}² + ${fmt(ty)}²) = <b>${fmt(d)} cm</b>. Alcance posible: de ${fmt(Math.abs(L1 - L2))} a ${fmt(L1 + L2)} cm.` +
+        (T1 === 0 && Math.abs(T2) === 90 ? `<br>Con el codo en <b>ángulo recto</b> la punta queda en (${L1}, ${T2 > 0 ? L2 : -L2}) y la distancia es √(${L1}² + ${L2}²) = ${fmt(Math.hypot(L1, L2))} cm: ¡no es ${L1} + ${L2}!` : "") +
+        (reach ? "" : "<br>Fuera de alcance: el brazo no llega ahí.");
+    }
+    for (const i of Object.values(I)) i.addEventListener("input", update);
+    mirror.addEventListener("input", update);
+    q("[data-right]").addEventListener("click", () => { I.t1.value = "0"; I.t2.value = "90"; update(); });
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .bar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 0 14px 12px; }
+  .chk { display: flex; gap: 8px; align-items: center; margin: 0; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,92 @@
+---
+// Laboratorio del vuelco: coche visto de frente sobre una pendiente lateral.
+// Regla de la unidad: el coche vuelca si la vertical desde el centro de gravedad (CG) cae FUERA de las ruedas.
+// Vuelca cuando tan(inclinación) > (mitad del ancho) ÷ (altura del CG). Medidas en agujeros (8 mm cada uno).
+---
+
+<div class="lab" data-tip>
+  <div class="head"><b>Laboratorio · ¿Vuelca o no vuelca?</b><span class="muted">Inclina la rampa y mira dónde cae la vertical del centro de gravedad</span></div>
+
+  <svg viewBox="0 0 800 340" role="img" aria-label="Coche visto de frente sobre una rampa inclinada, con una línea vertical que baja desde su centro de gravedad">
+    <rect width="800" height="340" fill="#05060a" />
+    <g data-scene></g>
+  </svg>
+
+  <div class="ctrl">
+    <label>Inclinación de la rampa: <b data-a-v>15</b>°<input type="range" min="0" max="50" step="1" value="15" data-ang aria-label="Inclinación de la rampa en grados" /></label>
+    <label>Ancho entre ruedas: <b data-w-v>6</b> agujeros<input type="range" min="3" max="10" step="1" value="6" data-w aria-label="Distancia entre las ruedas en agujeros" /></label>
+    <label>Altura del centro de gravedad: <b data-h-v>3</b> agujeros<input type="range" min="1" max="8" step="1" value="3" data-h aria-label="Altura del centro de gravedad sobre el suelo en agujeros" /></label>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+  const S = 26; // px por agujero
+  for (const root of document.querySelectorAll<HTMLElement>("[data-tip]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const scene = q<SVGGElement>("[data-scene]");
+    const angI = q<HTMLInputElement>("[data-ang]");
+    const wI = q<HTMLInputElement>("[data-w]");
+    const hI = q<HTMLInputElement>("[data-h]");
+    const out = q<HTMLElement>("[data-out]");
+
+    function update() {
+      const a = +angI.value, w = +wI.value, h = +hI.value;
+      q("[data-a-v]").textContent = String(a);
+      q("[data-w-v]").textContent = String(w);
+      q("[data-h-v]").textContent = String(h);
+      const phi = (a * Math.PI) / 180;
+      const crit = (Math.atan(w / 2 / h) * 180) / Math.PI;
+      const stable = a < crit;
+      scene.replaceChildren();
+      // El centro de la rampa está en (400, 270). La rampa sube hacia la derecha; el coche está en el punto medio.
+      const cx = 400, cy = 270;
+      const g = mk("g", { transform: `translate(${cx} ${cy}) rotate(${-a})` });
+      g.append(mk("rect", { x: -380, y: 0, width: 760, height: 40, fill: "#232739" }));
+      // ruedas y cuerpo (en el sistema inclinado; eje y hacia abajo)
+      const wl = -(w / 2) * S, wr = (w / 2) * S;
+      const body = mk("rect", { x: wl - 8, y: -(h * 2 * S) + 0.5 * S, width: wr - wl + 16, height: h * 1.4 * S + 8, rx: 6, fill: stable ? "#2f7fe0" : "#d8382f", opacity: 0.92, stroke: "#05060a", "stroke-width": 2 });
+      g.append(body);
+      for (const x of [wl, wr]) g.append(mk("circle", { cx: x, cy: -0.75 * S, r: 0.75 * S, fill: "#3c404e", stroke: "#aeb6c8", "stroke-width": 3 }));
+      g.append(mk("circle", { cx: 0, cy: -h * S, r: 8, fill: "#f2b230", stroke: "#05060a", "stroke-width": 2 }));
+      scene.append(g);
+      // vertical desde el CG hasta el suelo (en coordenadas del mundo, sin inclinar)
+      const rad = (d: number) => (d * Math.PI) / 180;
+      const cgx = cx - Math.sin(phi) * h * S, cgy = cy - Math.cos(phi) * h * S; // CG en el mundo
+      const leftX = cx - Math.cos(phi) * (w / 2) * S;
+      const rightX = cx + Math.cos(phi) * (w / 2) * S;
+      const groundYAt = (x: number) => cy - Math.tan(phi) * (x - cx);
+      const col = stable ? "#4ade80" : "#ff5a4a";
+      scene.append(mk("line", { x1: cgx, y1: cgy, x2: cgx, y2: groundYAt(cgx) + 0, stroke: col, "stroke-width": 3, "stroke-dasharray": "7 5" }));
+      scene.append(mk("circle", { cx: leftX, cy: groundYAt(leftX), r: 5, fill: "#fff" }));
+      scene.append(mk("circle", { cx: rightX, cy: groundYAt(rightX), r: 5, fill: "#fff" }));
+      void rad;
+      const inside = cgx > leftX && cgx < rightX;
+      out.innerHTML = `Vuelca a partir de unos <b>${crit.toFixed(0)}°</b> (con este ancho y esta altura).<br>` +
+        (inside
+          ? `<b style="color:#4ade80">✓ Aguanta:</b> la vertical del centro de gravedad cae <b>entre las ruedas</b>.`
+          : `<b style="color:#ff5a4a">✗ Vuelca:</b> la vertical del centro de gravedad cae <b>fuera de las ruedas</b>.`) +
+        `<br>Baja el centro de gravedad o ensancha el coche y verás que aguanta más inclinación. (Este dibujo supone que no resbala.)`;
+    }
+    for (const el of [angI, wI, hI]) el.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; gap: 12px; padding: 12px 14px; }
+  label { display: block; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+</style>

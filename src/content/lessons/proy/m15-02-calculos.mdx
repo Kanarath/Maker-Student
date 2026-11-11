@@ -1,0 +1,164 @@
+---
+id: m15-02
+unit: proy
+order: 2
+title: "Calcula tu brazo: par, margen y servos"
+summary: "Calcula el par del hombro y del codo de tu brazo (carga y peso propio), añade un margen de 2 y elige servos que de verdad lleguen."
+practice: [l_proy_calc]
+cover: proy/k_s4
+duration: 35
+status: revisada
+prerequisites: [m15-01, m3-01]
+objectives:
+  - "Calcular el par del hombro como peso × distancia de la carga más el peso propio en el punto medio"
+  - "Aplicar un margen (por ejemplo 2×) para elegir un servo"
+  - "Reducir el par si no llega: acortar, aligerar, contrapeso o reducción"
+materials:
+  - "Tu ficha de requisitos de la lección anterior"
+  - "Una báscula de cocina para pesar tus piezas, y la ficha técnica (kg·cm) de tus servos"
+piece:
+  name: "Hoja de cálculo de tu brazo"
+  hint: "Foto de tu hoja con el par del hombro y del codo, el margen de 2 y el servo elegido"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Ya sabes **qué** debe hacer tu brazo. Ahora toca saber si tus motores **pueden hacerlo**. Vas a escribir tu **hoja de cálculo**: unas pocas multiplicaciones que te ahorran comprar un servo que no llega.
+
+<Fig src="proy/k_s4" alt="El brazo horizontal y estirado con una pieza blanca en la pinza. Una flecha naranja baja desde la pieza y una cian, más corta, desde la mitad del brazo. Dos curvas verdes alrededor del hombro marcan el giro del motor, y el servo del hombro está pintado de verde." caption="Dos pesos tiran hacia abajo (naranja: la pieza; cian: el brazo). El servo del hombro (en verde) debe dar el par que los equilibra, con margen." />
+
+Hoy no montas piezas: tu producto es la **hoja con tus números**.
+</Block>
+
+<Block kind="concepto">
+## Los números del hombro
+
+El motor del **hombro** debe dar un par igual a **fuerza × distancia** de la carga, **más** el peso propio del brazo (que actúa en su **punto medio**). Elige un motor con **margen**: por ejemplo, el **doble** del par que necesitas.
+
+**Ejemplo (en N·m).** Un brazo horizontal de 0,2 m lleva una pieza de 3 N en la punta y su peso propio es de 2 N (actúa en su punto medio):
+
+**par = 3 N × 0,2 m + 2 N × 0,1 m = 0,6 + 0,2 = 0,8 N·m**
+
+Con un margen de 2 veces: **0,8 × 2 = 1,6 N·m**.
+
+<Fig src="proy/k_s1" alt="El brazo horizontal con la pieza blanca en la pinza. Solo hay una flecha naranja en la pieza y una cota blanca desde el hombro hasta ella." caption="Primero, solo la carga: peso × distancia." />
+
+<Fig src="proy/k_s2" alt="El mismo brazo con una segunda flecha cian en el centro del brazo y una cota cian más corta, hasta la mitad." caption="Después, el peso propio, a la mitad del brazo. También suma par." />
+
+**Predice antes de mirar:** ¿qué articulación de un brazo suele necesitar el motor más fuerte?
+
+<details>
+<summary>La respuesta</summary>
+
+La del **hombro**, la más cercana a la base, porque soporta todo lo que hay después: eslabones, motores y carga, a mucha distancia. La muñeca solo carga con la pinza y la pieza.
+</details>
+
+<Why title="¿Por qué casi no cuenta un motor sobre el eje?">
+Porque el par depende de la **distancia al eje**: un motor colocado justo sobre el eje del hombro está casi a distancia cero y le añade casi nada. Por eso se colocan los motores pesados cerca de la base.
+</Why>
+
+### ¿Y si no llega?
+
+Todas las medidas razonables bajan el par necesario o suben el par disponible:
+
+- **Acortar** el brazo (menos distancia).
+- **Aligerar** el brazo (menos peso).
+- Añadir un **contrapeso** detrás del hombro.
+- Añadir **reducción** (engranajes) para ganar par a cambio de velocidad.
+
+Prueba con tus piezas. **Cambia las medidas y los pesos** y mira el par del hombro y del codo, y si llegan tus servos:
+
+<ArmPlanLab />
+
+<Quiz id="q1" q="Un brazo horizontal de 0,2 m lleva una pieza de 3 N en la punta y su peso propio es de 2 N (actúa en su punto medio). ¿Qué par debe dar el motor del hombro?" options={["0,6 N·m", "0,8 N·m", "1 N·m"]} answer={1}>
+Par = 3 N × 0,2 m (la pieza) + 2 N × 0,1 m (el brazo, en su punto medio) = 0,6 + 0,2 = **0,8 N·m**.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Tu producto es una **hoja de cálculo** con cuatro pasos. Usa estos números como ejemplo y luego sustituye los tuyos: pinza con pieza **60 g** en la punta, a **14,4 cm** del hombro; brazo completo (eslabones y servo del codo) de **65 g**, con su centro a **7,2 cm**.
+
+<Step n={1} title="El par de la carga" img="proy/k_s1" alt="El brazo con la pieza en la pinza, una flecha naranja y una cota blanca hasta el hombro.">
+Pesa la pinza con su pieza. Mide la distancia al hombro.
+
+**60 g × 14,4 cm = 864 g·cm**
+</Step>
+
+<Step n={2} title="El par del peso propio" img="proy/k_s2" alt="El mismo brazo con la flecha cian en el centro del brazo y una cota hasta la mitad.">
+Pesa los eslabones y el servo del codo. Su peso actúa, aproximadamente, en el punto medio.
+
+**65 g × 7,2 cm = 468 g·cm**
+<Why>Es una aproximación: el servo del codo pesa más en un extremo. La hoja del laboratorio reparte cada pieza en su sitio y da un resultado algo más fino.</Why>
+</Step>
+
+<Step n={3} title="Suma el par" img="proy/k_s3" alt="El brazo con las dos flechas y una curva verde alrededor del hombro, que marca el par que debe dar el motor.">
+Suma los dos: 864 + 468 = **1332 g·cm = 1,33 kg·cm** (unos 0,13 N·m).
+</Step>
+
+<Step n={4} title="Elige el servo con margen" img="proy/k_s4" alt="El servo del hombro pintado de verde y una segunda curva verde, más grande, alrededor del hombro, que indica el par con margen.">
+Multiplica por el margen: **1,33 × 2 = 2,66 kg·cm** (aprox. 2,7 kg·cm). Busca en la ficha de tus servos uno que dé **al menos** ese par. Haz lo mismo para el **codo**: solo carga lo que hay después de él.
+
+<details>
+<summary>Cuenta del codo con los mismos datos</summary>
+
+Pieza con pinza: 60 g × 6,4 cm = 384 g·cm. Eslabón 2: 20 g × 3,2 cm = 64 g·cm. Total 448 g·cm = **0,45 kg·cm**; con margen 2: **0,9 kg·cm**. El codo necesita mucho menos que el hombro.
+</details>
+</Step>
+
+Cuando no llegue, prueba un **contrapeso** (imagen) antes de comprar un servo más grande:
+
+<Fig src="proy/k_contrapeso" alt="El brazo horizontal con una barra gris trasera que sale del hombro hacia atrás, de la que cuelgan tres pesas verdes. Una flecha naranja gruesa baja sobre ellas y una más fina sobre la pieza de la pinza. Las cotas indican la distancia de cada peso al hombro." caption="Un contrapeso detrás del hombro equilibra parte del par. Cuenta su peso × su distancia con signo contrario." />
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba con el laboratorio:
+
+1. **Brazo más corto:** pasa L1 de 8 a 6 cm. ¿Cuánto baja el par del hombro? ¿Sigue llegando a tu alcance?
+2. **Más carga:** sube la carga de 30 a 100 g. ¿Llega ahora tu servo del hombro? ¿Con qué margen?
+3. **Servo del codo en la base:** pon 0 g al servo del codo (como si fuera por transmisión desde la base). ¿Cuánto baja el par del hombro?
+
+<ArmPlanLab />
+</Block>
+
+<Block kind="errores">
+<Mistake title="Olvidar el peso propio del brazo" wrongLabel="Solo la carga" rightLabel="Carga + brazo">
+  <Fig slot="wrong" src="proy/k_s1" alt="El brazo con solo la flecha naranja en la pieza." />
+  <Fig slot="right" src="proy/k_s2" alt="El brazo con la flecha naranja en la pieza y la flecha cian en el centro del brazo." />
+
+El brazo también pesa, y pesa a media distancia. Si solo cuentas la carga, el par calculado queda corto y el servo elegido **no llega**. Con los datos del ejemplo, la carga sola da 864 g·cm y el brazo suma 468 más.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu hoja:
+
+<Checklist items={[
+  "He pesado mis piezas con una báscula (no estimado a ojo)",
+  "He sumado el par de la carga y el del peso propio en el punto medio",
+  "He aplicado un margen (por ejemplo 2×) al elegir el servo",
+  "He mirado el par del hombro y también el del codo",
+  "Si no llega, sé qué cuatro medidas puedo probar",
+]} />
+
+<Quiz id="q2" q="El par necesario en el hombro es de 0,8 N·m y quieres un motor con un margen de 2 veces. ¿Qué par mínimo debe dar el motor?" options={["1,6 N·m", "0,8 N·m", "2,8 N·m"]} answer={0}>
+Par con margen = par necesario × margen = 0,8 × 2 = **1,6 N·m**.
+</Quiz>
+
+<Quiz id="q3" q="¿Qué articulación de un brazo suele necesitar el motor más fuerte?" options={["La de la muñeca", "Todas necesitan lo mismo", "La del hombro (la más cercana a la base), porque soporta todo lo que hay después"]} answer={2}>
+El hombro carga con los eslabones, motores y carga que cuelgan más allá, a mucha distancia. La muñeca solo carga con la pinza y la pieza.
+</Quiz>
+
+<Quiz id="q4" q="Tu servo no llega a levantar el brazo con la carga. ¿Cuál es la mejor primera medida?" options={["Añadir más peso en la punta", "Acortar o aligerar el brazo, o añadir un contrapeso o reducción", "Alargar el brazo"]} answer={1}>
+Todas las opciones razonables bajan el par necesario o suben el par disponible: menos longitud, menos masa, equilibrio o más reducción.
+</Quiz>
+
+<Quiz id="q5" q="Un motor colocado justo sobre el eje del hombro, ¿cuánto par añade a ese mismo hombro por su peso?" options={["Mucho: pesa lo mismo y eso es lo único que importa", "Casi nada: está casi a cero de distancia del eje (par = peso × distancia)", "Todo su peso multiplicado por la longitud del brazo"]} answer={1}>
+El par depende de la distancia al eje, y sobre el eje es casi cero. Por eso se colocan los motores pesados cerca de la base.
+</Quiz>
+
+<RegisterPiece piece="Hoja de cálculo de tu brazo" />
+</Block>

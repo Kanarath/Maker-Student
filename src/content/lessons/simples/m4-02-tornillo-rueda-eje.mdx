@@ -1,0 +1,157 @@
+---
+id: m4-02
+unit: simples
+order: 2
+title: "Tornillo, rueda y eje: rampas enrolladas y mangos"
+summary: "Descubre que un tornillo es una rampa enrollada, mide su paso y monta un cabrestante de rueda y eje 4:1 para levantar una carga con la cuarta parte de la fuerza."
+practice: [l_tornillo]
+cover: simples/re_hero
+duration: 35
+status: revisada
+prerequisites: [m4-01, m3-01]
+objectives:
+  - "Calcular cuánto avanza un tornillo con avance = paso × vueltas"
+  - "Calcular la ventaja de una rueda y eje con radio de la rueda ÷ radio del eje"
+  - "Explicar por qué un mango más grueso o un paso más fino piden menos fuerza"
+materials:
+  - "Una viga de 9 agujeros, una de 8, un eje con topes, una rueda grande (o polea) y un tambor pequeño que giren juntos en el mismo eje"
+  - "Cuerda fina y una carga ligera (una bolsita con tornillos)"
+  - "Un tornillo y su tuerca (o un tornillo en un trozo de madera) y una regla"
+piece:
+  name: "Cabrestante de rueda y eje 4:1"
+  hint: "Foto de tu cabrestante con las dos cuerdas y la medida de los dos radios"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **cabrestante**: una rueda grande y un tambor pequeño unidos en el mismo eje, con la rueda 4 veces más ancha. Tirando de la rueda, levantarás la carga con **menos fuerza**. Además mirarás un tornillo real para descubrir que es una rampa enrollada.
+
+<Fig src="simples/re_hero" alt="Un soporte de vigas azul y gris sostiene un eje con una rueda grande amarilla y un tambor pequeño rojo delante. De la rueda cae una cuerda a la izquierda con una flecha naranja corta; del tambor cuelga una caja verde a la derecha con una flecha cian larga." caption="Una flecha corta en la rueda sostiene una flecha larga en el eje: ganas fuerza con el radio grande." />
+</Block>
+
+<Block kind="concepto">
+## El tornillo: una rampa enrollada
+
+Imagina una rampa enrollada alrededor de un cilindro. Eso es la **rosca** de un tornillo. Al darle **una vuelta** avanza una distancia fija: su **paso**.
+
+**avance = paso × número de vueltas**
+
+Un tornillo de paso 1,5 mm con 10 vueltas avanza 1,5 × 10 = **15 mm**.
+
+<Fig src="simples/tr_hero" alt="Un tornillo vertical con rosca amarilla que atraviesa una placa gris. Una flecha naranja curva rodea el tornillo indicando el giro y una flecha cian hacia arriba indica el avance." caption="Giras el tornillo (naranja) y avanza a lo largo de su eje (cian)." />
+
+**Predice:** ¿qué tornillo avanza más por vuelta, el de rosca fina o el de rosca gruesa? ¿Y cuál empuja con más fuerza?
+
+<Fig src="simples/tr_paso" alt="Dos tornillos iguales atravesando cada uno una placa gris. El de la izquierda tiene la rosca verde con muchas vueltas muy juntas y una flecha cian corta; el de la derecha tiene la rosca amarilla más separada y una flecha cian más larga." caption="Rosca fina (izquierda): avanza poco por vuelta. Rosca gruesa (derecha): avanza más." />
+
+<details>
+<summary>Respuesta</summary>
+
+- El de **paso grueso** avanza **más por vuelta**.
+- El de **paso fino** avanza menos, hay que girar más, pero cada giro empuja con **más fuerza** y se coloca con **más precisión**. Es otra vez la regla de siempre: fuerza ↔ recorrido.
+</details>
+
+<Why title="¿Por qué la rosca ahorra fuerza?">
+Para avanzar un paso, el tornillo recorre una vuelta entera de rampa (mucho camino) subiendo muy poco. Es el plano inclinado de la lección anterior, pero enrollado para que quepa en poco espacio.
+</Why>
+
+<Quiz id="q1" q="Un tornillo avanza 1,5 mm por cada vuelta. Si le das 20 vueltas, ¿cuánto avanza?" options={["21,5 mm", "13,3 mm", "30 mm"]} answer={2}>
+Avance = paso × vueltas = 1,5 × 20 = **30 mm**.
+</Quiz>
+
+## Rueda y eje: el mango grande
+
+Una **rueda y eje** es una rueda grande y un eje pequeño que **giran juntos**. Si tiras de la cuerda de la rueda grande, la carga cuelga del eje pequeño.
+
+**ventaja = radio de la rueda ÷ radio del eje**
+
+En tu montaje: radio de la rueda (2 agujeros) ÷ radio del tambor (medio agujero) = **4**. Con la cuarta parte de la fuerza sostienes la carga… y tiras **4 veces más cuerda** de la que sube la carga. Es una palanca que da vueltas.
+
+Ejemplos de casa: el **picaporte**, el volante, el mango de un destornillador o una manivela de cabrestante.
+
+<Quiz id="q2" q="Una manivela tiene un radio de 20 cm y el eje al que gira, 4 cm. ¿Qué fuerza mínima necesitas para mover una carga de 50 N unida al eje (sin rozamiento)?" options={["10 N", "250 N", "46 N"]} answer={0}>
+Ventaja = 20 ÷ 4 = **5**. Fuerza = 50 ÷ 5 = **10 N**. A cambio, giras una circunferencia 5 veces más larga.
+</Quiz>
+
+<Tip title="Sabías que… el tornillo de Arquímedes">
+Se atribuye a **Arquímedes** el **tornillo** que sube agua girando una espiral dentro de un tubo inclinado. Los historiadores discuten si lo inventó él o si ya se usaba antes. Sigue usándose hoy para mover agua, grano y otros materiales.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="El soporte" img="simples/re_s1" alt="Una viga gris horizontal en la base con una viga azul larga vertical en el centro.">
+Pon una viga horizontal de base y una viga **vertical** larga en el centro. Será el soporte del eje.
+</Step>
+
+<Step n={2} title="El eje" img="simples/re_s2" alt="Un eje gris claro atravesando un agujero cerca de lo alto de la viga vertical, saliendo hacia delante.">
+Pasa un eje por un agujero **alto** de la viga vertical, de forma que salga bastante por delante.
+<Why>Tiene que sobrar sitio delante para la rueda y el tambor, y que los dos queden **en el mismo eje**: así giran a la vez.</Why>
+</Step>
+
+<Step n={3} title="La rueda y el tambor" img="simples/re_s3" alt="Una rueda grande amarilla y delante de ella un tambor pequeño rojo, los dos montados en el mismo eje.">
+Coloca la **rueda grande** en el eje y, por delante, el **tambor pequeño**. Comprueba que los dos giran juntos, como una sola pieza.
+
+**Predice:** si el radio de la rueda es 4 veces el del tambor, ¿cuánta fuerza necesitarás para sostener la carga comparado con su peso?
+</Step>
+
+<Step n={4} title="Las cuerdas y la carga" img="simples/re_s4" alt="Una cuerda cae por el lado izquierdo de la rueda amarilla y otra baja por el lado derecho del tambor rojo hasta una caja verde colgada.">
+Enrolla una cuerda en la **rueda** (cae por la izquierda) y otra en el **tambor** (cae por la derecha, con la carga). Así, al **tirar hacia abajo** de la rueda, la carga **sube**.
+
+<details>
+<summary>Respuesta</summary>
+
+Un **cuarto** del peso (ventaja = 4 ÷ 1 = 4), y tiras **4 veces más cuerda** de la que sube la carga. Con rozamiento notarás algo más de esfuerzo.
+</details>
+
+<Warn title="Cuidado con los dedos">
+Una carga en movimiento y la cuerda enrollándose pueden pillarte los dedos. Sujeta la carga con la otra mano al soltar y no pongas los dedos entre la cuerda y la rueda.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Una rueda con el doble de radio** (ventaja 8 con el mismo tambor). ¿Qué fuerza pide ahora? ¿Y cuánta cuerda tiras por cada centímetro que sube la carga?
+2. **Mide el paso de un tornillo real:** marca un punto, dale **10 vueltas** y mide cuánto avanza. Divide entre 10: ese es el paso. ¿Coincide con lo que esperabas?
+3. **El destornillador:** gira un tornillo con un mango estrecho y luego con uno grueso. Predice cuál cuesta menos.
+
+<details>
+<summary>Respuestas</summary>
+
+1. 1/8 del peso, y tiras **8 veces** la cuerda que sube la carga.
+2. Avance ÷ 10 = paso. Un tornillo de rosca fina tendrá un paso pequeño.
+3. El **mango grueso**: es la «rueda» grande frente al «eje» pequeño de la punta. Ventaja = radio del mango ÷ radio de la punta.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Medir los radios desde el borde" wrongLabel="Desde el borde del eje" rightLabel="Desde el centro">
+  <Fig slot="wrong" src="simples/re_error_mal" alt="El cabrestante con dos flechas rojas: una que mide el radio de la rueda desde el borde del tambor y otra que mide el tambor de lado a lado, en vez del radio." />
+  <Fig slot="right" src="simples/re_error_bien" alt="El cabrestante con dos flechas verdes: una desde el centro hasta el borde de la rueda y otra desde el centro hasta el borde del tambor." />
+
+Los **radios** se miden **desde el centro del eje**. Si mides desde el borde del tambor, o el tambor de lado a lado, sale una ventaja que no es la real (aquí saldría 1,5 en vez de 4). Cuenta saltos de agujero desde el centro.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Rueda y tambor giran juntos en el mismo eje",
+  "He medido los dos radios desde el centro del eje",
+  "He predicho la fuerza con radio de la rueda ÷ radio del eje antes de tirar",
+  "He comprobado que tiro más cuerda de la que sube la carga",
+  "He medido el paso de un tornillo con 10 vueltas",
+]} />
+
+<Quiz id="q3" q="Un destornillador con el mango más grueso se gira con menos esfuerzo. ¿Por qué?" options={["Porque pesa más", "Porque aumenta el radio de la «rueda» frente al de la punta: más ventaja", "Porque el tornillo es más pequeño"]} answer={1}>
+El mango es la «rueda» y la punta es el «eje»: ventaja = radio del mango ÷ radio de la punta.
+</Quiz>
+
+<RegisterPiece piece="Cabrestante de rueda y eje 4:1" />
+</Block>

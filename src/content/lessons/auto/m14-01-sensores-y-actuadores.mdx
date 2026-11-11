@@ -1,0 +1,177 @@
+---
+id: m14-01
+unit: auto
+order: 1
+title: "Sensores y actuadores: los sentidos y los músculos"
+summary: "Descubre cómo una máquina detecta, decide y mueve; monta un carro que se para solo al llegar al final y distingue el lazo abierto del cerrado."
+practice: [l_sens]
+cover: auto/a_bloques
+duration: 30
+status: revisada
+prerequisites: []
+objectives:
+  - "Distinguir sensor, actuador y mecanismo en una máquina cotidiana"
+  - "Explicar para qué sirve un final de carrera y qué pasa si falta"
+  - "Diferenciar un sistema de lazo abierto de uno de lazo cerrado (realimentación)"
+  - "Decir por qué una puerta automática lleva un sensor de obstáculo además del que detecta a quien llega"
+materials:
+  - "Una viga larga o una regla como carril, y un carro de piezas con ruedas (o una caja pequeña que deslice)"
+  - "Una pieza que haga de palanca (viga o tira de cartón con un eje donde gire)"
+  - "Opcional, solo si ya sabes montar circuitos sencillos: un microinterruptor (final de carrera), una pila y un motor pequeño"
+piece:
+  name: "Carro que se para al llegar al final"
+  hint: "Foto de tu carro llegando al tope, con la palanca pulsada, y tu esquema sensor → mecanismo → actuador"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **carro sobre un carril** que avanza hacia un tope. Antes de llegar, el carro **pulsa una palanca**, un **final de carrera**, que **avisa** de que debe parar. Es el ejemplo más pequeño posible de una máquina automática.
+
+<Fig src="auto/a_bloques" alt="Sobre una base oscura, tres bloques en fila unidos por dos flechas naranja. A la izquierda, un bloque azul con un ojo blanco de pupila negra (el sensor). En el centro, un bloque amarillo con tres pilotos pequeños verde, rojo y azul (el control). A la derecha, un motor rojo con un pequeño engranaje amarillo (el actuador)." caption="De izquierda a derecha: el sensor detecta, el control decide y el actuador mueve." />
+
+Tu **producto** es el carro que llega al tope y la **foto** con tu esquema de tres cajas.
+
+<Tip title="Sabías que… las puertas automáticas de la Antigüedad">
+A **Herón de Alejandría**, ingeniero del siglo I, se le atribuye el diseño de **puertas de templo que se abrían solas** al encender el fuego del altar: el calor expandía el aire y desplazaba agua, que tiraba de unos contrapesos.
+
+Sin electricidad, solo con **mecánica y física**.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Detectar, decidir y mover
+
+Casi toda máquina automática combina **tres cosas**:
+
+- un **sensor** que **detecta** algo del entorno (presencia, posición, temperatura, luz) y lo convierte en una señal. Son los **«sentidos»**;
+- un **actuador** que **mueve** o actúa: un motor, un pistón, un electroimán. Son los **«músculos»**;
+- un **mecanismo o control** en medio, que decide qué hacer con la señal.
+
+Un **final de carrera** es un sensor muy sencillo: un interruptor que **se pulsa cuando una pieza llega al extremo de su recorrido** y avisa de que debe parar. Evita que algo siga empujando contra el tope.
+
+<Fig src="auto/a_fc_lejos" alt="Un carril gris largo sobre una base oscura. A la izquierda, un motor azul unido con un hilo a un carro amarillo, que avanza hacia la derecha con una flecha naranja. En el extremo derecho hay un bloque gris de tope y, delante de él, un final de carrera rojo con su palanca plateada levantada, esperando." caption="El carro todavía está lejos: la palanca del final de carrera está levantada." />
+
+**Predice.** El motor sigue tirando cuando el carro **ya ha llegado al tope**. Sin final de carrera, ¿qué pasa?
+
+<details>
+<summary>Ver la respuesta</summary>
+
+Si nada le avisa, el motor sigue empujando contra el tope: **se bloquea, consume mucho y se calienta**. Con el final de carrera, el aviso llega a tiempo y el motor se para.
+</details>
+
+<Fig src="auto/a_fc_pulsado" alt="El mismo carril. El carro amarillo ha llegado al final y su parachoques rojo aprieta la palanca plateada del final de carrera, que ha quedado plana. Una bolita verde marca la señal de aviso y una flecha roja detrás del carro indica el movimiento que debe parar." caption="El carro pulsa la palanca: ese es el aviso de «ya has llegado, para»." />
+
+<Quiz id="q1" q="¿Qué hace un final de carrera?" options={["Produce el movimiento de la máquina", "Avisa de que una pieza ha llegado al extremo de su recorrido", "Aumenta la fuerza del motor"]} answer={1}>
+Es un **sensor**: un interruptor que se pulsa cuando una pieza llega al extremo del recorrido y avisa de que debe parar. El que produce el movimiento es el **actuador**.
+</Quiz>
+
+## Lazo abierto y lazo cerrado
+
+Si el sistema **mide el resultado** y **se corrige**, es de **lazo cerrado** (tiene **realimentación**): mira, compara y corrige. Si no mide, es de **lazo abierto**.
+
+<Fig src="auto/a_lazo" alt="Los mismos tres bloques en fila: sensor azul con ojo, control amarillo y motor rojo, unidos por flechas naranja. Además, desde el motor sale una línea cian que baja, vuelve por debajo hacia la izquierda y sube con una flecha hasta el sensor." caption="En el lazo cerrado, lo que hace la salida se mide y vuelve a la entrada (línea cian)." />
+
+Pruébalo con una habitación que se calienta. En lazo abierto la calefacción funciona un tiempo fijo; en lazo cerrado hay un termostato que mide.
+
+<AutoLoopLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- En **lazo abierto**, cambiar el frío de fuera cambia el resultado y **nadie lo corrige**.
+- En **lazo cerrado**, la temperatura se queda cerca de la deseada, también cuando hace más frío fuera.
+- El modelo es muy simple, pero basta para ver la idea: **medir y corregir**.
+</details>
+
+<Quiz id="q2" q="Una tostadora sencilla funciona un tiempo fijo sin comprobar si el pan está dorado. ¿Qué tipo de sistema es?" options={["De lazo abierto: no mide el resultado", "De lazo cerrado: mide el dorado", "Un sensor sin actuador"]} answer={0}>
+Funciona por tiempo, sin mirar el resultado. Un sistema de lazo cerrado mediría (por ejemplo, el color o la temperatura) y se corregiría.
+</Quiz>
+
+<Quiz id="q3" q="Un termostato apaga la calefacción cuando la habitación llega a la temperatura elegida. ¿Qué tiene?" options={["Solo un actuador", "Un sistema de lazo abierto", "Un sensor de temperatura y realimentación: es un sistema de lazo cerrado"]} answer={2}>
+Mide la temperatura y la compara con la deseada para encender o apagar. Esa medida que vuelve al sistema es la **realimentación**.
+</Quiz>
+
+<Why title="La seguridad es parte del diseño">
+Una puerta automática lleva **dos sensores**: el que detecta a quien llega y otro de **obstáculo**. Si no, podría **cerrarse sobre una persona o un objeto**. Un sistema que mueve masas y puede atrapar a alguien necesita un modo seguro de parar o de abrirse de nuevo.
+</Why>
+</Block>
+
+<Block kind="montaje">
+Seis pasos para tu carro con final de carrera. **Primero lo haces todo mecánico**, con tu mano como motor.
+
+<Step n={1} title="Carril y tope">
+Coloca una viga larga sobre la mesa como **carril**. En un extremo, pon un **tope** (una pieza fija que bloquee el paso).
+<Why>El tope representa el final del recorrido: si algo llega hasta ahí empujando, se atasca.</Why>
+</Step>
+
+<Step n={2} title="El carro">
+Monta un **carro** que deslice sobre el carril, con un **parachoques** al frente (una pieza que sobresalga por delante).
+<Fig src="auto/a_fc_lejos" alt="Carro amarillo sobre el carril, lejos del tope, con la palanca del final de carrera levantada al fondo." caption="Carro de salida, lejos del tope." />
+</Step>
+
+<Step n={3} title="La palanca-sensor">
+Pon, **justo antes del tope**, una **palanca** (viga o tira con un eje donde gire) colocada de modo que el **parachoques del carro la empuje antes de chocar con el tope**.
+<Fig src="auto/a_fc_pulsado" alt="El carro amarillo al final del carril, con su parachoques apretando la palanca del final de carrera." caption="El parachoques aprieta la palanca antes de tocar el tope." />
+<Why>La palanca es tu «sensor»: cuando se mueve, sabes que el carro llegó.</Why>
+</Step>
+
+<Step n={4} title="Tú eres el motor: predice y prueba">
+Empuja el carro despacio. **Predice**: ¿en qué momento notas que la palanca se mueve? En cuanto se mueva, **para** (es lo que haría el sistema). Repite 3 veces y comprueba que **siempre paras antes del tope**.
+</Step>
+
+<Step n={5} title="Opcional: versión eléctrica">
+Solo si ya sabes montar circuitos sencillos: el **final de carrera** (un microinterruptor de los que están **normalmente cerrados**, es decir, que dejan pasar la corriente hasta que se pulsan) se coloca **en serie con el motor**, de modo que **al pulsarse corta la corriente**.
+<Warn title="Pilas y cables">
+No conectes nunca los dos polos de una pila con un cable sin nada en medio: se calienta mucho. Si dudas, hazlo solo con la versión mecánica y pide ayuda a alguien con experiencia.
+</Warn>
+</Step>
+
+<Step n={6} title="Dibuja las tres cajas">
+En una hoja dibuja **tres cajas con flechas**: **SENSOR** (la palanca) → **MECANISMO** (tú, o el circuito) → **ACTUADOR** (el motor o tu mano). Fotografía el esquema junto al carro.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Más rápido:** empuja el carro más deprisa. ¿Sigues parando antes del tope? ¿Qué pasaría con un motor que no puede frenar de golpe? *(Pista: la palanca tendría que estar más lejos del tope.)*
+2. **Dos finales de carrera:** pon otra palanca en el **otro extremo** del carril para que el carro pare también al volver.
+3. **Abierto o cerrado:** en tu carro, ¿qué parte mide el resultado? Si le quitas la palanca, ¿qué tipo de sistema es? Escribe tu respuesta.
+
+<details>
+<summary>Comprueba el reto 3</summary>
+
+Con la palanca, el sistema **mide dónde está el carro**: es de lazo cerrado. Sin la palanca, el carro no se entera de nada: sería de **lazo abierto**.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Sin final de carrera" wrongLabel="El motor sigue tirando" rightLabel="La palanca avisa y se para">
+  <Fig slot="wrong" src="auto/a_fc_sin" alt="El carro amarillo pegado contra el tope gris, sin ningún final de carrera. Una flecha roja detrás indica que el motor sigue tirando y una bolita roja marca el choque." />
+  <Fig slot="right" src="auto/a_fc_pulsado" alt="El carro llega al final y aprieta la palanca del final de carrera, con una bolita verde que indica el aviso." />
+
+Sin aviso, el motor **sigue empujando contra el tope**: se bloquea, consume mucho y se calienta. Un final de carrera avisa de que se ha llegado al extremo.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu montaje:
+
+<Checklist items={[
+  "El carro desliza sin esfuerzo sobre el carril",
+  "La palanca se empuja antes de que el carro toque el tope",
+  "He probado 3 veces y siempre paro antes del tope",
+  "Mi esquema tiene sensor, mecanismo y actuador con flechas",
+  "Sé decir si mi carro es de lazo abierto o cerrado y por qué",
+]} />
+
+<Quiz id="q4" q="¿Por qué una puerta automática lleva un sensor de obstáculo además del que detecta a quien llega?" options={["Para abrirse más deprisa", "Para gastar menos energía", "Para no cerrarse sobre una persona o un objeto que esté en el hueco"]} answer={2}>
+Un sistema que mueve masas y puede atrapar a alguien necesita un modo seguro de parar o abrirse de nuevo. La seguridad forma parte del diseño, no es un añadido.
+</Quiz>
+
+<RegisterPiece piece="Carro que se para al llegar al final" />
+</Block>

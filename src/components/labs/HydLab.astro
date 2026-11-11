@@ -1,0 +1,116 @@
+---
+// Laboratorio hidráulico: dos émbolos unidos por un líquido encerrado (principio de Pascal), versión IDEAL (sin rozamiento ni fugas).
+//   presión = fuerza ÷ área (la misma en todo el líquido)  ·  fuerza grande = presión × área grande
+//   volumen que sale = volumen que entra  →  recorrido grande = recorrido pequeño × área pequeña ÷ área grande
+// Unidades: N, cm², N/cm² (1 N/cm² = 10 kPa), cm.
+---
+
+<div class="lab" data-hyd>
+  <div class="head"><b>Laboratorio · Dos émbolos, un líquido</b><span class="muted">Cambia las áreas y mira fuerza y recorrido</span></div>
+
+  <svg viewBox="0 0 800 340" role="img" aria-label="Un émbolo pequeño y uno grande unidos por un tubo con líquido">
+    <rect width="800" height="340" fill="#05060a" />
+    <g data-scene></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Émbolo pequeño (el que empujas)</legend>
+      <label>Área: <b data-a1-v>2</b> cm²<input type="range" min="1" max="10" step="1" value="2" data-a1 aria-label="Área del émbolo pequeño en centímetros cuadrados" /></label>
+      <label>Fuerza que haces: <b data-f1-v>10</b> N<input type="range" min="1" max="50" step="1" value="10" data-f1 aria-label="Fuerza sobre el émbolo pequeño en newtons" /></label>
+      <label>Lo empujas: <b data-d1-v>10</b> cm<input type="range" min="0" max="10" step="1" value="10" data-d1 aria-label="Recorrido del émbolo pequeño en centímetros" /></label>
+    </fieldset>
+    <fieldset>
+      <legend>Émbolo grande (el que trabaja)</legend>
+      <label>Área: <b data-a2-v>20</b> cm²<input type="range" min="2" max="50" step="1" value="20" data-a2 aria-label="Área del émbolo grande en centímetros cuadrados" /></label>
+    </fieldset>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+  const fmt = (n: number) => (Math.abs(n - Math.round(n)) < 0.005 ? String(Math.round(n)) : n.toFixed(2).replace(/0+$/, "").replace(/\.$/, ""));
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-hyd]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const scene = q<SVGGElement>("[data-scene]");
+    const I = { a1: q<HTMLInputElement>("[data-a1]"), f1: q<HTMLInputElement>("[data-f1]"), d1: q<HTMLInputElement>("[data-d1]"), a2: q<HTMLInputElement>("[data-a2]") };
+    const out = q<HTMLElement>("[data-out]");
+    const K = 13; // ancho en px = K × √área
+    const S = 14; // px por cm de recorrido
+    const TOP = 70, BOT = 300; // cilindros
+
+    function update() {
+      const a1 = +I.a1.value, f1 = +I.f1.value, d1 = +I.d1.value, a2 = +I.a2.value;
+      q("[data-a1-v]").textContent = String(a1);
+      q("[data-f1-v]").textContent = String(f1);
+      q("[data-d1-v]").textContent = String(d1);
+      q("[data-a2-v]").textContent = String(a2);
+      const p = f1 / a1; // N/cm²
+      const f2 = p * a2;
+      const d2 = (d1 * a1) / a2;
+      scene.replaceChildren();
+      const w1 = K * Math.sqrt(a1), w2 = K * Math.sqrt(a2);
+      const x1 = 170, x2 = 590;
+      const s = Math.min(S, 150 / Math.max(d1, d2, 1)); // escala del dibujo (cabe aunque el recorrido sea grande)
+      const level1 = TOP + 20 + d1 * s; // la cabeza del émbolo pequeño baja
+      const level2 = BOT - 60 - d2 * s; // y el grande sube
+      // líquido
+      scene.append(mk("rect", { x: x1 - w1 / 2, y: level1, width: w1, height: BOT - level1, fill: "#2f9cff", opacity: 0.85 }));
+      scene.append(mk("rect", { x: x2 - w2 / 2, y: level2, width: w2, height: BOT - level2, fill: "#2f9cff", opacity: 0.85 }));
+      scene.append(mk("rect", { x: x1 - 6, y: BOT, width: x2 - x1 + 12, height: 14, fill: "#2f9cff", opacity: 0.85 }));
+      // paredes de los cilindros
+      for (const [x, w] of [[x1, w1], [x2, w2]]) {
+        scene.append(mk("rect", { x: x - w / 2 - 5, y: TOP, width: 5, height: BOT - TOP + 14, fill: "#9aa3b5" }));
+        scene.append(mk("rect", { x: x + w / 2, y: TOP, width: 5, height: BOT - TOP + 14, fill: "#9aa3b5" }));
+      }
+      scene.append(mk("rect", { x: x1 - w1 / 2 - 5, y: BOT + 14, width: x2 - x1 + w1 / 2 + w2 / 2 + 10, height: 5, fill: "#9aa3b5" }));
+      // émbolos (cabeza + vástago)
+      scene.append(mk("rect", { x: x1 - w1 / 2, y: level1 - 10, width: w1, height: 12, fill: "#d8382f" }));
+      scene.append(mk("rect", { x: x1 - 4, y: 20, width: 8, height: level1 - 30, fill: "#d5d9e2" }));
+      scene.append(mk("rect", { x: x2 - w2 / 2, y: level2 - 10, width: w2, height: 12, fill: "#d8382f" }));
+      scene.append(mk("rect", { x: x2 - 4, y: Math.max(10, level2 - 60), width: 8, height: level2 - 10 - Math.max(10, level2 - 60), fill: "#d5d9e2" }));
+      // flechas de fuerza
+      const arrow = (x: number, y0: number, y1: number, col: string, wd: number) => {
+        scene.append(mk("line", { x1: x, y1: y0, x2: x, y2: y1, stroke: col, "stroke-width": wd, "stroke-linecap": "round" }));
+        const dir = y1 > y0 ? 1 : -1;
+        scene.append(mk("polygon", { points: `${x},${y1 + dir * 4} ${x - wd * 2},${y1 - dir * wd * 2.4} ${x + wd * 2},${y1 - dir * wd * 2.4}`, fill: col }));
+      };
+      arrow(x1, 6, 36, "#ff8a1f", Math.max(3, Math.min(10, f1 / 5)));
+      arrow(x2, Math.max(10, level2 - 60) - 28, Math.max(10, level2 - 60) - 4, "#2de0f2", 3);
+      const t1 = mk("text", { x: x1 + 40, y: 28, fill: "#ff8a1f", "font-size": 15, "font-weight": 700 });
+      t1.textContent = `${fmt(f1)} N`;
+      const t2 = mk("text", { x: x2 + 40, y: Math.max(10, level2 - 60) - 8, fill: "#2de0f2", "font-size": 15, "font-weight": 700 });
+      t2.textContent = `${fmt(f2)} N`;
+      scene.append(t1, t2);
+      const wk1 = f1 * d1, wk2 = f2 * d2; // trabajo en N·cm
+      out.innerHTML = `Presión en todo el líquido: ${fmt(f1)} N ÷ ${a1} cm² = <b>${fmt(p)} N/cm²</b> (${fmt(p * 10)} kPa).<br>` +
+        `Fuerza del émbolo grande: ${fmt(p)} × ${a2} = <b>${fmt(f2)} N</b> (×${fmt(a2 / a1)}).<br>` +
+        `Recorrido del grande: ${d1} cm × ${a1} ÷ ${a2} = <b>${fmt(d2)} cm</b> (÷${fmt(a2 / a1)}).<br>` +
+        `Trabajo: ${fmt(wk1)} N·cm entran y ${fmt(wk2)} N·cm salen. <b>Lo que ganas en fuerza lo pagas en recorrido.</b> (Ideal: sin rozamiento ni fugas.)`;
+    }
+    for (const i of Object.values(I)) i.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

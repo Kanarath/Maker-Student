@@ -1,0 +1,173 @@
+---
+// Laboratorio de levas: lo que sube el seguidor lo decide la forma de la leva.
+// Leva excéntrica (disco con el eje descentrado e): el seguidor sube y baja 2 × e.
+// Leva «con reposo»: tramos de subida, reposo arriba, bajada y reposo abajo. Seguidor de punta, alineado con el eje.
+---
+
+<div class="lab" data-cam>
+  <div class="head"><b>Laboratorio · Levas</b><span class="muted">Elige la forma y mira cómo se mueve el seguidor</span></div>
+  <svg viewBox="0 0 800 340" role="img" aria-label="A la izquierda una leva giratoria con un seguidor vertical apoyado encima; a la derecha, la gráfica de la altura del seguidor según el ángulo de giro">
+    <rect width="800" height="340" fill="#05060a" />
+    <g data-camg><path data-shape fill="#f2b230" stroke="#0b0d12" stroke-width="2" /><circle data-hubc r="6" fill="#0b0d12" /><circle data-mark r="5" fill="#d8382f" /></g>
+    <circle data-axis r="7" fill="#0b0d12" stroke="#d5d9e2" stroke-width="2" />
+    <rect data-guide x="168" y="20" width="8" height="90" fill="#6b7186" />
+    <rect data-guide2 x="204" y="20" width="8" height="90" fill="#6b7186" />
+    <rect data-foll x="178" width="24" fill="#37b26c" stroke="#0b0d12" stroke-width="2" />
+    <line x1="400" y1="40" x2="400" y2="300" stroke="#3a4054" />
+    <line x1="400" y1="300" x2="770" y2="300" stroke="#3a4054" />
+    <polyline data-plot fill="none" stroke="#2de0f2" stroke-width="3" />
+    <circle data-dot r="7" fill="#ff8a1f" />
+    <text x="400" y="326" fill="#9aa3b5" font-size="14" font-family="monospace">0°</text>
+    <text x="745" y="326" fill="#9aa3b5" font-size="14" font-family="monospace">360°</text>
+    <text x="408" y="34" fill="#9aa3b5" font-size="14" font-family="monospace">altura del seguidor</text>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Forma de la leva</legend>
+      <div class="opts">
+        <button type="button" class="opt" data-shape-btn="ecc" aria-pressed="true">Excéntrica</button>
+        <button type="button" class="opt" data-shape-btn="dwell" aria-pressed="false">Con reposo</button>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend data-par-label>Excentricidad: <b data-par-v>8</b> mm</legend>
+      <input type="range" min="2" max="10" step="1" value="8" data-par aria-label="Parámetro de la leva en milímetros" />
+    </fieldset>
+    <fieldset>
+      <legend>Ángulo: <b data-a-v>0</b>°</legend>
+      <input type="range" min="0" max="359" step="1" value="0" data-a aria-label="Ángulo de giro de la leva en grados" />
+    </fieldset>
+    <fieldset>
+      <legend>Movimiento</legend>
+      <div class="opts"><button type="button" class="opt" data-play aria-pressed="false">Girar</button></div>
+    </fieldset>
+  </div>
+  <p class="out" aria-live="polite" data-info></p>
+</div>
+
+<script>
+  const fmt = (n: number) => n.toLocaleString("es-ES", { maximumFractionDigits: 1 });
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-cam]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const par = q<HTMLInputElement>("[data-par]");
+    const aIn = q<HTMLInputElement>("[data-a]");
+    const playBtn = q<HTMLButtonElement>("[data-play]");
+    const info = q<HTMLElement>("[data-info]");
+    const camg = q<SVGGElement>("[data-camg]");
+    const shape = q<SVGPathElement>("[data-shape]");
+    const mark = q<SVGCircleElement>("[data-mark]");
+    const hubc = q<SVGCircleElement>("[data-hubc]");
+    const axis = q<SVGCircleElement>("[data-axis]");
+    const foll = q<SVGRectElement>("[data-foll]");
+    const plot = q<SVGPolylineElement>("[data-plot]");
+    const dot = q<SVGCircleElement>("[data-dot]");
+    const parLabel = q<HTMLElement>("[data-par-label]");
+    const CX = 190, CY = 220, S = 3.2; // S = píxeles por mm
+    const R = 26;                      // radio del disco de la leva excéntrica, en mm
+    let kind: "ecc" | "dwell" = "ecc";
+    let playing = false;
+
+    // radio de la leva medido desde el eje, en el ángulo local alfa (grados), en mm
+    function radius(alfa: number, p: number) {
+      const a = (((alfa % 360) + 360) % 360);
+      if (kind === "ecc") {
+        const r = (a * Math.PI) / 180;
+        return p * Math.cos(r) + Math.sqrt(R * R - p * p * Math.sin(r) ** 2);
+      }
+      const r0 = 18; // mm de radio en reposo bajo; p = lo que sube
+      if (a < 90) return r0 + (p * (1 - Math.cos((Math.PI * a) / 90))) / 2;
+      if (a < 180) return r0 + p;
+      if (a < 270) return r0 + p - (p * (1 - Math.cos((Math.PI * (a - 180)) / 90))) / 2;
+      return r0;
+    }
+
+    function build() {
+      const p = +par.value;
+      q("[data-par-v]").textContent = String(p);
+      parLabel.innerHTML = kind === "ecc" ? `Excentricidad: <b>${p}</b> mm` : `Lo que sube: <b>${p}</b> mm`;
+      // contorno
+      const pts: string[] = [];
+      for (let d = 0; d < 360; d += 3) {
+        const r = radius(d, p) * S, t = (d * Math.PI) / 180;
+        pts.push(`${(CX + r * Math.cos(t)).toFixed(1)},${(CY - r * Math.sin(t)).toFixed(1)}`);
+      }
+      shape.setAttribute("d", "M" + pts.join(" L") + " Z");
+      // marca para ver el giro
+      const rm = radius(0, p) * S - 10;
+      mark.setAttribute("cx", String(CX + rm)); mark.setAttribute("cy", String(CY));
+      hubc.setAttribute("cx", String(CX)); hubc.setAttribute("cy", String(CY));
+      axis.setAttribute("cx", String(CX)); axis.setAttribute("cy", String(CY));
+      // mínimo y máximo reales (barrido)
+      let mn = Infinity, mx = -Infinity;
+      for (let d = 0; d < 360; d++) { const r = radius(90 - d, p); mn = Math.min(mn, r); mx = Math.max(mx, r); }
+      // gráfica: altura relativa (mm sobre el mínimo)
+      const line: string[] = [];
+      for (let d = 0; d <= 360; d += 4) {
+        const h = radius(90 - d, p) - mn;
+        line.push(`${400 + (d / 360) * 370},${300 - h * 11}`);
+      }
+      plot.setAttribute("points", line.join(" "));
+      return { p, mn, mx };
+    }
+
+    let state = build();
+
+    function update() {
+      state = build();
+      const a = +aIn.value;
+      q("[data-a-v]").textContent = String(Math.round(a));
+      // la leva gira en sentido antihorario: el punto que queda arriba es el del ángulo local 90° − a
+      camg.setAttribute("transform", `rotate(${-a} ${CX} ${CY})`);
+      const r = radius(90 - a, state.p);
+      const topY = CY - r * S;
+      foll.setAttribute("y", String(topY - 70)); foll.setAttribute("height", "70");
+      const h = r - state.mn;
+      dot.setAttribute("cx", String(400 + (a / 360) * 370)); dot.setAttribute("cy", String(300 - h * 11));
+      const stroke = state.mx - state.mn;
+      info.innerHTML = kind === "ecc"
+        ? `Leva excéntrica con e = ${state.p} mm: el seguidor sube y baja <b>2 × ${state.p} = ${fmt(2 * state.p)} mm</b> (en el dibujo medimos ${fmt(stroke)} mm). Ahora está ${fmt(h)} mm por encima de su punto más bajo. Fíjate: arriba cuando la parte más alejada del eje pasa bajo el seguidor.`
+        : `Leva con reposo: sube ${state.p} mm, se queda quieto un tramo (el radio es constante), baja y descansa abajo. Ahora el seguidor está ${fmt(h)} mm sobre su punto más bajo. Mira la gráfica: los tramos planos son los reposos; la forma de la leva «programa» cuándo se mueve.`;
+    }
+
+    let last = performance.now();
+    function tick(now: number) {
+      const dt = (now - last) / 1000; last = now;
+      if (playing) { aIn.value = String((+aIn.value + dt * 50) % 360); update(); }
+      requestAnimationFrame(tick);
+    }
+    par.addEventListener("input", update);
+    aIn.addEventListener("input", update);
+    root.querySelectorAll<HTMLButtonElement>("[data-shape-btn]").forEach((b) =>
+      b.addEventListener("click", () => {
+        kind = b.dataset.shapeBtn as "ecc" | "dwell";
+        root.querySelectorAll("[data-shape-btn]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        if (kind === "ecc") { par.min = "2"; par.max = "10"; par.value = "8"; } else { par.min = "4"; par.max = "12"; par.value = "8"; }
+        update();
+      }));
+    playBtn.addEventListener("click", () => {
+      playing = !playing;
+      playBtn.textContent = playing ? "Pausa" : "Girar";
+      playBtn.setAttribute("aria-pressed", String(playing));
+    });
+    update();
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) requestAnimationFrame(tick);
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  .opts { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .opt { min-width: 52px; padding: 10px 12px; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 4px; font: 600 .95rem var(--font-mono); cursor: pointer; }
+  .opt[aria-pressed="true"] { background: var(--accent); color: #0b0d12; border-color: var(--accent); }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 8px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,152 @@
+---
+id: m10-01
+unit: fluidos
+order: 1
+title: "Presión y principio de Pascal: dos jeringuillas unidas"
+summary: "Une dos jeringuillas iguales con un tubo lleno de agua, predice cuánto se mueve la segunda y descubre qué es la presión y por qué un clavo se hunde y tu dedo no."
+practice: [l_presion]
+cover: fluidos/f_p_hero
+duration: 35
+status: revisada
+prerequisites: []
+objectives:
+  - "Calcular una presión como fuerza ÷ área e indicar su unidad (el pascal)"
+  - "Explicar por qué la misma fuerza sobre menos área da más presión (el clavo)"
+  - "Enunciar el principio de Pascal con un ejemplo de dos jeringuillas"
+  - "Explicar por qué el agua transmite el movimiento mejor que el aire"
+materials:
+  - "Dos jeringuillas del mismo tamaño SIN AGUJA (por ejemplo de 10 ml)"
+  - "30-40 cm de tubo flexible transparente que ajuste en las puntas, agua (con una gota de colorante si quieres verla mejor)"
+  - "Una bandeja o toalla de papel, una regla y un vaso"
+piece:
+  name: "Circuito de dos jeringuillas con agua"
+  hint: "Foto de tu circuito y cuánto se movió el segundo émbolo al empujar el primero 2 cm"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a unir **dos jeringuillas iguales con un tubo lleno de agua**. Antes de empujar, **predecirás** qué hace el émbolo de la segunda cuando empujes el de la primera.
+
+<Fig src="fluidos/f_p_hero" alt="Dos jeringuillas transparentes sin aguja, tumbadas en paralelo y unidas por un tubo azul en forma de U en sus puntas, llenas de agua. Una flecha naranja empuja el émbolo de la jeringuilla delantera hacia dentro y una flecha azul cian muestra el émbolo de la otra saliendo la misma distancia." caption="Empujas un émbolo (naranja) y el otro sale (cian): el agua transmite el empuje por el tubo." />
+
+<Warn title="Sin agujas y lejos de los enchufes">
+Usa solo jeringuillas **sin aguja** (las de dar medicinas o de laboratorio, sin punta metálica) y no las uses con agujas nunca. Trabaja **sobre una bandeja** y **lejos de enchufes, cargadores y aparatos eléctricos**: el agua y la electricidad no se llevan bien. Seca cualquier gota que caiga.
+</Warn>
+</Block>
+
+<Block kind="concepto">
+## Presión: la fuerza repartida
+
+La **presión** es la fuerza **repartida** en una superficie:
+
+**presión = fuerza ÷ área**
+
+Se mide en **pascales** (Pa): un newton sobre un metro cuadrado. Ejemplo: una fuerza de 100 N repartida en 0,05 m² da 100 ÷ 0,05 = **2000 Pa**.
+
+La misma fuerza sobre **menos área** da **más presión**. Por eso un clavo se hunde en la madera con un martillazo y tu dedo no: la punta del clavo tiene muy poca área y concentra la fuerza.
+
+<Fig src="fluidos/f_area" alt="Dos bloques de madera. A la izquierda, un clavo clavado en un bloque con una flecha naranja empujando su cabeza; a la derecha, un disco ancho apoyado sobre otro bloque con una flecha naranja de la misma longitud empujándolo, sin hundirse." caption="La misma fuerza (flechas iguales): el clavo, con poca área, se hunde; el disco ancho no." />
+
+<Quiz id="q1" q="Una fuerza de 50 N se reparte sobre una superficie de 0,02 m². ¿Qué presión hay?" options={["1 Pa", "2500 Pa", "0,0004 Pa"]} answer={1}>
+Presión = fuerza ÷ área = 50 ÷ 0,02 = **2500 Pa**. (Si multiplicas te salen 1 Pa y si das la vuelta a la división, 0,0004 Pa.)
+</Quiz>
+
+## Pascal: la presión se transmite igual
+
+En un fluido **encerrado**, la presión que haces se **transmite con la misma intensidad por todo el fluido**. Es el **principio de Pascal**: aprietas por un lado y la presión llega igual a todos los lados.
+
+**Predice:** conectas dos jeringuillas **iguales** con un tubo lleno de agua. Empujas el émbolo de una **2 cm**. ¿Qué hace el de la otra?
+
+<details>
+<summary>Respuesta</summary>
+
+Se mueve: sale **unos 2 cm** (en teoría). El agua casi no se comprime, así que transmite la presión y el movimiento casi directamente. Con la misma área, mismo recorrido.
+</details>
+
+<Why title="¿Y por qué no con aire?">
+El agua casi **no se comprime**: lo que entra por un lado sale por el otro. El aire **sí se comprime**: parte de tu esfuerzo se gasta en apretarlo y se comporta como un muelle. Por eso un circuito hidráulico (con líquido) es más preciso que uno neumático (con aire).
+</Why>
+
+<Fig src="fluidos/f_b_aire_agua" alt="Dos jeringuillas tumbadas con la punta tapada por un tapón rojo. La de arriba, llena de agua azul, tiene el émbolo casi sin entrar. La de abajo, llena de aire blanco, tiene el émbolo mucho más metido con una flecha naranja igual de larga." caption="Mismo empuje: con agua el émbolo apenas cede; con aire se comprime y se queda «esponjoso»." />
+
+<Quiz id="q2" q="Empujas el émbolo de una jeringuilla llena de aire con la punta tapada y luego otra llena de agua. ¿Qué diferencia notas?" options={["La de agua rebota más", "La de aire se comprime y rebota; la de agua casi no cede", "No hay ninguna diferencia"]} answer={1}>
+El aire se comprime como un muelle; el agua casi no.
+</Quiz>
+
+<Tip title="Sabías que… Pascal y los fluidos">
+**Blaise Pascal**, en el siglo XVII, estudió cómo se transmite la presión en un fluido encerrado. Su resultado, el **principio de Pascal**, es la base de los frenos hidráulicos y de los gatos. De él viene también el **pascal**, la unidad de presión.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris. Los dibujos son esquemas de la idea.
+
+<Step n={1} title="Llena la primera jeringuilla" img="fluidos/f_p_s1" alt="Una jeringuilla transparente sin aguja, tumbada, con el cuerpo lleno de agua azul y el émbolo a mitad de recorrido, apoyada en dos soportes.">
+Mete la punta de una jeringuilla en el vaso de agua y **tira del émbolo despacio**. Sácala y, con la punta hacia arriba, **empuja un poco** el émbolo para sacar las burbujas grandes.
+<Why>Cada burbuja es aire, y el aire se comprime: comerá parte de tu movimiento.</Why>
+</Step>
+
+<Step n={2} title="El tubo y la segunda jeringuilla" img="fluidos/f_p_s2" alt="Se añade una segunda jeringuilla igual en paralelo, con agua, y un tubo azul en U que une las puntas de las dos.">
+Llena el **tubo** de agua y conéctalo a la primera. Llena la **segunda** jeringuilla y conéctala al otro extremo **bajo el agua** o cuidando de no dejar burbujas. Apóyalas en la bandeja.
+</Step>
+
+<Step n={3} title="Empuja y mira" img="fluidos/f_p_s3" alt="Las dos jeringuillas unidas. Una flecha naranja empuja el émbolo de una hacia dentro y una flecha cian señala el émbolo de la otra saliendo.">
+Empuja el émbolo de la primera **2 cm** y mira el de la segunda.
+</Step>
+
+<Step n={4} title="Mide y compara">
+Con la regla, anota cuánto ha salido el segundo émbolo. ¿Coincide con tu predicción? Si sale menos, ¿hay burbujas o alguna fuga en una unión?
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Un tubo más largo.** Pon el doble de tubo. **Predice:** ¿cambia cuánto se mueve el segundo émbolo?
+2. **Empuja más despacio y más deprisa.** ¿El movimiento de la segunda sigue la primera?
+3. **Prueba con aire.** Vacía el agua y repite con aire, **a presión baja, solo con la fuerza de tus manos**. ¿Qué notas?
+
+<details>
+<summary>Respuestas</summary>
+
+1. Casi **igual**: el agua apenas se comprime (el tubo flexible puede ceder un poquito).
+3. El segundo émbolo se mueve **menos y con retraso**, y al soltar el primero **rebota**: el aire actúa como un muelle.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Aire dentro del circuito" wrongLabel="Así no: con aire, esponjoso" rightLabel="Así sí: con agua, directo">
+  <Fig slot="wrong" src="fluidos/f_p_aire" alt="Dos jeringuillas unidas por un tubo, llenas de aire blanco. La flecha naranja empuja mucho un émbolo, pero el otro apenas sale." />
+  <Fig slot="right" src="fluidos/f_p_agua" alt="Dos jeringuillas unidas por un tubo, llenas de agua azul. Un émbolo entra y el otro sale la misma distancia, con flechas naranja y cian de igual longitud." />
+
+Con aire, parte de tu empuje se gasta en **comprimir el gas** y el movimiento llega blando y con retraso. Con agua llega casi entero.
+</Mistake>
+
+<Warn title="Con aire no fuerces">
+Si pruebas con aire, hazlo con la fuerza de tus manos, sin golpes y sin apuntar a nadie. Un émbolo o un tapón puede salir disparado si fuerzas la presión.
+</Warn>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Las dos jeringuillas son sin aguja y estoy trabajando sobre una bandeja lejos de enchufes",
+  "He sacado las burbujas grandes antes de conectar",
+  "He predicho cuánto se mueve el segundo émbolo y lo he medido",
+  "Sé calcular una presión como fuerza ÷ área",
+  "Sé explicar por qué con agua el movimiento llega mejor que con aire",
+]} />
+
+<Quiz id="q3" q="Dos jeringuillas unidas por un tubo lleno de agua. Empujas el émbolo de una. ¿Qué ocurre con el de la otra?" options={["No se mueve nada", "Se mueve: la presión se transmite por el líquido", "Solo se mueve si hay aire"]} answer={1}>
+El agua casi no se comprime y transmite la presión que haces: es el principio de Pascal.
+</Quiz>
+
+<Quiz id="q4" q="¿Por qué un clavo se hunde en la madera con un martillazo y tu dedo no, aunque pongas la misma fuerza?" options={["Porque la punta tiene muy poca área y concentra la fuerza: más presión", "Porque el clavo pesa más", "Porque el clavo se calienta"]} answer={0}>
+La misma fuerza sobre menos área da más presión. Por eso los clavos y los cuchillos tienen punta o filo.
+</Quiz>
+
+<RegisterPiece piece="Circuito de dos jeringuillas con agua" />
+</Block>

@@ -1,0 +1,152 @@
+---
+id: m15-01
+unit: proy
+order: 1
+title: "Qué debe hacer tu brazo: requisitos con números"
+summary: "Define con números qué alcance, qué carga y cuántos grados de libertad necesita tu brazo, y dibuja su esquema antes de comprar o montar nada."
+practice: [l_proy_req]
+cover: proy/r_hero
+duration: 30
+status: revisada
+prerequisites: []
+objectives:
+  - "Escribir requisitos medibles: alcance en cm, carga en gramos y número de GDL"
+  - "Calcular la longitud del segundo eslabón a partir del alcance y del primero (L2 = alcance − L1)"
+  - "Elegir un primer brazo realista: 2 GDL y carga ligera, con un tercero para después"
+materials:
+  - "Papel y lápiz (o el cuaderno de tu proyecto) y una regla"
+  - "El objeto que quieres mover (por ejemplo, un tapón de botella) y una mesa con dos marcas: origen y destino"
+piece:
+  name: "Ficha de requisitos de tu brazo"
+  hint: "Foto de tu ficha: alcance en cm, carga en g, número de GDL y un esquema dibujado a mano"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Este es el **proyecto final**: un brazo de **2-3 grados de libertad** que tú diseñas y construyes. Un buen proyecto empieza con una pregunta: **¿qué quiero que haga?** Y la respuesta debe llevar **números**.
+
+<Fig src="proy/r_hero" alt="Brazo con base giratoria, columna, servo en el hombro y en el codo, viga amarilla y viga roja, que lleva en su pinza verde un bloque rojo (el tapón). Sobre el suelo oscuro hay un círculo verde (el destino) y una flecha naranja curva que va desde el brazo hacia ese círculo." caption="El brazo recoge un tapón y lo lleva a otro punto de la mesa. ¿Cuánto debe alcanzar, cuánto debe levantar y cuántos movimientos necesita?" />
+
+Hoy no montas nada: **escribes tu ficha de requisitos**. Es el documento que guiará todas las decisiones de las dos lecciones siguientes.
+</Block>
+
+<Block kind="concepto">
+## Sin requisitos no sabes cuándo has terminado
+
+Un **requisito** es una cosa concreta que debe cumplir un diseño, expresada con números cuando se puede. Por ejemplo: «alcanzar 20 cm y levantar 100 g».
+
+Para tu brazo, tres números lo resumen casi todo:
+
+- **Alcance** (cm): hasta dónde debe llegar la punta desde el eje de la base.
+- **Carga** (g): el peso de lo que debe levantar.
+- **GDL:** cuántos movimientos independientes necesita.
+
+<Fig src="proy/r_mesa" alt="Una mesa oscura vista desde arriba en perspectiva. A la derecha del brazo hay un tapón rojo en el suelo, a unos diez pasos de la base; a la izquierda, un círculo verde marca el destino, también a diez pasos. Una flecha naranja curva une ambos puntos por encima de la base. El brazo está sobre el tapón, con la pinza abierta." caption="Origen del tapón a la derecha y destino a la izquierda, a unos 10 pasos (8 cm) de la base cada uno: el brazo debe girar 180° y alcanzar los dos." />
+
+**Predice antes de mirar:** quieres mover un tapón de botella de un lado de la mesa a otro, y tu mesa es pequeña. ¿Qué requisitos te serán más útiles?
+
+<details>
+<summary>La respuesta</summary>
+
+**Alcance en cm, carga máxima en gramos y número de GDL.** Son medibles y orientan los cálculos de par y de longitud. «Que sea bonito» o «lo más grande posible» no ayudan a decidir nada.
+</details>
+
+### El alcance fija la longitud de los eslabones
+
+El **alcance máximo** de un brazo de dos eslabones es **L1 + L2**. Si ya has elegido uno, el otro sale de una resta:
+
+**L2 = alcance − L1**
+
+Ejemplo: quieres un alcance máximo de **24 cm** y el primer eslabón mide **14 cm**. Entonces L2 = 24 − 14 = **10 cm**.
+
+<Fig src="proy/r_alcance" alt="El brazo estirado en horizontal. Encima, tres cotas: una naranja sobre la viga amarilla, una cian sobre la roja y una blanca más larga que cubre las dos juntas." caption="Naranja: L1. Cian: L2. Blanco: el alcance máximo, que es la suma de los dos." />
+
+### Pocos GDL y poca carga para empezar
+
+- **GDL:** para tu primer brazo, **dos**, y añade un tercero cuando el primero funcione bien. Cada GDL añade un motor, más par, más peso, más juego y más cableado.
+- **Carga:** una **pieza ligera (decenas de gramos)** y, si va bien, la subes poco a poco. Cuanto más pesa la carga, más par necesitan los motores y más se dobla la estructura.
+- Si tus servos tienen **poco par**, te conviene un brazo **corto y ligero**: menos longitud y menos masa lejos de la base significan menos par necesario.
+
+<Fig src="proy/r_esquema" alt="Esquema del brazo con líneas y bolas: una línea gris vertical de la base al hombro, una amarilla del hombro al codo y una roja del codo a la punta. Una bola naranja marca el giro de la base, una cian el hombro y una verde el codo, con una flecha curva de su color en cada una." caption="Tu esquema: tres articulaciones (naranja, cian y verde) y dos eslabones (amarillo y rojo). El primer brazo puede quedarse en dos: la base y una más." />
+
+Con el laboratorio puedes mover las medidas y ver cómo cambia el alcance. De momento mira solo la parte del alcance; el par lo trabajarás en la próxima lección:
+
+<ArmPlanLab />
+
+<Quiz id="q1" q="Quieres que tu brazo tenga un alcance máximo de 24 cm y el primer eslabón mide 14 cm. ¿Cuánto debe medir el segundo?" options={["10 cm", "38 cm", "7 cm"]} answer={0}>
+Alcance máximo = L1 + L2, así que L2 = 24 − 14 = **10 cm**.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Tu producto es la **ficha de requisitos**. Cuatro pasos, cada uno con su imagen. Escribe en tu cuaderno.
+
+<Step n={1} title="Dónde está el origen y el destino" img="proy/r_mesa" alt="La mesa vista desde arriba con el tapón rojo a la derecha y el círculo verde de destino a la izquierda, unidos por una flecha naranja curva.">
+Dibuja tu mesa y marca **dónde está el objeto** y **dónde debe dejarse**. Decide dónde irá el **eje de la base** y mide con la regla la distancia hasta cada punto: la mayor es tu **alcance mínimo necesario**.
+<Why>Si el brazo no llega a uno de los dos puntos, no hay forma de cumplir la tarea. Medir antes evita comprar o imprimir piezas que luego no sirven.</Why>
+</Step>
+
+<Step n={2} title="Dibuja el esquema" img="proy/r_esquema" alt="El esquema de líneas y bolas del brazo: base, hombro y codo, con una flecha curva en cada articulación.">
+Dibuja el brazo con **líneas para los eslabones y círculos para las articulaciones**. Numera las articulaciones: 1 = giro de la base, 2 = hombro, 3 = codo. Para empezar, **tacha la 3**: es tu versión de 2 GDL. La añadirás después.
+</Step>
+
+<Step n={3} title="Elige las longitudes" img="proy/r_alcance" alt="El brazo estirado con las cotas de L1, L2 y el alcance total.">
+Aplica **L2 = alcance − L1**. Un ejemplo con piezas tipo Technic: una viga de 11 agujeros (10 pasos = 8,0 cm) y una de 9 agujeros (8 pasos = 6,4 cm) dan un alcance máximo de **14,4 cm** y un mínimo de 1,6 cm.
+<Why>Pide **algo más** de alcance del que necesitas: así no vas al límite justo del brazo estirado, que es la peor posición para el motor.</Why>
+</Step>
+
+<Step n={4} title="Escribe la carga" img="proy/r_hero" alt="El brazo con el tapón rojo en la pinza, levantado, y el destino marcado en el suelo.">
+Escribe el **peso del objeto** en gramos y apunta una carga de proyecto **ligera**, de unas decenas de gramos. Pésalo con una báscula de cocina si puedes.
+
+Tu ficha debe quedar así: **Alcance ≥ … cm · Carga ≤ … g · GDL: 2 (después 3)**, con el esquema dibujado.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Otro destino:** mueve el destino al doble de distancia de la base. ¿Cómo cambia L2 si dejas L1 igual? ¿Sigue siendo razonable?
+2. **Más carga:** sube el requisito a 100 g. ¿Qué predices que le pasará a los motores y a la estructura? (Lo comprobarás con números en la lección siguiente.)
+3. **Requisitos verificables:** escribe tres requisitos distintos de tu brazo. Para cada uno, escribe **cómo sabrás que se cumple** (una medida o una prueba).
+
+<ArmPlanLab />
+</Block>
+
+<Block kind="errores">
+<Mistake title="Pedirlo todo a la vez con motores pequeños" wrongLabel="Largo y pesado" rightLabel="Corto y ligero">
+  <Fig slot="wrong" src="proy/r_err_mal" alt="Un brazo muy largo, de dos vigas largas, con una pieza grande en la punta. Una flecha roja gruesa baja desde la pieza y una cota roja muy larga mide toda la distancia al hombro." />
+  <Fig slot="right" src="proy/r_err_bien" alt="Un brazo corto con una pieza ligera en la punta. Una flecha verde fina baja desde la pieza y una cota verde corta mide la distancia al hombro." />
+
+Un alcance enorme **y** una carga alta piden mucho par: **peso × distancia**. Con servos de poco par, lo razonable es un brazo **corto y ligero** y una carga pequeña. Mejor un brazo que funciona hoy que uno ambicioso que no se mueve.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu ficha:
+
+<Checklist items={[
+  "He escrito el alcance en cm (medido desde el eje de la base)",
+  "He escrito la carga en gramos, y es ligera",
+  "He decidido empezar con 2 GDL y dejar el tercero para después",
+  "He dibujado el esquema con las articulaciones numeradas",
+  "Para cada requisito sé cómo comprobaré que se cumple",
+]} />
+
+<Quiz id="q2" q="Para tu primer brazo, ¿cuántos grados de libertad es razonable pedir?" options={["Seis a la vez, para hacerlo todo", "Dos, y añadir un tercero cuando el primero funcione bien", "Todos los que se te ocurran"]} answer={1}>
+Cada grado de libertad añade un motor, más par, más peso, más juego y más cableado. Es más fácil acertar con pocos y ampliar después.
+</Quiz>
+
+<Quiz id="q3" q="¿Por dónde empiezas el proyecto de tu brazo?" options={["Comprando los motores más potentes", "Montando sin plan y mirando qué sale", "Escribiendo qué debe hacer: alcance, carga y número de grados de libertad"]} answer={2}>
+Los requisitos guían todas las decisiones: el tamaño, los motores y la estructura. Sin ellos, es fácil comprar o construir lo que no hace falta.
+</Quiz>
+
+<Quiz id="q4" q="¿Qué carga es razonable pedir a un primer brazo de piezas y motores pequeños?" options={["Una pieza ligera (decenas de gramos) y, si va bien, subir poco a poco", "Un objeto de varios kilos", "La mayor carga posible desde el principio"]} answer={0}>
+Cuanto más pesa la carga, más par necesitan los motores y más se dobla la estructura. Con carga ligera, aprendes sin quemar motores.
+</Quiz>
+
+<RegisterPiece piece="Ficha de requisitos de tu brazo" />
+</Block>

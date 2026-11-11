@@ -1,0 +1,155 @@
+---
+id: m8-01
+unit: motor
+order: 1
+title: "Tu primer circuito: pila, interruptor y motor"
+summary: "Monta un circuito con pila, interruptor y motor, entiende qué son tensión, corriente y potencia, y aprende a evitar un cortocircuito."
+practice: [l_elec]
+cover: motor/e_hero
+duration: 30
+status: revisada
+prerequisites: []
+objectives:
+  - "Explicar tensión y corriente con la analogía del agua en una tubería"
+  - "Calcular la potencia eléctrica (tensión × corriente) y la tensión de pilas en serie"
+  - "Montar un circuito con interruptor sin hacer un cortocircuito"
+materials:
+  - "Un portapilas con pilas de 1,5 V iguales (por ejemplo, 4 para 6 V)"
+  - "Un motor pequeño de corriente continua; mira en su etiqueta la tensión que admite"
+  - "Un interruptor sencillo y cables con pinzas (o cables pelados con cinta)"
+piece:
+  name: "Circuito pila, interruptor y motor"
+  hint: "Foto de tu circuito con el interruptor abierto y otra con el motor girando"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar el circuito más sencillo que existe: una **pila** que empuja, un **interruptor** que abre y cierra el paso, y un **motor** que gira. Al terminar sabrás **calcular cuánta potencia gasta**.
+
+<Fig src="motor/e_hero" alt="Circuito sobre una mesa oscura: una pila azul a la izquierda, un interruptor arriba, un motor gris a la derecha y dos cables, uno rojo y otro azul, que cierran el lazo. Flechas naranjas sobre los cables marcan el sentido de la corriente, de la pila al interruptor, al motor y de vuelta a la pila." caption="Las flechas naranjas muestran por dónde va la corriente: sale del polo +, pasa por el interruptor y el motor, y vuelve al polo −." />
+
+Todo esto lo harás con **pilas o baterías pequeñas**, nunca con la corriente del enchufe.
+
+<Warn title="Seguridad primero">
+**Nunca** uses la corriente del enchufe para estos montajes. Trabaja solo con pilas pequeñas y no unas nunca los dos polos de una pila con un metal: es un **cortocircuito**.
+</Warn>
+</Block>
+
+<Block kind="concepto">
+## La pila empuja y la corriente circula
+
+Una **pila** empuja (**tensión**, en voltios, V). Por los cables circula la **corriente** (en amperios, A) hasta el motor y de vuelta a la pila. Si el interruptor está abierto, el circuito queda cortado y no circula nada.
+
+Una forma de recordarlo es la **analogía del agua** en una tubería: la **tensión** es como la **presión** y la **corriente**, como el **caudal**. No es perfecta, pero ayuda a no confundirlas.
+
+**Predice antes de mirar:** 4 pilas de 1,5 V, una detrás de otra (en serie). ¿Qué tensión dan juntas?
+
+<details>
+<summary>Mira la respuesta</summary>
+
+**6 V.** En serie las tensiones se **suman**: 4 × 1,5 V = 6 V.
+</details>
+
+<Fig src="motor/e_serie" alt="Cuatro pilas azules en fila, con el polo positivo de cada una tocando el negativo de la siguiente. Sobre cada pila, una flecha naranja corta; encima de todas, una flecha cian larga." caption="En serie, cada pila suma su empuje: cuatro flechas cortas (1,5 V) dan una larga (6 V)." />
+
+La **potencia** es lo que gasta el motor: **potencia = tensión × corriente** (en vatios, W). Pruébalo con el laboratorio y mira qué pasa con las pilas en serie y en paralelo:
+
+<PilasLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- En **serie**, la tensión **sube** (suma). En **paralelo**, se queda en 1,5 V.
+- Con más tensión y la misma corriente, **la potencia sube**.
+- Por eso empezamos con pilas de **poca tensión**: es mucho más seguro (aunque «poca tensión» no significa riesgo cero).
+</details>
+
+<Why title="¿Y por qué no puedo unir los dos polos?">
+Si unes los dos polos con un metal, la corriente no tiene **nada que la limite** y circula muchísima: es un **cortocircuito**. La pila se calienta y el metal también. Por eso las pilas no se llevan sueltas en el bolsillo junto a llaves o monedas.
+</Why>
+
+<Quiz id="q1" q="Un motor funciona a 6 V y consume 0,5 A. ¿Qué potencia eléctrica usa?" options={["12 W", "6,5 W", "3 W"]} answer={2}>
+Potencia = tensión × corriente = 6 V × 0,5 A = **3 W**.
+</Quiz>
+
+<Quiz id="q2" q="Con la analogía del agua en una tubería, ¿a qué se parece la tensión y a qué la corriente?" options={["La tensión es como la presión y la corriente como el caudal", "La tensión es el caudal y la corriente la presión", "Las dos son como el tamaño de la tubería"]} answer={0}>
+Más presión empuja más agua por la tubería; más tensión empuja más corriente por el cable.
+</Quiz>
+
+<Tip title="Sabías que… la primera pila">
+En 1800, Alessandro Volta apiló discos de cobre y de zinc separados por paños empapados en salmuera y consiguió una corriente continua: la **pila voltaica**. De su apellido viene el **voltio**, la unidad de tensión.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. **En cada imagen, lo nuevo sale en color y lo anterior, en gris.** Trabaja con el **interruptor abierto**.
+
+<Step n={1} title="La pila" img="motor/e_s1" alt="Una pila cilíndrica azul tumbada a lo largo, con un collar rojo y un botón en el extremo positivo y un casquillo oscuro en el negativo.">
+Coloca el portapilas con sus pilas (todas **iguales y nuevas**). Localiza el polo **+** (collar rojo en el dibujo) y el **−**.
+</Step>
+
+<Step n={2} title="El motor" img="motor/e_s2" alt="Un motor cilíndrico gris tumbado a la derecha, con el eje hacia la derecha y dos lengüetas metálicas en la parte de atrás.">
+Coloca el motor sujeto a la mesa para que no se mueva. Fíjate en sus **dos terminales** de atrás y en su **etiqueta**: dice la tensión que admite.
+<Warn title="Mira la etiqueta">
+No le des al motor más tensión de la que indica su etiqueta. Si no estás seguro, empieza con menos pilas.
+</Warn>
+</Step>
+
+<Step n={3} title="El interruptor" img="motor/e_s3" alt="Un interruptor con base oscura, dos postes metálicos y una palanca amarilla, colocado en la parte de arriba del circuito, entre la pila y el motor.">
+Coloca el interruptor entre la pila y el motor y déjalo **abierto** (la palanca levantada).
+<Why>Un interruptor es un trozo del circuito que **cortas a voluntad**. Con él abierto, la corriente no puede pasar y puedes tocar tus cables con tranquilidad.</Why>
+</Step>
+
+<Step n={4} title="Los cables" img="motor/e_s4" alt="Un cable rojo sale del polo positivo de la pila, pasa por el interruptor y llega a un terminal del motor. Un cable azul sale del otro terminal del motor y vuelve al polo negativo de la pila.">
+Conecta el cable **rojo** del **+** de la pila al interruptor y de ahí a un terminal del motor. Conecta el cable **azul** del otro terminal del motor al **−** de la pila.
+
+Cierra el interruptor: **¿gira?** Ábrelo: ¿se para?
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Al revés:** intercambia los dos cables del motor. ¿Hacia dónde gira ahora? (Un motor de corriente continua cambia de sentido al cambiar la polaridad.)
+2. **Más empuje:** si tu motor lo admite, prueba con **menos pilas** y luego con más. ¿Cuándo gira más deprisa? Comprueba la etiqueta primero.
+3. **Calcula:** lee en la etiqueta la tensión y la corriente (o mide la corriente si tienes un medidor) y calcula la **potencia** con la fórmula.
+
+<Warn title="Si algo se calienta o huele raro">
+Abre el interruptor y desconecta la pila al instante. Un motor que se **bloquea** mientras sigue conectado consume muchísima corriente.
+</Warn>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Unir los dos polos con un metal" wrongLabel="Un clip une los dos polos" rightLabel="Pilas guardadas en su caja">
+  <Fig slot="wrong" src="motor/e_corto_mal" alt="Una pila azul con un clip metálico arqueado que une su polo positivo y su polo negativo. Esferas rojas marcan los dos contactos y flechas rojas hacia arriba indican calor." />
+  <Fig slot="right" src="motor/e_corto_bien" alt="Dos pilas azules guardadas dentro de una caja de plástico gris abierta. Un clip metálico queda fuera, lejos de las pilas, junto a una esfera verde." />
+
+Si un clip, una llave o una moneda tocan **a la vez** los dos polos, hay un **cortocircuito**: circula mucha corriente y la pila y el clip pueden calentarse. Guarda las pilas **en su caja o con los polos tapados**, lejos de metales sueltos.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu circuito:
+
+<Checklist items={[
+  "Uso solo pilas o baterías pequeñas, nunca el enchufe",
+  "Las pilas son iguales y la tensión no pasa de lo que admite el motor",
+  "El cable rojo va al + y el azul al −, y nada metálico toca los dos polos",
+  "El interruptor abre y cierra el circuito y el motor se para al abrirlo",
+  "He calculado la potencia con tensión × corriente",
+]} />
+
+<Quiz id="q3" q="Un clip metálico toca a la vez los dos polos de una pila. ¿Qué puede pasar?" options={["Nada, el clip no conduce", "Se produce un cortocircuito: circula mucha corriente y el clip y la pila pueden calentarse", "La pila se carga"]} answer={1}>
+Sin nada que limite la corriente, la pila entrega todo lo que puede y se calienta.
+</Quiz>
+
+<Quiz id="q4" q="Conectas 4 pilas de 1,5 V en serie. ¿Qué tensión total dan?" options={["1,5 V", "5,5 V", "6 V"]} answer={2}>
+En serie las tensiones se suman: 4 × 1,5 V = 6 V.
+</Quiz>
+
+<RegisterPiece piece="Circuito pila, interruptor y motor" />
+</Block>

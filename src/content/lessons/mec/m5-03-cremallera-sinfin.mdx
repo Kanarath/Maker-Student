@@ -1,0 +1,142 @@
+---
+id: m5-03
+unit: mec
+order: 3
+title: "Cremallera y tornillo sin fin: giro en recta y reducción enorme"
+summary: "Monta un piñón con una cremallera para convertir un giro en avance recto y descubre cómo un tornillo sin fin consigue una reducción enorme en muy poco espacio."
+practice: [l_sinfin]
+cover: mec/rk_hero
+duration: 35
+status: revisada
+prerequisites: [m5-01, m3-03]
+objectives:
+  - "Calcular el avance de una cremallera con nº de dientes × paso"
+  - "Calcular la reducción de un tornillo sin fin de una entrada con el número de dientes de la rueda"
+  - "Colocar la cremallera a la altura correcta para que engrane con el piñón"
+materials:
+  - "Un piñón (por ejemplo de 12 dientes) y una cremallera de su mismo tamaño de diente, un eje y una viga de soporte"
+  - "Una viga larga como guía bajo la cremallera"
+  - "Opcional: un tornillo sin fin y una rueda dentada compatibles"
+piece:
+  name: "Piñón y cremallera"
+  hint: "Foto de tu piñón engranando con la cremallera, con una marca en el piñón y la medida del avance por vuelta"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **piñón con cremallera**: al girar el piñón, la cremallera **avanza en línea recta**. Antes de girar, **predecirás cuánto** avanza la cremallera en una vuelta.
+
+<Fig src="mec/rk_hero" alt="Un piñón azul de 12 dientes sobre una cremallera amarilla horizontal con dientes rectos que encajan, montados sobre una viga gris. Una viga roja corta marca el giro del piñón. Una flecha naranja curva marca el giro y una flecha cian recta bajo la cremallera marca su avance." caption="El piñón gira (naranja) y la cremallera avanza en línea recta (cian)." />
+</Block>
+
+<Block kind="concepto">
+## Una cremallera es un engranaje estirado
+
+Una **cremallera** es una barra con dientes en línea recta que **engrana con un piñón**. Convierte giro en movimiento en línea recta. Y también al revés: si empujas la cremallera, el piñón gira.
+
+En una vuelta del piñón pasan por el contacto **todos sus dientes**:
+
+**avance por vuelta = nº de dientes del piñón × paso (distancia entre dientes)**
+
+Un piñón de 12 dientes, con 5 mm entre dientes: 12 × 5 = **60 mm** por vuelta.
+
+<Quiz id="q1" q="Un piñón de 12 dientes, con 5 mm entre dientes, mueve una cremallera. ¿Cuánto avanza en una vuelta del piñón?" options={["17 mm", "60 mm", "120 mm"]} answer={1}>
+En una vuelta pasan 12 dientes por el contacto y cada uno ocupa 5 mm: 12 × 5 = **60 mm**.
+</Quiz>
+
+## Tornillo sin fin: una reducción enorme
+
+Un **tornillo sin fin** es un tornillo que **engrana con una rueda dentada** y la mueve **un diente por cada vuelta** del tornillo. Con una sola entrada (un solo filete), la relación es **igual al número de dientes de la rueda**:
+
+**vueltas del tornillo por vuelta de la rueda = nº de dientes de la rueda**
+
+Con una rueda de 24 dientes, el tornillo da **24 vueltas** por cada vuelta de la rueda: una reducción de 24 : 1 **en un solo paso**. Con engranajes rectos necesitarías varias etapas.
+
+<Fig src="mec/sf_hero" alt="Una rueda dentada amarilla de 24 dientes en vertical, con su eje, y bajo ella, en horizontal, un tornillo azul con rosca fina que engrana con sus dientes por abajo. Una flecha naranja curva rodea el tornillo y una flecha cian curva rodea la rueda." caption="El tornillo (abajo) engrana con la rueda: una vuelta del tornillo mueve la rueda un diente." />
+
+<Why title="¿Por qué es tan fuerte?">
+Con 24 vueltas de tornillo la rueda da solo una: como en los engranajes, **lo que pierdes en velocidad lo ganas en fuerza de giro**. Pero cuidado con el rozamiento: en un sin fin hay mucho, y por eso se pierde bastante fuerza por el camino.
+</Why>
+
+<Quiz id="q2" q="Un tornillo sin fin con una sola entrada mueve una rueda de 24 dientes. ¿Cuántas vueltas da el tornillo por cada vuelta completa de la rueda?" options={["24 vueltas", "12 vueltas", "1 vuelta"]} answer={0}>
+Cada vuelta del tornillo mueve la rueda un diente: para una vuelta entera hacen falta tantas vueltas como dientes tiene, **24**.
+</Quiz>
+
+<Tip title="Sabías que… una etapa vale por varias">
+Con un tornillo sin fin de una entrada, una rueda de 40 dientes da una reducción de **40 : 1 en un solo paso**. Eso sí: que el tornillo se **autobloquee** (que la rueda no pueda moverlo) depende del rozamiento y del ángulo de la rosca; no lo des por seguro.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Tres pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="Placa y guía" img="mec/rk_s1" alt="Una viga gris larga y horizontal abajo y, apoyada sobre ella en el centro, una viga azul vertical.">
+Pon una viga larga **horizontal** (la guía por donde irá la cremallera) y, en su centro, una viga **vertical** corta como soporte del eje del piñón.
+<Why>La guía deja la cremallera a la **altura justa**: el piñón sobre ella tiene que tocarla sin presionar.</Why>
+</Step>
+
+<Step n={2} title="El piñón" img="mec/rk_s2" alt="Un eje que atraviesa la viga vertical y un piñón azul de 12 dientes montado en él, con una viga roja corta que sale de su centro.">
+Pasa un eje por la parte alta de la viga vertical y monta el **piñón**. Pon una viga corta o una marca en él para ver las vueltas.
+</Step>
+
+<Step n={3} title="La cremallera" img="mec/rk_s3" alt="Una barra amarilla con dientes colocada sobre la viga gris, con sus dientes engranando por debajo del piñón azul.">
+Coloca la **cremallera** sobre la guía, con sus dientes **hacia arriba**, engranando con el piñón. Gira el piñón una vuelta entera.
+
+**Predice:** ¿cuánto avanzará la cremallera? Pista: cuenta los dientes del piñón y mide el paso (la distancia entre dos dientes seguidos de la cremallera).
+
+<details>
+<summary>Respuesta</summary>
+
+**dientes del piñón × paso.** Si tu piñón tiene 12 dientes y el paso es de unos 5 mm, serán unos 60 mm. Marca la posición de la cremallera antes y después de una vuelta y mídelo.
+</details>
+
+<Warn title="Dedos entre los dientes">
+Los dientes en marcha pellizcan. Mueve el piñón despacio y no pongas los dedos donde se encuentran piñón y cremallera.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Invierte el movimiento:** empuja la cremallera con la mano. ¿Gira el piñón? ¿En qué sentido gira si la empujas hacia la derecha?
+2. **Dos vueltas:** gira el piñón dos vueltas. ¿Cuánto avanza la cremallera ahora?
+3. **Tornillo sin fin** (si tienes uno con su rueda): cuenta cuántas vueltas del tornillo hacen falta para una vuelta de la rueda. **Predice** primero con el número de dientes de la rueda. Luego prueba a girar la rueda con el dedo: ¿mueve el tornillo?
+
+<details>
+<summary>Respuestas</summary>
+
+1. Sí, gira: la cremallera y el piñón funcionan en los dos sentidos. Si el piñón está **encima** y empujas la cremallera hacia la derecha, el piñón gira en sentido **contrario** a las agujas del reloj (mirándolo de frente).
+2. **El doble** del avance de una vuelta.
+3. Tantas vueltas como dientes tenga la rueda. Que la rueda pueda mover el tornillo o no depende del rozamiento y de la inclinación de la rosca: puede quedarse **bloqueado**, pero no está garantizado.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Cremallera a la altura equivocada" wrongLabel="Demasiado baja: no engrana" rightLabel="A la altura justa: engrana">
+  <Fig slot="wrong" src="mec/rk_error_mal" alt="El piñón azul sobre la cremallera amarilla, pero con la cremallera algo más abajo: entre los dientes del piñón y los de la cremallera se ve un hueco." />
+  <Fig slot="right" src="mec/rk_error_bien" alt="El piñón azul con los dientes metidos entre los de la cremallera amarilla, sin hueco." />
+
+Si hay **hueco**, los dientes no llegan a tocarse y el piñón patina sin mover la cremallera. Si aprietas **demasiado**, los dientes se atascan. Ajusta la altura de la guía hasta que giren suaves.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "El piñón y la cremallera engranan sin hueco ni atasco",
+  "He contado los dientes del piñón y medido el paso",
+  "He predicho el avance por vuelta con dientes × paso",
+  "He medido el avance real y lo he comparado con la predicción",
+  "Sé decir qué reducción da un sin fin con una rueda de 24 dientes",
+]} />
+
+<Quiz id="q3" q="Con un tornillo sin fin de rosca poco inclinada, ¿qué suele pasar si empujas la rueda para hacer girar el tornillo?" options={["Gira libremente, siempre", "Se rompe siempre", "Puede quedarse bloqueado (autobloqueo), pero no está garantizado"]} answer={2}>
+El autobloqueo depende del rozamiento y del ángulo de la rosca. Con el desgaste o las vibraciones se puede perder, así que no te fíes solo de él para sostener cargas peligrosas.
+</Quiz>
+
+<RegisterPiece piece="Piñón y cremallera" />
+</Block>

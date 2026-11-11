@@ -1,0 +1,127 @@
+---
+// Laboratorio del voladizo y las capas: inclina una pared y mira cuánto de cada capa queda en el aire.
+// Modelo simplificado: el ancho de la línea de plástico es el doble de la altura de capa (caso típico: 0,4 y 0,2 mm),
+// así que con un desplazamiento de «altura × tan(ángulo)» por capa, la parte en el aire es tan(ángulo) / 2 de su ancho.
+// Regla práctica del temario: por encima de unos 45° respecto a la vertical suele hacer falta soporte o reorientar.
+// Además calcula cuántas capas tiene una pieza: altura ÷ altura de capa.
+---
+
+<div class="lab" data-ovh>
+  <div class="head"><b>Laboratorio · Voladizo y capas</b><span class="muted">Inclina la pared y cambia la altura de capa</span></div>
+
+  <svg viewBox="0 0 800 330" role="img" aria-label="Pared inclinada hecha de capas apiladas. La parte de cada capa que sobresale de la anterior se marca en rojo con rayas.">
+    <defs>
+      <pattern id="ovh-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="8" height="8" fill="#ff5a4a" />
+        <line x1="0" y1="0" x2="0" y2="8" stroke="#05060a" stroke-width="3" />
+      </pattern>
+    </defs>
+    <rect x="0" y="0" width="800" height="330" fill="#05060a" />
+    <rect x="20" y="294" width="760" height="14" rx="3" fill="#2f7fe0" />
+    <text x="780" y="324" text-anchor="end" fill="#a3a1b4" font-size="14" font-family="monospace">cama</text>
+    <g data-layers></g>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Inclinación de la pared</legend>
+      <label>Ángulo respecto a la vertical: <b data-ang-v>30</b>°
+        <input type="range" min="0" max="75" step="5" value="30" data-ang />
+      </label>
+      <p class="hint">0° = pared recta · 90° = tejado plano</p>
+    </fieldset>
+    <fieldset>
+      <legend>Número de capas de una pieza</legend>
+      <label>Altura de la pieza: <b data-h-v>30</b> mm
+        <input type="range" min="10" max="60" step="5" value="30" data-h />
+      </label>
+      <label>Altura de capa
+        <select data-lh>
+          <option value="0.1">0,1 mm (muy fina)</option>
+          <option value="0.2" selected>0,2 mm</option>
+          <option value="0.3">0,3 mm (gruesa)</option>
+        </select>
+      </label>
+    </fieldset>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <p class="out2" aria-live="polite" data-out2></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+  const fmt = (n: number, d = 0) => n.toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-ovh]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const g = q<SVGGElement>("[data-layers]");
+    const ang = q<HTMLInputElement>("[data-ang]");
+    const hh = q<HTMLInputElement>("[data-h]");
+    const lh = q<HTMLSelectElement>("[data-lh]");
+    const out = q<HTMLElement>("[data-out]");
+    const out2 = q<HTMLElement>("[data-out2]");
+    const VH = 16, VW = 32, N = 9, X0 = 60, BED = 294;
+
+    function update() {
+      const a = +ang.value;
+      const H = +hh.value;
+      const h = +lh.value;
+      q("[data-ang-v]").textContent = String(a);
+      q("[data-h-v]").textContent = String(H);
+      const off = VH * Math.tan((a * Math.PI) / 180);
+      g.replaceChildren();
+      for (let i = 0; i < N; i++) {
+        const x0 = X0 + i * off;
+        const y = BED - (i + 1) * VH;
+        const hang = i === 0 ? 0 : Math.min(off, VW);
+        const sup = VW - hang;
+        if (sup > 0) g.append(mk("rect", { x: x0, y, width: sup, height: VH - 1.5, fill: i % 2 ? "#f9d27a" : "#f2b230" }));
+        if (hang > 0) g.append(mk("rect", { x: x0 + sup, y, width: hang, height: VH - 1.5, fill: "url(#ovh-hatch)" }));
+      }
+      const frac = Math.min(1, Math.tan((a * Math.PI) / 180) / 2);
+      let verdict: string, cls: string;
+      if (a <= 45) {
+        verdict = a === 45 ? "En el límite: suele salir bien sin soportes, pero prueba antes." : "Se apoya bien en la capa de abajo: normalmente no hace falta soporte.";
+        cls = "ok";
+      } else if (a < 75) {
+        verdict = "Pasa de unos 45°: suele hacer falta un soporte o girar la pieza (reorientar).";
+        cls = "ko";
+      } else {
+        verdict = "Casi horizontal: las capas quedan casi sin nada debajo. Soporte o reorientar.";
+        cls = "ko";
+      }
+      out.innerHTML = `Inclinación <b>${a}°</b> · en el dibujo, cada capa tiene en el aire el <b>${fmt(frac * 100)} %</b> de su ancho (rayado rojo).<br>${verdict}`;
+      out.classList.toggle("ok", cls === "ok");
+      out.classList.toggle("ko", cls === "ko");
+      const layers = Math.round(H / h);
+      out2.innerHTML = `Capas: ${H} mm ÷ ${fmt(h, 1)} mm = <b>${fmt(layers)} capas</b>. Capas más finas = más detalle, pero más capas y más tiempo.`;
+    }
+    for (const el of [ang, hh, lh]) el.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  select { display: block; width: 100%; margin-top: 6px; min-height: 40px; background: var(--panel-2); color: inherit; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; font: inherit; }
+  .hint { margin: 6px 0 0; font-size: .82rem; opacity: .75; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .out.ok { background: #4ade8014; border-top-color: #4ade80; }
+  .out.ko { background: #ff6b5a14; border-top-color: #ff6b5a; }
+  .out2 { margin: 0; padding: 10px 14px 14px; font-size: .95rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

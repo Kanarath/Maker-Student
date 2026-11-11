@@ -1,0 +1,129 @@
+---
+// Laboratorio de la dirección: gira el volante y mira los dos círculos de la curva.
+// Datos de la unidad: 3 vueltas de volante de tope a tope = 60° de las ruedas de tope a tope → 20° por vuelta.
+// Con la geometría Ackermann, las rectas de todas las ruedas se cortan en UN punto (el centro de la curva) y la rueda
+// interior gira más ángulo que la exterior. Con «dirección paralela» las dos ruedas giran igual y no se cortan en un punto.
+// (El cálculo de ángulos usa trigonometría por dentro; tú solo tienes que mirar el dibujo y los números.)
+---
+
+<div class="lab" data-steer>
+  <div class="head"><b>Laboratorio · Los círculos de la curva</b><span class="muted">Gira el volante y mira dónde se cortan las rectas</span></div>
+
+  <svg viewBox="0 0 800 440" role="img" aria-label="Coche visto desde arriba girando a la izquierda, con las rectas de los ejes de las ruedas">
+    <rect width="800" height="440" fill="#05060a" />
+    <g data-scene></g>
+  </svg>
+
+  <div class="ctrl">
+    <label>Volante: <b data-v-t>0</b> vueltas a la izquierda<input type="range" min="-1.5" max="1.5" step="0.05" value="0.9" data-turns aria-label="Vueltas de volante (negativo es a la derecha)" /></label>
+    <label>Distancia entre ejes del coche: <b data-l-t>8</b> agujeros<input type="range" min="6" max="14" step="1" value="8" data-wb aria-label="Distancia entre el eje delantero y el trasero, en agujeros" /></label>
+    <label class="chk"><input type="checkbox" data-par /> Dirección paralela (las dos ruedas giran lo mismo)</label>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  };
+  const S = 22, OX = 130, OY = 250; // px por agujero; eje trasero en (OX, OY)
+  const HALF = 2.9; // media separación de las ruedas (agujeros)
+  const deg = (r: number) => (r * 180) / Math.PI;
+  const rad = (d: number) => (d * Math.PI) / 180;
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-steer]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const scene = q<SVGGElement>("[data-scene]");
+    const turns = q<HTMLInputElement>("[data-turns]");
+    const wbI = q<HTMLInputElement>("[data-wb]");
+    const par = q<HTMLInputElement>("[data-par]");
+    const out = q<HTMLElement>("[data-out]");
+
+    function update() {
+      const t = +turns.value, L = +wbI.value, parallel = par.checked;
+      // Todo se calcula como giro a la IZQUIERDA; si giras a la derecha se dibuja el espejo (sgn = -1).
+      const sgn = t >= 0 ? 1 : -1;
+      const sx = (x: number) => OX + x * S;
+      const sy = (y: number) => OY - y * sgn * S;
+      q("[data-v-t]").textContent = Math.abs(t).toFixed(2) + (t < 0 ? " (a la derecha)" : "");
+      q("[data-l-t]").textContent = String(L);
+      const line = (x1: number, y1: number, x2: number, y2: number, color: string, dash = "") => {
+        const l = mk("line", { x1: sx(x1), y1: sy(y1), x2: sx(x2), y2: sy(y2), stroke: color, "stroke-width": 2.5, "stroke-linecap": "round" });
+        if (dash) l.setAttribute("stroke-dasharray", dash);
+        scene.append(l);
+      };
+      const wheelRect = (cx: number, cy: number, ang: number, color: string) => {
+        const g = mk("g", { transform: `translate(${sx(cx)} ${sy(cy)}) rotate(${-deg(ang) * sgn})` });
+        g.append(mk("rect", { x: -0.65 * S, y: -0.45 * S, width: 1.3 * S, height: 0.9 * S, rx: 3, fill: color, stroke: "#05060a", "stroke-width": 1.5 }));
+        scene.append(g);
+      };
+      const label = (x: number, y: number, txt: string, color: string) => {
+        const tx = mk("text", { x, y, fill: color, "font-size": 15, "font-weight": 700 });
+        tx.textContent = txt;
+        scene.append(tx);
+      };
+      scene.replaceChildren();
+      const alpha = Math.min(30, Math.abs(t) * 20); // °: 3 vueltas = 60° de tope a tope → 20° por vuelta, tope ±30°
+      const straight = alpha < 0.5;
+      scene.append(mk("rect", { x: 0, y: 0, width: 800, height: 440, fill: "#0b0d12" }));
+      scene.append(mk("rect", { x: sx(0) - 6, y: OY - 1.6 * S, width: L * S + 12, height: 3.2 * S, rx: 6, fill: "#2a2c35", stroke: "#4a4e60", "stroke-width": 2 }));
+      let thIn = 0, thOut = 0, R = Infinity;
+      if (!straight) {
+        if (parallel) thIn = thOut = rad(alpha);
+        else {
+          R = L / Math.tan(rad(alpha)); // radio medido hasta el centro del eje trasero
+          thIn = Math.atan(L / (R - HALF));
+          thOut = Math.atan(L / (R + HALF));
+        }
+      }
+      wheelRect(0, HALF, 0, "#aeb6c8");
+      wheelRect(0, -HALF, 0, "#aeb6c8");
+      wheelRect(L, HALF, thIn, "#ff8a1f"); // interior
+      wheelRect(L, -HALF, thOut, "#2de0f2"); // exterior
+      if (!straight) {
+        const far = 60;
+        line(0, 0, 0, far, "#a3a1b4", "6 6");
+        line(L, HALF, L - Math.sin(thIn) * far, HALF + Math.cos(thIn) * far, "#ff8a1f", "6 6");
+        line(L, -HALF, L - Math.sin(thOut) * far, -HALF + Math.cos(thOut) * far, "#2de0f2", "6 6");
+        if (parallel) {
+          // dónde corta cada recta a la línea del eje trasero (x = 0): no es el mismo punto
+          for (const y0 of [HALF, -HALF]) {
+            const tt = L / Math.sin(thIn);
+            scene.append(mk("circle", { cx: sx(0), cy: sy(y0 + tt * Math.cos(thIn)), r: 8, fill: "#ff5a4a", stroke: "#05060a", "stroke-width": 2 }));
+          }
+        } else {
+          for (const [yw, col] of [[HALF, "#ff8a1f"], [-HALF, "#2de0f2"]] as const) {
+            const r = Math.hypot(L, yw - R) * S;
+            scene.append(mk("circle", { cx: sx(0), cy: sy(R), r, fill: "none", stroke: col, "stroke-width": 1.5, opacity: 0.55 }));
+          }
+          scene.append(mk("circle", { cx: sx(0), cy: sy(R), r: 9, fill: "#4ade80", stroke: "#05060a", "stroke-width": 2 }));
+          if (sy(R) > 20 && sy(R) < 430) label(sx(0) + 16, sy(R) + 5, "centro de la curva", "#4ade80");
+        }
+      }
+      const fmt = (r: number) => deg(r).toFixed(1) + "°";
+      out.innerHTML = straight
+        ? "Ruedas rectas: el coche va en línea recta. Gira el volante."
+        : parallel
+          ? `Las dos ruedas giran <b>${fmt(thIn)}</b> (volante: ${Math.abs(t).toFixed(2)} vueltas × 20° = ${alpha.toFixed(1)}°). Las rectas <b>no se cortan en un punto</b>: los puntos rojos están separados, así que una rueda tendría que patinar.`
+          : `Volante: ${Math.abs(t).toFixed(2)} vueltas × 20° = <b>${alpha.toFixed(1)}°</b> de media. Rueda <b style="color:#ff8a1f">interior ${fmt(thIn)}</b> (gira más) · rueda <b style="color:#2de0f2">exterior ${fmt(thOut)}</b> · radio de la curva ≈ <b>${R.toFixed(1)} agujeros</b> (unos ${(R * 0.8).toFixed(0)} cm). Todas las rectas se cortan en el centro: nadie patina.<br>Prueba un coche más corto: con el mismo giro, la curva es más cerrada.`;
+    }
+    for (const el of [turns, wbI, par]) el.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; gap: 12px; padding: 12px 14px; }
+  label { display: block; font-size: .92rem; }
+  .chk { display: flex; gap: 8px; align-items: center; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1rem; }
+</style>

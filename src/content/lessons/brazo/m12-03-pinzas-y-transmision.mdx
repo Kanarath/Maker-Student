@@ -1,0 +1,174 @@
+---
+id: m12-03
+unit: brazo
+order: 3
+title: "Pinzas y transmisión: agarrar sin pesar"
+summary: "Monta una pinza de cremallera, calcula cuánto debe apretar para que una pieza no resbale y descubre cómo el paralelogramo mantiene la mano nivelada."
+practice: [l_pinza]
+cover: brazo/n_cremallera
+duration: 40
+status: revisada
+prerequisites: [m12-01, m3-03]
+objectives:
+  - "Explicar que una pinza agarra por rozamiento y calcular el apriete mínimo (2 × μ × N ≥ peso)"
+  - "Montar una pinza de dos dedos movida por un solo motor con piñón y cremalleras"
+  - "Saber para qué sirven un paralelogramo, una transmisión desde la base y una ventosa"
+materials:
+  - "Una viga de 9 agujeros, un engranaje de 8 dientes con su eje, una viga de 3 agujeros (manivela)"
+  - "Dos cremalleras que engranen con el engranaje de 8 dientes, dos vigas de 5 agujeros (dedos) y pasadores"
+  - "Gomas elásticas o trozos de goma para los dedos; una pieza para agarrar"
+piece:
+  name: "Pinza de cremallera con goma en los dedos"
+  hint: "Foto de tu pinza agarrando una pieza, con la goma en los dedos"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+La **pinza** es la mano del brazo. Vas a montar una de **dos dedos** que abre y cierra con **un solo motor** (o con tu mano en la manivela) y a descubrir **por qué agarra**: por rozamiento.
+
+<Fig src="brazo/n_cremallera" alt="Pinza vista desde arriba: un engranaje azul pequeño en el centro, una manivela roja encima, y dos cremalleras (una amarilla arriba y una azul abajo) que engranan con él por lados opuestos. De los extremos de cada cremallera salen dos vigas verdes paralelas, los dedos. Una flecha naranja curva muestra el giro de la manivela y dos flechas cian apuntan hacia el centro: los dedos se cierran." caption="El engranaje gira y las dos cremalleras se mueven en sentidos opuestos: los dedos se acercan o se alejan a la vez." />
+
+Un solo giro, dos dedos que se mueven al mismo tiempo. Eso es lo que vas a conseguir.
+
+<Tip title="Sabías que… robots de almacén con ventosas">
+Muchos robots de almacén cogen cajas con **ventosas**: no necesitan apretar, solo crear vacío para que la presión del aire las sujete. Pero solo funcionan con superficies lo bastante lisas y limpias para sellar.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## La pinza agarra por rozamiento
+
+Los dedos aprietan la pieza por los lados. Lo que impide que caiga es el **rozamiento**:
+
+**rozamiento = μ × fuerza con la que aprietas**
+
+Con dos dedos, cada uno aporta μ × N, así que para que la pieza **no resbale** (pieza quieta, agarre vertical):
+
+**2 × μ × N ≥ peso de la pieza**
+
+(μ es el «coeficiente de rozamiento»: es mayor con **goma** que con plástico liso. Sus valores son orientativos y dependen mucho de los materiales y de si están limpios.)
+
+**Ejemplo.** Una pieza de 200 g pesa unos 2 N. Con μ = 0,5, cada dedo debe apretar al menos 2 ÷ (2 × 0,5) = **2 N**. Con goma (μ ≈ 0,9) bastaría con algo más de la mitad.
+
+**Predice antes de mirar:** una pinza de dos dedos suelta una pieza lisa y pesada al moverla. ¿Qué puede ayudar?
+
+<details>
+<summary>La respuesta</summary>
+
+**Aumentar el rozamiento** (goma en los dedos) **o la fuerza de agarre**. Pulir más los dedos o mover la pinza más deprisa no ayuda.
+</details>
+
+Pruébalo: sube el peso, cambia la superficie y mira si sujeta o resbala.
+
+<ArmGripLab />
+
+### Cómo mover los dos dedos con un solo motor
+
+Una **cremallera** con un **piñón** convierte el giro del motor en un desplazamiento en línea recta. Con **dos cremalleras**, una a cada lado del piñón, se mueven en **sentidos opuestos**: los dedos abren y cierran a la vez. Un **tornillo con dos tuercas** (una con rosca a cada lado) hace lo mismo. Es lo que viste en la unidad «Ventaja mecánica» y en los mecanismos.
+
+### Otros trucos de un brazo
+
+- **Paralelogramo articulado:** cuatro barras que forman un paralelogramo mantienen **paralelas** las barras opuestas. Así la mano **conserva su orientación** aunque el brazo suba o baje (lo usan muchas lámparas de escritorio).
+- **Motores en la base:** con una **correa, una cadena o varillas** puedes mover una articulación sin poner el motor justo en ella. Lo llevas a la base y reduces el par que carga el brazo; lo pagas con algo más de complejidad y de **juego**.
+- **Ventosa:** agarra con la presión del aire al crear vacío. Necesita superficies **lisas y limpias**, donde pueda sellar.
+
+<Why title="¿Por qué importa la orientación de la mano?">
+Si llevas un vaso con agua o una pieza apoyada en una bandeja, la mano debe **seguir nivelada** mientras el brazo sube. Con un solo eslabón, la mano se inclina al mismo tiempo que el brazo. Con un paralelogramo, no.
+</Why>
+
+<Quiz id="q1" q="Una pinza de dos dedos suelta una pieza lisa y pesada al moverla. ¿Qué puede ayudar?" options={["Hacer los dedos más pulidos", "Mover la pinza más deprisa", "Aumentar el rozamiento (goma en los dedos) o la fuerza de agarre"]} answer={2}>
+La pinza sujeta por rozamiento: rozamiento = μ × fuerza con la que aprietas. Con goma sube μ; con más fuerza sube la normal.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos para tu **pinza de cremallera**, vista desde arriba. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.**
+
+<Step n={1} title="La base" img="brazo/n_s1" alt="Una viga gris de 9 agujeros tumbada en horizontal sobre el suelo.">
+Pon la viga de 9 agujeros tumbada. Todo se apoyará en ella.
+</Step>
+
+<Step n={2} title="El piñón y la manivela" img="brazo/n_s2" alt="En el centro de la viga, un eje vertical con un engranaje azul pequeño de 8 dientes y, encima, una viga roja de 3 agujeros como manivela.">
+Pon un **eje** en el agujero del medio y, en él, el **engranaje de 8 dientes** (el piñón). Encima, sujeta una viga de 3 agujeros: la **manivela**. Gírala con el dedo y comprueba que el piñón gira libre.
+<Why>El piñón es lo que reparte el giro a los dos dedos. Cuanto menos roce, mejor se mueven.</Why>
+</Step>
+
+<Step n={3} title="Las dos cremalleras" img="brazo/n_s3" alt="Dos cremalleras, una amarilla por encima del engranaje y otra azul por debajo, con sus dientes mirando al engranaje y engranando con él.">
+Coloca una cremallera **a cada lado del piñón**, con los dientes mirando hacia él, de modo que **engranen**. Gira la manivela: una debe avanzar mientras la otra retrocede.
+<Warn title="Que engranen sin forzar">
+Si los dientes no entran, no empujes: separa un poco y vuelve a colocar. Forzar dobla las piezas y la pinza se atasca.
+</Warn>
+</Step>
+
+<Step n={4} title="Los dedos y la goma" img="brazo/n_s4" alt="Dos vigas verdes de 5 agujeros, una fijada al extremo exterior de cada cremallera, apuntando en paralelo hacia delante. En la cara interior de cada dedo hay una almohadilla oscura de goma.">
+Fija una viga de 5 agujeros al **extremo exterior** de cada cremallera con un pasador, de modo que los dos dedos **apunten en el mismo sentido**. Pon **goma** en la cara interior de cada dedo. Gira la manivela **en sentido antihorario visto desde arriba**: los dedos se cierran. En sentido contrario, se abren.
+
+Coge una pieza y levántala. ¿La sujeta? Prueba sin goma y compara.
+
+<details>
+<summary>Si no engrana o no agarra</summary>
+
+**a)** Los dientes del piñón y de la cremallera no están a la altura justa. **b)** Los dedos rozan la base: sepáralos con un pasador más largo. **c)** La pieza resbala: añade goma o aprieta más.
+</details>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Sin goma:** quita la goma y levanta una pieza lisa. ¿Resbala? Añádela y repite. ¿Cuánto más pesa la pieza que consigues levantar?
+2. **Haz la cuenta:** con una pieza de 200 g y μ ≈ 0,5, ¿cuánto debe apretar cada dedo? (Pista: 2 N ÷ (2 × 0,5).)
+3. **Paralelogramo:** monta con dos vigas de 9 agujeros y dos de 3 agujeros un cuadrilátero con pasadores. Muévelo: ¿qué barras se mantienen paralelas? ¿Qué pasa con la barra de un extremo cuando inclinas las otras?
+
+<ArmGripLab />
+</Block>
+
+<Block kind="errores">
+<Mistake title="La mano se inclina al subir el brazo" wrongLabel="Un solo eslabón" rightLabel="Con paralelogramo">
+  <Fig slot="wrong" src="brazo/n_para_mal" alt="Una viga amarilla inclinada hacia arriba con una viga verde pegada a su extremo, que cuelga también inclinada, y una bandeja con un vaso blanco que se ve torcido. Una flecha roja inclinada marca la orientación de la mano." />
+  <Fig slot="right" src="brazo/n_para_bien" alt="Dos vigas amarillas paralelas unidas por una pieza verde vertical en su extremo, que cuelga recta con una bandeja horizontal y el vaso blanco derecho. Una flecha verde vertical marca la orientación de la mano." />
+
+Con un solo eslabón, la mano gira **igual** que el brazo y la bandeja se inclina. Con un **paralelogramo** (dos barras iguales y paralelas), la pieza del extremo sigue vertical aunque cambie la altura.
+</Mistake>
+
+<Mistake title="Dedos lisos y poco apriete" wrongLabel="La pieza resbala" rightLabel="Goma y apriete suficiente">
+  <Fig slot="wrong" src="brazo/n_roz_mal" alt="Vista de frente de una pinza verde con una pieza blanca entre los dedos, ligeramente caída. Una flecha naranja gruesa baja (el peso) y las flechas cian del rozamiento son muy cortas." />
+  <Fig slot="right" src="brazo/n_roz_bien" alt="La misma pinza con almohadillas oscuras de goma en cada dedo y la pieza bien sujeta. Una flecha naranja baja y dos flechas verdes suben a cada lado con la misma longitud en total." />
+
+El rozamiento máximo es **2 × μ × N**. Si es menor que el peso, resbala. Con **goma** sube μ y con **más apriete** sube N.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu montaje:
+
+<Checklist items={[
+  "El piñón engrana con las dos cremalleras sin forzar",
+  "Al girar la manivela, los dos dedos se mueven a la vez en sentidos opuestos",
+  "Los dedos apuntan en el mismo sentido y llevan goma",
+  "He probado a levantar una pieza con y sin goma",
+  "Sé decir qué hace un paralelogramo y para qué sirve una ventosa",
+]} />
+
+<Quiz id="q2" q="Quieres que una pinza abra y cierre dos dedos a la vez con un solo motor que gira. ¿Qué mecanismo sirve?" options={["Una polea fija sola", "Una cremallera con piñón, o un tornillo con dos tuercas", "Un trinquete"]} answer={1}>
+El giro del motor se convierte en desplazamiento lineal de los dos dedos: lo que viste en la unidad de mecanismos.
+</Quiz>
+
+<Quiz id="q3" q="¿Para qué sirve un paralelogramo articulado en un brazo?" options={["Para que el brazo sea más pesado", "Para convertir giro en línea recta", "Para que la herramienta o la pinza mantenga su orientación al subir y bajar el brazo"]} answer={2}>
+Las barras opuestas siguen paralelas, así que la pieza del extremo no se inclina aunque cambie su altura. Lo usan muchas lámparas de escritorio.
+</Quiz>
+
+<Quiz id="q4" q="¿Cuándo funciona bien una ventosa como efector?" options={["Con superficies lisas y limpias, donde puede sellar", "Con superficies rugosas y sucias", "Con cualquier superficie, siempre"]} answer={0}>
+Una ventosa agarra con la presión del aire al crear vacío: necesita sellar. Con superficies rugosas o sucias entra aire y suelta.
+</Quiz>
+
+<Quiz id="q5" q="¿Cómo mueves una articulación del brazo sin poner el motor justo en ella?" options={["No es posible", "Con una correa, una cadena o varillas desde un motor colocado en la base", "Con un imán"]} answer={1}>
+Llevar el motor a la base reduce el peso que carga el brazo y el par que debe aguantar. Se paga con algo más de complejidad y de juego.
+</Quiz>
+
+<RegisterPiece piece="Pinza de cremallera con goma en los dedos" />
+</Block>

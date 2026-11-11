@@ -1,0 +1,154 @@
+---
+id: m9-01
+unit: vehiculo
+order: 1
+title: "Dirección: los dos círculos de la curva"
+summary: "Monta un coche con dirección de piñón y cremallera, predice qué rueda gira más en una curva y descubre por qué las rectas de las ruedas deben cortarse en un punto."
+practice: [l_direccion]
+cover: vehiculo/v_dir_hero
+duration: 40
+status: revisada
+prerequisites: [m3-03]
+objectives:
+  - "Explicar por qué en una curva la rueda interior gira más ángulo que la exterior (geometría Ackermann)"
+  - "Calcular cuántos grados giran las ruedas por cada vuelta del volante"
+  - "Montar una dirección de piñón y cremallera y comprobar que las dos ruedas giran a la vez"
+  - "Relacionar la distancia entre ejes con lo cerrada que es la curva"
+materials:
+  - "Dos vigas de 11 agujeros, dos de 8, dos de 5 y dos de 2, y varillas o bielas de unos 2 agujeros para unir"
+  - "Cuatro ruedas, ejes, pasadores largos (pivotes), una cremallera y un engranaje de 8 dientes"
+  - "Un volante o una manivela, un transportador de ángulos (o papel y lápiz)"
+piece:
+  name: "Dirección de piñón y cremallera"
+  hint: "Foto de tu coche visto desde arriba con las ruedas giradas, y cuántas vueltas de volante necesita de tope a tope"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar el **chasis de un coche con dirección**: un volante gira un piñón, el piñón mueve una cremallera y la cremallera empuja las dos ruedas delanteras. Antes de girar el volante, **predecirás qué rueda gira más** en una curva.
+
+<Fig src="vehiculo/v_dir_hero" alt="Coche de piezas visto desde arriba con las dos ruedas delanteras giradas hacia la izquierda. Desde cada rueda delantera y desde el eje trasero salen rectas azul cian que se juntan en un punto verde arriba de la imagen. Dos flechas curvas, una naranja y otra cian, marcan el círculo que recorre cada rueda delantera." caption="Las rectas de las cuatro ruedas apuntan al mismo punto verde: el centro de la curva. Las ruedas del lado de dentro dibujan un círculo más pequeño." />
+</Block>
+
+<Block kind="concepto">
+## En una curva, cada rueda traza su propio círculo
+
+Cuando un coche gira, todas las ruedas dan vueltas **alrededor del mismo punto**: el centro de la curva. Pero no están a la misma distancia de ese punto:
+
+- la rueda de **dentro** está más cerca → traza un círculo **más pequeño**;
+- la rueda de **fuera** está más lejos → traza un círculo **más grande**.
+
+Para que ninguna patine, cada rueda tiene que apuntar **perpendicular** a la recta que va hasta el centro. Resultado: la rueda de dentro tiene que **girar más ángulo**. Es la **geometría Ackermann**.
+
+**Predice:** si el coche gira a la izquierda, ¿qué rueda delantera crees que gira más ángulo?
+
+<details>
+<summary>Respuesta</summary>
+
+La **interior** (la izquierda), la más cercana al centro de la curva. En el laboratorio de abajo se ve con números.
+</details>
+
+<Fig src="vehiculo/v_dir_bien" alt="Coche visto desde arriba con las ruedas delanteras giradas hacia la izquierda. Las rectas que salen de las dos ruedas delanteras y del eje trasero se cortan todas en una esfera verde, el centro de la curva." caption="Con Ackermann, las rectas de todas las ruedas se cortan en UN solo punto." />
+
+<SteerLab />
+
+<Why title="¿Por qué la rueda interior gira más?">
+Piensa en un triángulo: el centro de la curva, el eje trasero y la rueda delantera. La rueda delantera tiene que quedar **perpendicular** a la recta que la une con el centro. Si la rueda está **más cerca** del centro, esa recta forma un ángulo **más abierto** con el coche, y la rueda tiene que girar más para quedar de lado. Si las dos giran igual, sus rectas se cruzan en puntos distintos y **una de las dos tiene que patinar**.
+</Why>
+
+### Del volante a las ruedas
+
+En un coche Technic el volante suele mover un **piñón** que desplaza una **cremallera** de lado a lado, y unas **varillas** llevan ese movimiento a las ruedas delanteras. Es el mismo piñón de la lección de engranajes, ahora en línea recta.
+
+Ejemplo: **3 vueltas** de volante de tope a tope mueven las ruedas **60°** de tope a tope. Por cada vuelta de volante, las ruedas giran **60 ÷ 3 = 20°**. Una dirección que necesita más vueltas es más **lenta**, pero también más suave y precisa.
+
+Y la **distancia entre ejes** manda: con las mismas ruedas giradas, un coche **corto** hace una curva **más cerrada** que uno largo.
+
+<Quiz id="q1" q="Un volante da 4 vueltas de tope a tope y las ruedas giran 60° de tope a tope. ¿Cuántos grados giran las ruedas por cada vuelta del volante?" options={["240°", "15°", "64°"]} answer={1}>
+60 ÷ 4 = **15°** por vuelta. (Si hubieras multiplicado 60 × 4 te saldrían 240°: recuerda que **divides** los grados entre las vueltas.)
+</Quiz>
+
+<Tip title="Sabías que… la patente de la dirección">
+La geometría de dirección de los coches se asocia a **Rudolph Ackermann**, que la patentó en Inglaterra en **1818**, aunque la idea la había ideado el alemán Georg Lankensperger. Sirve para que las dos ruedas delanteras no patinen en una curva.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris. Los dibujos son un **esquema** de la idea: tu coche puede llevar otras piezas, con tal de que cada paso haga lo mismo.
+
+<Step n={1} title="Chasis rígido" img="vehiculo/v_dir_s1" alt="Dos vigas grises de 11 agujeros en paralelo, unidas por una viga azul de 8 agujeros en la parte trasera y por dos vigas amarillas de 5 agujeros que se cruzan en diagonal entre ellas.">
+Pon **dos vigas de 11 agujeros** en paralelo, a 3 agujeros de distancia entre sí. Únelas por detrás con una **viga de 8** y cruza **dos diagonales** de 5 en el centro.
+<Why>Un rectángulo se deforma; con diagonales forma triángulos, que **no se deforman**. Un chasis que se tuerce hace que la dirección dé resultados distintos cada vez.</Why>
+</Step>
+
+<Step n={2} title="Ejes y ruedas libres" img="vehiculo/v_dir_s2" alt="El chasis en gris con un eje trasero que cruza de lado a lado con una rueda en cada extremo, y una viga azul delantera con un pasador vertical a cada lado y una rueda unida a cada pasador por un eje corto.">
+Monta el **eje trasero** con sus dos ruedas. Delante, pon una **viga de 8** cruzada y, en cada extremo, un **pasador largo vertical** (el pivote): la rueda delantera se une a él con un eje corto y puede girar de lado.
+<Why>El pivote vertical es lo que permite que la rueda gire a izquierda y derecha. Comprueba que **las cuatro ruedas giran libres** y que no rozan con el chasis.</Why>
+</Step>
+
+<Step n={3} title="Cremallera y varillas" img="vehiculo/v_dir_s3" alt="Una cremallera roja con dientes colocada entre los dos pivotes delanteros, dos brazos cortos verdes que salen de cada rueda hacia atrás y dos varillas grises que unen los extremos de la cremallera con los brazos.">
+Pon un **brazo corto** en cada rueda, hacia atrás. Coloca la **cremallera** entre los dos pivotes y únela a cada brazo con una **varilla**. Empuja la cremallera con el dedo: **las dos ruedas giran a la vez**.
+<Why>Una sola pieza (la cremallera) mueve las dos ruedas. Cada varilla que añades es una unión con **juego**: cuantas menos y mejor ajustadas, más precisa la dirección.</Why>
+</Step>
+
+<Step n={4} title="Piñón y volante" img="vehiculo/v_dir_s4" alt="Un engranaje azul pequeño engranado con la cremallera roja, con un eje vertical que sube hasta un volante rojo con tres radios.">
+Engrana un **piñón de 8 dientes** con la cremallera y sube su eje hasta un **volante** (vale una manivela). Gira el volante despacio.
+
+**Mide:** cuenta cuántas vueltas de volante necesitas para llevar las ruedas de **un tope al otro**.
+
+<Warn title="Dedos y pelo">
+Entre el piñón y la cremallera los dientes pellizcan. Gira despacio y mantén los dedos y el pelo lejos de donde engranan.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Grados por vuelta.** Con un transportador (o dibujando las ruedas en un papel) mide cuántos grados giran las ruedas de tope a tope. Divide entre las vueltas que contaste. ¿Cuántos grados por vuelta?
+2. **Mira desde arriba.** Gira el volante a tope y observa las dos ruedas: ¿giran lo mismo o la de dentro más? Con brazos paralelos suelen girar casi igual (dirección **paralela**, la del laboratorio con la casilla marcada). Los coches reales suelen inclinar los brazos hacia dentro para acercarse a Ackermann: prueba a inclinar un poco los tuyos y mira si la rueda interior gira algo más.
+3. **Coche más corto.** Acerca el eje trasero 2 agujeros hacia delante y gira las ruedas lo mismo. **Predice:** ¿la curva será más cerrada o más abierta? Compruébalo dibujando en el suelo con tiza o cinta el círculo que recorre.
+
+<details>
+<summary>Respuesta del reto 3</summary>
+
+Más **cerrada**: con las mismas ruedas giradas, un coche con menos distancia entre ejes traza un círculo más pequeño.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Las dos ruedas giran lo mismo" wrongLabel="Así no: ruedas paralelas" rightLabel="Así sí: las rectas se cortan en un punto">
+  <Fig slot="wrong" src="vehiculo/v_dir_mal" alt="Coche visto desde arriba con las dos ruedas delanteras giradas exactamente igual. Las rectas rojas que parten de ellas no se juntan y marcan dos puntos rojos distintos al cortar la línea del eje trasero." />
+  <Fig slot="right" src="vehiculo/v_dir_bien" alt="Coche visto desde arriba con la rueda interior más girada que la exterior. Todas las rectas se cortan en una esfera verde." />
+
+Si las dos ruedas giran el mismo ángulo, sus rectas **no se juntan** y una rueda tendrá que patinar o arrastrarse. Se mejora girando algo **más** la rueda interior.
+</Mistake>
+
+<Warn title="Si el volante tiene «holgura»">
+Notas que el volante gira un poco **antes** de que las ruedas reaccionen. La causa más probable es el **juego** en las uniones y en los dientes entre piñón y cremallera. **Menos uniones, bien ajustadas**, reducen el juego: así el giro del volante llega entero a las ruedas.
+</Warn>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Las cuatro ruedas giran libres y no rozan con el chasis",
+  "Al empujar la cremallera, las dos ruedas delanteras giran a la vez",
+  "He contado las vueltas de volante de tope a tope y he calculado los grados por vuelta",
+  "He mirado desde arriba qué rueda gira más (o si giran igual)",
+  "Sé explicar por qué en una curva la rueda interior gira más ángulo",
+]} />
+
+<Quiz id="q2" q="En una curva a la izquierda, ¿qué rueda delantera debe girar más ángulo?" options={["La exterior (la derecha)", "Las dos igual", "La interior (la izquierda)"]} answer={2}>
+La **interior**: sigue un círculo más pequeño, y para ello hace falta un giro mayor.
+</Quiz>
+
+<Quiz id="q3" q="Con las ruedas giradas lo mismo, ¿qué coche hace una curva más cerrada?" options={["El más corto (menos distancia entre ejes)", "El más largo", "Los dos igual"]} answer={0}>
+El corto: cuanto **menos distancia entre ejes**, menor es el radio de giro.
+</Quiz>
+
+<RegisterPiece piece="Dirección de piñón y cremallera" />
+</Block>

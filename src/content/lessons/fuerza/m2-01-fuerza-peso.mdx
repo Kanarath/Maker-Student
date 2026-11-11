@@ -1,0 +1,160 @@
+---
+id: m2-01
+unit: fuerza
+order: 1
+title: "Fuerza, peso y fuerzas que se suman"
+summary: "Distingue masa y peso, calcula una resultante y monta un medidor de fuerza casero con una goma elástica y una regla."
+practice: [l_fuerza, l_suma]
+cover: fuerza/p_hero
+duration: 35
+status: revisada
+prerequisites: []
+objectives:
+  - "Diferenciar masa (kg) de peso (N) y calcular peso = masa × 9,8"
+  - "Calcular la resultante de fuerzas en la misma línea y reconocer el equilibrio"
+  - "Explicar qué es la inercia y montar un medidor de fuerza con una goma"
+materials:
+  - "Una goma elástica en buen estado y una regla"
+  - "Un tablero, caja o pared donde colgarla, y cinta adhesiva"
+  - "Dos bolsitas con la misma cantidad de tornillos, monedas o piezas (las «pesas»)"
+piece:
+  name: "Medidor de fuerza con goma"
+  hint: "Foto de tu goma colgada con la regla y las marcas de 0, 1 y 2 pesas"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **medidor de fuerza casero**: una goma colgada junto a una regla. Cuanto más se estira, **más fuerza** lleva. Con él sentirás en los dedos lo que dice la física.
+
+<Fig src="fuerza/p_hero" alt="Tres tableros azules iguales, uno junto a otro, cada uno con una regla blanca y una goma amarilla colgada de una chincheta. El de la izquierda no lleva pesas; el del centro, una pesa verde con la goma más estirada; el de la derecha, dos pesas verdes con la goma todavía más estirada. Una línea naranja marca en cada regla hasta dónde llega la goma." caption="Sin pesas, con una y con dos: la goma se estira más cuanto más pesa lo que cuelga. La raya naranja marca la lectura en la regla." />
+
+Esta goma será tu herramienta en las lecciones de **rozamiento** y de **trabajo**.
+
+<Warn title="Cuidado con la goma">
+Usa gomas en buen estado y **no las estires cerca de la cara**: si se sueltan, pueden dar un latigazo. Tira despacio.
+</Warn>
+</Block>
+
+<Block kind="concepto">
+## Masa y peso no son lo mismo
+
+- La **masa** es cuánta materia hay. Se mide en **kg** y no cambia de sitio.
+- El **peso** es la **fuerza** con que la Tierra atrae esa masa. Se mide en **newtons (N)** y depende de la gravedad.
+
+En la Tierra: **peso = masa × 9,8**. Para cuentas rápidas, **1 kg pesa unos 10 N**.
+
+Predice: **un astronauta viaja a la Luna, donde la gravedad es unas 6 veces menor. ¿Qué les pasa a su masa y a su peso?**
+
+<details>
+<summary>La respuesta</summary>
+
+<Fig src="fuerza/p_tierra_luna" alt="Dos bloques blancos iguales sobre dos postes. El de la izquierda, sobre un soporte azul (la Tierra), tiene una flecha violeta larga hacia abajo. El de la derecha, sobre un soporte gris (la Luna), tiene una flecha violeta cortísima, unas seis veces más corta." caption="Mismo bloque, misma masa. En la Tierra (izquierda) el peso es la flecha larga; en la Luna (derecha), unas 6 veces menor." />
+
+Su **masa no cambia** (la cantidad de materia es la misma) y su **peso baja a casi la sexta parte**. Un objeto de 60 kg pesa en la Tierra 60 × 9,8 = **588 N**; en la Luna, unos 98 N, lo que pesaría un objeto de unos 10 kg en la Tierra.
+</details>
+
+<Why title="¿Por qué se confunden kilos y newtons?">
+En el día a día «pesar 3 kilos» se usa para hablar de masa. Pero cuando calculas fuerzas necesitas **newtons**. Para pasar de kilos a newtons: **× 9,8** (o × 10 si quieres ir rápido).
+</Why>
+
+<Quiz id="q1" q="¿Cuánto pesa, en newtons, un objeto de 3 kg de masa? Usa 9,8 N por cada kilogramo." options={["3 N", "29,4 N", "294 N"]} answer={1}>
+Peso = masa × 9,8 = 3 × 9,8 = **29,4 N**.
+</Quiz>
+
+## Fuerzas que se suman
+
+Si varias fuerzas van en la **misma línea**: las que van en el mismo sentido se **suman** y las de sentidos opuestos se **restan**. Lo que queda es la **resultante**. Si la resultante es **cero**, hay **equilibrio**.
+
+<Fig src="fuerza/p_suma" alt="Una caja blanca sobre la mesa con una cuerda a cada lado. A la izquierda, una flecha naranja larga (40 N); a la derecha, una flecha cian más corta (25 N). Debajo de la caja, una flecha verde corta apuntando a la izquierda: la resultante, 15 N." caption="40 N a la izquierda y 25 N a la derecha: se restan. Resultante: 15 N hacia la izquierda (flecha verde)." />
+
+Pruébalo. **Antes de mover nada, predice** y luego cambia los deslizadores:
+
+<SumaFuerzasLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Con tirones **iguales**, la resultante es 0 N: **equilibrio**. Hay fuerzas, pero se cancelan.
+- Con la **misma resultante**, una caja con más masa **cambia menos su movimiento**: tiene más **inercia**.
+</details>
+
+<Why title="Inercia: nadie te empuja hacia delante">
+Cuando un autobús frena de golpe, los pasajeros «se van hacia delante». **No hay ninguna fuerza que los empuje**: es el autobús el que frena y sus cuerpos siguen como iban, por **inercia**. Por eso se usa el cinturón.
+</Why>
+
+<Tip title="Sabías que… el truco del mantel">
+Hay un truco clásico de física: tirar de un mantel **muy rápido y seco** y dejar casi inmóviles los objetos que había encima. Por **inercia**, tienden a quedarse donde estaban. Funciona mejor con mantel liso, objetos pesados y un tirón rápido. ¡No lo pruebes con tu vajilla buena!
+</Tip>
+
+<Quiz id="q2" q="Dos personas tiran de una caja en sentidos opuestos: una con 40 N hacia la izquierda y otra con 25 N hacia la derecha. ¿Cuál es la resultante?" options={["15 N hacia la izquierda", "65 N hacia la izquierda", "0 N (equilibrio)"]} answer={0}>
+Van en sentidos opuestos, así que se restan: 40 − 25 = **15 N**. Gana la mayor: la caja tiende a ir hacia la izquierda.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.** Las unidades de la regla son las que tú elijas (centímetros, por ejemplo): lo importante es comparar.
+
+<Step n={1} title="Tablero y regla" img="fuerza/p_s1" alt="Un tablero azul vertical sobre la mesa con una regla blanca pegada a su lado derecho, con marcas oscuras cada unidad y la marca 0 en la parte alta." >
+Fija una **regla en vertical** junto a un tablero, una caja o el borde de un estante. El **0** de la regla va arriba, donde acabará el extremo de la goma sin carga.
+<Why>Si la regla se mueve, tus lecturas dejan de valer. Pégala con cinta.</Why>
+</Step>
+
+<Step n={2} title="Cuelga la goma y marca el cero" img="fuerza/p_s2" alt="La misma escena con una chincheta oscura arriba y una goma amarilla colgando de ella. Una raya naranja marca en la regla dónde acaba la goma sin carga." >
+Cuelga la goma de un clavo o chincheta de forma que cuelgue junto a la regla. Con **nada colgado**, marca con una raya dónde acaba su extremo: es tu **cero**.
+</Step>
+
+<Step n={3} title="Una pesa, una marca" img="fuerza/p_s3" alt="De la goma cuelga ahora una pesa verde. La goma se ha estirado y la raya naranja baja hasta el nuevo extremo de la goma sobre la regla." >
+Cuelga **una bolsita** de la goma con un gancho (un clip). Espera a que se pare y marca dónde llega **el extremo de la goma**, no la bolsita.
+<Why>Lo que mide la fuerza es **cuánto se ha estirado la goma**: la distancia entre tu cero y la nueva marca.</Why>
+</Step>
+
+<Step n={4} title="Dos pesas, otra marca" img="fuerza/p_s4" alt="Ahora cuelgan dos pesas verdes apiladas y la goma está más estirada. La raya naranja baja más aún." >
+Cuelga **dos bolsitas iguales** y marca otra vez. Mira cuánto se ha estirado: debería ser **aproximadamente el doble** que con una.
+
+Ya puedes **pesar cosas por comparación**: cuelga algo y mira entre qué marcas cae.
+<Warn title="Gomas reales">
+Una goma real **no siempre se estira justo el doble**: si la estiras mucho, deja de ser proporcional. Usa pesos ligeros y comprueba tú mismo cuánto se estira.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Tres pesas:** predice la marca con 3 bolsitas. ¿Cae donde esperabas? ¿Dónde deja de ser «el triple»?
+2. **Pesa lo desconocido:** cuelga un objeto cualquiera y mira entre qué marcas cae. ¿Pesa más o menos que una bolsita?
+3. **En la Luna:** si llevaras tu medidor a la Luna con **una bolsita**, ¿cuánto se estiraría? Predice (respuesta ideal: **una sexta parte**) y dibuja la goma.
+
+Para jugar con fuerzas que se cancelan, usa el laboratorio de arriba: pon 30 N a un lado y busca cuánto necesitas al otro para que la resultante sea 0.
+</Block>
+
+<Block kind="errores">
+<Mistake title="Leer en el sitio equivocado" wrongLabel="Leyendo el fondo de la pesa" rightLabel="Leyendo el extremo de la goma">
+  <Fig slot="wrong" src="fuerza/p_error_mal" alt="Una goma colgada con una pesa verde. La raya roja de lectura está a la altura del fondo de la pesa, mucho más abajo que el extremo de la goma." />
+  <Fig slot="right" src="fuerza/p_error_bien" alt="La misma goma y pesa. La raya verde de lectura está en el extremo inferior de la goma, justo donde empieza el gancho." />
+
+El estirón de la goma es la distancia entre su extremo **sin carga** y su extremo **con carga**. Si lees en el fondo de la pesa, **sumas** el gancho y la altura de la bolsita y tus marcas no valen.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu medidor:
+
+<Checklist items={[
+  "La regla está fija y el 0 está donde acaba la goma sin carga",
+  "He marcado el extremo de la goma con 1 pesa y con 2 pesas",
+  "Con 2 pesas la goma se estira aproximadamente el doble que con 1",
+  "Sé decir la diferencia entre masa (kg) y peso (N)",
+  "Sé calcular una resultante y qué significa que sea 0",
+]} />
+
+<Quiz id="q3" q="Un autobús frena de golpe y los pasajeros de pie se «van hacia delante». ¿Por qué?" options={["Porque una fuerza los empuja hacia delante", "Porque el aire los empuja", "Por inercia: su cuerpo tiende a seguir moviéndose a la velocidad que llevaba"]} answer={2}>
+Nadie los empuja hacia delante: es el autobús el que se frena y sus cuerpos siguen como iban.
+</Quiz>
+
+<RegisterPiece piece="Medidor de fuerza con goma" />
+</Block>

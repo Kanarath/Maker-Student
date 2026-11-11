@@ -1,0 +1,128 @@
+---
+// Laboratorio de lazo abierto y lazo cerrado: una habitación que se calienta.
+// Lazo abierto: la calefacción funciona un tiempo fijo, sin mirar la temperatura (como una tostadora con temporizador).
+// Lazo cerrado: un termostato mide la temperatura y enciende o apaga (con un pequeño margen para no «parpadear»).
+// Modelo muy simplificado (una sola ecuación, minuto a minuto); sirve para ver la IDEA, no para dimensionar nada real.
+//   T(t+1) = T(t) + calor·[encendida] − pérdida·(T(t) − T_exterior)     con calor = 0,9 °C/min y pérdida = 0,03 por minuto
+---
+
+<div class="lab" data-loop>
+  <div class="head"><b>Laboratorio · Lazo abierto y cerrado</b><span class="muted">Cambia el frío de fuera y compara</span></div>
+
+  <svg viewBox="0 0 800 300" role="img" aria-label="Gráfica de la temperatura de la habitación durante 120 minutos, con una línea discontinua para la temperatura deseada">
+    <rect x="0" y="0" width="800" height="300" fill="#05060a" />
+    <g data-grid></g>
+    <line data-goal x1="60" x2="780" stroke="#2de0f2" stroke-width="2" stroke-dasharray="6 5" />
+    <polyline data-curve fill="none" stroke="#ff8a1f" stroke-width="3.5" stroke-linejoin="round" />
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Tipo de control</legend>
+      <label class="radio"><input type="radio" name="loop-mode" value="open" checked /> Lazo abierto: calefacción 25 min fijos</label>
+      <label class="radio"><input type="radio" name="loop-mode" value="closed" /> Lazo cerrado: termostato</label>
+    </fieldset>
+    <fieldset>
+      <legend>Situación</legend>
+      <label>Temperatura deseada: <b data-g-v>21</b> °C
+        <input type="range" min="18" max="24" step="1" value="21" data-g />
+      </label>
+      <label>Temperatura exterior: <b data-o-v>10</b> °C
+        <input type="range" min="0" max="15" step="1" value="10" data-o />
+      </label>
+    </fieldset>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function mk(tag: string, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+  const fmt = (n: number, d = 1) => n.toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const HEAT = 0.9, LOSS = 0.03, MIN = 120, T0 = 15, FIXED = 25, HYS = 0.5;
+
+  function simulate(mode: string, goal: number, out: number) {
+    const T: number[] = [T0];
+    let on = false;
+    for (let t = 0; t < MIN; t++) {
+      const cur = T[t];
+      if (mode === "open") on = t < FIXED;
+      else {
+        if (cur < goal - HYS) on = true;
+        else if (cur > goal + HYS) on = false;
+      }
+      T.push(cur + (on ? HEAT : 0) - LOSS * (cur - out));
+    }
+    return T;
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-loop]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const grid = q<SVGGElement>("[data-grid]");
+    const curve = q<SVGPolylineElement>("[data-curve]");
+    const goalLine = q<SVGLineElement>("[data-goal]");
+    const g = q<HTMLInputElement>("[data-g]");
+    const o = q<HTMLInputElement>("[data-o]");
+    const out = q<HTMLElement>("[data-out]");
+    const X0 = 60, X1 = 780, Y0 = 270, Y1 = 20, TMIN = 0, TMAX = 30; // °C
+    const px = (t: number) => X0 + ((X1 - X0) * t) / MIN;
+    const py = (v: number) => Y0 - ((Y0 - Y1) * (v - TMIN)) / (TMAX - TMIN);
+
+    for (let v = 0; v <= 30; v += 10) {
+      grid.append(mk("line", { x1: X0, x2: X1, y1: py(v), y2: py(v), stroke: "#2a2c35", "stroke-width": 1 }));
+      const t = mk("text", { x: X0 - 8, y: py(v) + 4, fill: "#a3a1b4", "font-size": 13, "font-family": "monospace", "text-anchor": "end" });
+      t.textContent = `${v}°`;
+      grid.append(t);
+    }
+    for (let m = 0; m <= MIN; m += 30) {
+      const t = mk("text", { x: px(m), y: 290, fill: "#a3a1b4", "font-size": 13, "font-family": "monospace", "text-anchor": "middle" });
+      t.textContent = `${m} min`;
+      grid.append(t);
+    }
+
+    function update() {
+      const mode = root.querySelector<HTMLInputElement>('input[name="loop-mode"]:checked')!.value;
+      const goal = +g.value, ext = +o.value;
+      q("[data-g-v]").textContent = String(goal);
+      q("[data-o-v]").textContent = String(ext);
+      const T = simulate(mode, goal, ext);
+      curve.setAttribute("points", T.map((v, t) => `${px(t)},${py(v)}`).join(" "));
+      goalLine.setAttribute("y1", String(py(goal)));
+      goalLine.setAttribute("y2", String(py(goal)));
+      const last = T[MIN];
+      const tail = T.slice(90);
+      const lo = Math.min(...tail), hi = Math.max(...tail);
+      const err = last - goal;
+      let msg: string;
+      if (mode === "open") {
+        msg = `Lazo abierto: la calefacción se apaga a los ${FIXED} min pase lo que pase. A los 120 min la habitación está a <b>${fmt(last)} °C</b> (${fmt(Math.abs(err))} °C ${err >= 0 ? "por encima" : "por debajo"} de lo deseado). Cambia el frío de fuera y verás que <b>no se corrige</b>.`;
+      } else {
+        msg = `Lazo cerrado: el sensor mide, compara y corrige. En la última hora la temperatura se mueve entre <b>${fmt(lo)}</b> y <b>${fmt(hi)} °C</b>, alrededor de los ${goal} °C deseados. Si cambia el frío de fuera, <b>se adapta</b>.`;
+      }
+      out.innerHTML = msg;
+    }
+    for (const el of [g, o]) el.addEventListener("input", update);
+    root.querySelectorAll('input[name="loop-mode"]').forEach((r) => r.addEventListener("change", update));
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  .radio { padding: 6px 0; }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

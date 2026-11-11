@@ -1,0 +1,154 @@
+---
+id: m9-03
+unit: vehiculo
+order: 3
+title: "Suspensión, agarre y vuelco"
+summary: "Monta una rueda con suspensión de brazo, muelle y amortiguador, calcula el agarre máximo (μ × fuerza normal) y descubre por qué un coche bajo y ancho vuelca menos."
+practice: [l_susp]
+cover: vehiculo/v_susp_hero
+duration: 40
+status: revisada
+prerequisites: [m9-02]
+objectives:
+  - "Explicar para qué sirve el muelle y para qué el amortiguador en una suspensión"
+  - "Calcular el empuje máximo antes de que patinen las ruedas: μ × reacción normal"
+  - "Decidir si un coche vuelca mirando dónde cae la vertical de su centro de gravedad"
+  - "Montar una rueda con suspensión y comprobar cómo rebota con y sin amortiguador"
+materials:
+  - "Dos vigas de 9 y de 4 agujeros, una viga de 5 agujeros, una rueda, pasadores y ejes"
+  - "Un amortiguador de tu kit con muelle (o un muelle suelto para comparar)"
+  - "Una tabla o un libro grande para inclinar el coche, y pesas pequeñas (monedas, arandelas)"
+piece:
+  name: "Rueda con suspensión de brazo, muelle y amortiguador"
+  hint: "Foto de tu suspensión y una frase: cuántas veces rebota con muelle solo y con amortiguador"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar **una rueda con suspensión**: un brazo que sube y baja, un muelle que lo empuja y un amortiguador que calma el rebote. Después usarás la misma cabeza para decidir **cuánto agarra** un coche y **cuándo vuelca**.
+
+<Fig src="vehiculo/v_susp_hero" alt="Vista de frente de un chasis gris con un brazo azul que baja hasta una rueda. Un muelle plateado con un amortiguador oscuro en su interior va del brazo al chasis. Una flecha naranja empuja la rueda hacia arriba (un bache) y una flecha cian a un lado muestra el movimiento de respuesta." caption="El bache empuja la rueda hacia arriba (naranja); el muelle cede y vuelve a empujar. El amortiguador (dentro del muelle) frena el rebote." />
+</Block>
+
+<Block kind="concepto">
+## Tres ideas: agarrar, amortiguar y no volcar
+
+### 1. Agarrar
+
+Las ruedas empujan al coche gracias al **rozamiento** con el suelo. Hay un límite:
+
+**empuje máximo = μ × reacción normal**
+
+μ («mu») es el coeficiente de rozamiento entre neumático y suelo; la **normal** es la fuerza con que el suelo empuja hacia arriba a las ruedas motrices (si todo el peso descansa sobre ellas, es el peso del coche).
+
+Ejemplo: un coche de **20 N** con todo el peso sobre las ruedas motrices y μ = 0,6 puede empujar como máximo **0,6 × 20 = 12 N**. Si el motor intenta más, **las ruedas patinan**.
+
+Para agarrar más: **más peso** sobre las ruedas motrices o **más μ** (neumáticos de goma, no de plástico liso).
+
+<Quiz id="q1" q="Un coche de juguete pesa 25 N, todo sobre las ruedas motrices, y μ = 0,4. ¿Qué empuje máximo da el suelo antes de patinar?" options={["62,5 N", "10 N", "25,4 N"]} answer={1}>
+μ × normal = 0,4 × 25 = **10 N**. (62,5 sale de **dividir** 25 entre 0,4: es la operación al revés.)
+</Quiz>
+
+### 2. Amortiguar
+
+Un **muelle** guarda energía y la devuelve: sin más ayuda, rebota una y otra vez. El **amortiguador** convierte esa energía en calor por rozamiento (de un fluido o de aire) y **calma** el rebote. Juntos mantienen la rueda **pegada al suelo** en terreno irregular y la estructura sufre menos golpes. Cada rueda sube y baja **por separado**.
+
+**Predice:** si presionas el chasis y lo sueltas, ¿cuántas veces rebota con un muelle solo? ¿Y con amortiguador?
+
+<details>
+<summary>Respuesta</summary>
+
+Con **muelle solo**, varias veces; con **amortiguador**, una vez como mucho y se queda quieto.
+</details>
+
+### 3. No volcar
+
+Un coche vuelca cuando la **vertical que baja desde su centro de gravedad cae fuera de las ruedas**. Cuanto más **bajo** esté ese centro y más **ancha** sea la base, más margen hay antes de ese punto.
+
+<Fig src="vehiculo/v_vuelco" alt="Dos coches visto de frente sobre una rampa inclinada igual de 30°. A la izquierda, un coche alto y estrecho, rojo, con una línea vertical roja desde su centro de gravedad (bola amarilla) que cae fuera de las ruedas. A la derecha, un coche bajo y ancho, azul, con una línea verde que cae entre las ruedas." caption="Misma rampa. El alto y estrecho (rojo) vuelca: la vertical cae fuera. El bajo y ancho (azul) aguanta: la vertical cae entre las ruedas." />
+
+<TipLab />
+
+<Why title="¿Por qué la vertical?">
+El peso actúa en el centro de gravedad y tira hacia abajo. Mientras esa línea caiga **dentro de la base de apoyo**, el peso ayuda a que las ruedas sigan en el suelo. En cuanto la línea pasa de la rueda de abajo, el peso **tira del coche hacia el lado del vuelco** y ya no hay quien lo sujete.
+</Why>
+
+<Quiz id="q2" q="Un coche alto y estrecho vuelca antes que uno bajo y ancho. ¿Por qué?" options={["Porque pesa menos", "Porque su centro de gravedad está más alto y más cerca del borde de apoyo", "Porque tiene menos ruedas"]} answer={1}>
+Su vertical sale antes de las ruedas. Bajando el centro de gravedad y ensanchando la base se gana margen.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="Chasis y soporte" img="vehiculo/v_susp_s1" alt="Una viga gris horizontal de 9 agujeros y, colgando de ella, una viga gris vertical más corta que sirve de soporte del pivote del brazo.">
+Una **viga de 9** horizontal será el chasis. Cuélgale una **viga de 4** en vertical, en el extremo: es el soporte donde pivotará el brazo.
+</Step>
+
+<Step n={2} title="El brazo oscilante" img="vehiculo/v_susp_s2" alt="Un brazo azul de 5 agujeros sale del extremo inferior del soporte y baja ligeramente hacia la derecha, unido con un pasador oscuro.">
+Une una **viga de 5** al extremo de abajo del soporte con un **pasador**: debe poder **subir y bajar** sin apretar.
+<Why>Con un solo pivote el brazo se mueve en un arco y la rueda sube y baja **sin cambiar de lado**.</Why>
+</Step>
+
+<Step n={3} title="La rueda" img="vehiculo/v_susp_s3" alt="Una rueda de neumático oscuro y llanta clara unida al extremo libre del brazo azul con un pasador.">
+Monta la **rueda** en el extremo libre del brazo. Comprueba que gira libre y que no roza con el chasis.
+</Step>
+
+<Step n={4} title="Muelle y amortiguador" img="vehiculo/v_susp_s4" alt="Un muelle plateado en espiral con un amortiguador oscuro dentro, unido por abajo al brazo y por arriba al chasis.">
+Coloca el **amortiguador con su muelle** entre un punto del brazo y el chasis. Presiona el chasis y suéltalo.
+
+**Compara:** quita el amortiguador (deja solo el muelle) y repite. ¿Cuántas veces rebota?
+
+<Warn title="Muelles con cuidado">
+No comprimas un muelle del todo ni lo sueltes de golpe: puede salir disparado. Mantén la cara lejos y presiona despacio.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Con y sin amortiguador.** Cuenta los rebotes tras presionar y soltar el chasis. ¿Cuántos con muelle solo? ¿Y con amortiguador?
+2. **Tu ángulo de vuelco.** Pon tu coche sobre una tabla y levántala poco a poco (sujeta el coche para que no caiga). Anota el ángulo en que empieza a volcar. Después **baja el centro de gravedad** (pon las pesas abajo) y repite. **Predice:** ¿aguantará más o menos inclinación?
+3. **Agarre.** Sobre la tabla inclinada, compara neumáticos de **goma** y de **plástico liso**. **Predice:** ¿cuáles empiezan a resbalar con menos inclinación?
+
+<details>
+<summary>Respuestas</summary>
+
+2. **Más** inclinación: con el centro de gravedad más bajo, la vertical tarda más en salir de las ruedas.
+3. Los de **plástico liso**: tienen menos μ, así que agarran menos.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Coche alto, estrecho y con la carga arriba" wrongLabel="Así no: vuelca" rightLabel="Así sí: bajo y ancho">
+  <Fig slot="wrong" src="vehiculo/v_vuelco_mal" alt="Coche rojo alto y estrecho visto de frente sobre una rampa inclinada. La línea vertical roja desde su centro de gravedad cae fuera de las dos ruedas." />
+  <Fig slot="right" src="vehiculo/v_vuelco_bien" alt="Coche azul bajo y ancho sobre la misma rampa. La línea vertical verde desde su centro de gravedad cae entre las dos ruedas." />
+
+La misma inclinación vuelca al primero y no al segundo. Se arregla **ensanchando** la base y **bajando** el centro de gravedad (lo pesado, abajo).
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "El brazo sube y baja libre y la rueda gira sin rozar",
+  "He comparado los rebotes con muelle solo y con amortiguador",
+  "He calculado el empuje máximo con μ × normal en un ejemplo",
+  "He medido el ángulo en que vuelca mi coche y lo he comparado bajando el centro de gravedad",
+  "Sé explicar qué hace el muelle y qué hace el amortiguador",
+]} />
+
+<Quiz id="q3" q="Un muelle sin amortiguador rebota una y otra vez tras un bache. ¿Para qué sirve el amortiguador?" options={["Para que el coche pese menos", "Para disipar la energía del muelle y calmar el rebote", "Para que el muelle sea más largo"]} answer={1}>
+El muelle guarda energía y la devuelve; el amortiguador la convierte en calor por rozamiento y frena las oscilaciones.
+</Quiz>
+
+<Quiz id="q4" q="Tu coche de juguete patina al arrancar. ¿Qué puede ayudar a que agarre más?" options={["Quitar peso de las ruedas motrices", "Poner más peso sobre las ruedas motrices o neumáticos de goma", "Cambiar los neumáticos por plástico liso"]} answer={1}>
+Agarre máximo = μ × normal. Más peso sobre las motrices (más normal) o un μ mayor (goma) dan más agarre.
+</Quiz>
+
+<RegisterPiece piece="Rueda con suspensión de brazo, muelle y amortiguador" />
+</Block>

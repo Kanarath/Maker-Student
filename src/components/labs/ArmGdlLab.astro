@@ -1,0 +1,145 @@
+---
+// Laboratorio de grados de libertad: brazo plano visto desde arriba (como el montaje sobre papel).
+// Activa o bloquea cada articulación y mira qué zona alcanza la punta (su espacio de trabajo).
+// Longitudes en «pasos» (distancia entre agujeros de una viga, 8 mm): eslabón 1 = 8 pasos (viga de 9 agujeros), eslabón 2 = 6 pasos (viga de 7).
+---
+
+<div class="lab" data-gdl>
+  <div class="head"><b>Laboratorio · Grados de libertad</b><span class="muted">Activa articulaciones y mira dónde llega la punta</span></div>
+
+  <svg viewBox="0 0 800 440" role="img" aria-label="Vista desde arriba de un brazo de dos eslabones con la zona que alcanza su punta">
+    <rect x="0" y="0" width="800" height="440" fill="#05060a" />
+    <g data-zone></g>
+    <circle data-rmax cx="400" cy="220" r="10" fill="none" stroke="#2de0f2" stroke-width="1.5" stroke-dasharray="5 5" opacity=".6" />
+    <circle data-rmin cx="400" cy="220" r="10" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="5 5" opacity=".6" />
+    <line data-l1 x1="400" y1="220" x2="400" y2="220" stroke="#f2b230" stroke-width="16" stroke-linecap="round" />
+    <line data-l2 x1="400" y1="220" x2="400" y2="220" stroke="#d8382f" stroke-width="14" stroke-linecap="round" />
+    <circle cx="400" cy="220" r="11" fill="#2a2c35" stroke="#d5d9e2" stroke-width="3" />
+    <circle data-elbow cx="400" cy="220" r="9" fill="#2a2c35" stroke="#d5d9e2" stroke-width="3" />
+    <circle data-tip cx="400" cy="220" r="7" fill="#ff8a1f" stroke="#05060a" stroke-width="2" />
+    <text x="14" y="26" fill="#a3a1b4" font-size="14" font-family="monospace">vista desde arriba · base en el centro</text>
+  </svg>
+
+  <div class="ctrl">
+    <fieldset>
+      <legend>Articulaciones</legend>
+      <label class="chk"><input type="checkbox" data-j1 checked /> Articulación 1 (base): gira el eslabón 1</label>
+      <label class="chk"><input type="checkbox" data-j2 checked /> Articulación 2 (codo): gira el eslabón 2</label>
+      <label class="chk"><input type="checkbox" data-lim /> Giro limitado como un servo (base 0–180°, codo ±90°)</label>
+    </fieldset>
+    <fieldset>
+      <legend>Posición del brazo</legend>
+      <label>Ángulo de la base: <b data-a1-v>60</b>°<input type="range" min="0" max="360" value="60" data-a1 /></label>
+      <label>Ángulo del codo: <b data-a2-v>-40</b>°<input type="range" min="-180" max="180" value="-40" data-a2 /></label>
+    </fieldset>
+  </div>
+
+  <p class="out" aria-live="polite" data-out></p>
+  <p class="ride muted" data-note></p>
+</div>
+
+<script>
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const CX = 400, CY = 220, PX = 14; // 14 px por paso (8 mm)
+  const L1 = 8, L2 = 6;
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-gdl]")) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const j1 = q<HTMLInputElement>("[data-j1]"), j2 = q<HTMLInputElement>("[data-j2]"), lim = q<HTMLInputElement>("[data-lim]");
+    const a1 = q<HTMLInputElement>("[data-a1]"), a2 = q<HTMLInputElement>("[data-a2]");
+    const zone = q<SVGGElement>("[data-zone]");
+    const out = q<HTMLElement>("[data-out]"), note = q<HTMLElement>("[data-note]");
+    const rad = (d: number) => (d * Math.PI) / 180;
+
+    function tipAt(t1: number, t2: number) {
+      const ex = L1 * Math.cos(rad(t1)), ey = L1 * Math.sin(rad(t1));
+      return { ex, ey, tx: ex + L2 * Math.cos(rad(t1 + t2)), ty: ey + L2 * Math.sin(rad(t1 + t2)) };
+    }
+    const X = (v: number) => CX + v * PX, Y = (v: number) => CY - v * PX;
+
+    function update() {
+      const on1 = j1.checked, on2 = j2.checked, lm = lim.checked;
+      a1.disabled = false; a2.disabled = false;
+      // límites de cada articulación
+      const r1: [number, number] = lm ? [0, 180] : [0, 360];
+      const r2: [number, number] = lm ? [-90, 90] : [-180, 180];
+      let v1 = +a1.value, v2 = +a2.value;
+      if (on1 && lm) v1 = Math.max(0, Math.min(180, v1));
+      if (on2 && lm) v2 = Math.max(-90, Math.min(90, v2));
+      a1.value = String(v1); a2.value = String(v2);
+      q("[data-a1-v]").textContent = String(v1);
+      q("[data-a2-v]").textContent = String(v2);
+
+      // zona alcanzable: las articulaciones activas se mueven; las bloqueadas se quedan en el ángulo del deslizador
+      const s1 = on1 ? Array.from({ length: on2 ? 73 : 361 }, (_, i) => r1[0] + ((r1[1] - r1[0]) * i) / (on2 ? 72 : 360)) : [v1];
+      const s2 = on2 ? Array.from({ length: on1 ? 73 : 361 }, (_, i) => r2[0] + ((r2[1] - r2[0]) * i) / (on1 ? 72 : 360)) : [v2];
+      let d = "", dmin = Infinity, dmax = 0;
+      for (const t1 of s1) for (const t2 of s2) {
+        const p = tipAt(t1, t2);
+        d += `M${X(p.tx).toFixed(1)} ${Y(p.ty).toFixed(1)}h0`;
+        const r = Math.hypot(p.tx, p.ty);
+        dmin = Math.min(dmin, r); dmax = Math.max(dmax, r);
+      }
+      zone.replaceChildren();
+      const path = document.createElementNS(SVGNS, "path");
+      path.setAttribute("d", d);
+      path.setAttribute("stroke", "#2de0f2");
+      path.setAttribute("stroke-opacity", ".5");
+      path.setAttribute("stroke-width", on1 && on2 ? "6" : "4");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("fill", "none");
+      zone.append(path);
+
+      // brazo
+      const p = tipAt(v1, v2);
+      const set = (el: Element, a: Record<string, number>) => { for (const [k, v] of Object.entries(a)) el.setAttribute(k, v.toFixed(1)); };
+      set(q("[data-l1]"), { x2: X(p.ex), y2: Y(p.ey) });
+      set(q("[data-l2]"), { x1: X(p.ex), y1: Y(p.ey), x2: X(p.tx), y2: Y(p.ty) });
+      set(q("[data-elbow]"), { cx: X(p.ex), cy: Y(p.ey) });
+      set(q("[data-tip]"), { cx: X(p.tx), cy: Y(p.ty) });
+      const full = on1 && on2 && !lm;
+      set(q("[data-rmax]"), { r: (L1 + L2) * PX });
+      set(q("[data-rmin]"), { r: Math.abs(L1 - L2) * PX });
+      q("[data-rmax]").setAttribute("opacity", full ? ".7" : ".25");
+      q("[data-rmin]").setAttribute("opacity", full ? ".7" : ".25");
+
+      const gdl = (on1 ? 1 : 0) + (on2 ? 1 : 0);
+      const cm = (n: number) => (n * 0.8).toFixed(1).replace(".", ",");
+      const fmt = (n: number) => n.toFixed(1).replace(".", ",");
+      let txt = `<b>${gdl} grado${gdl === 1 ? "" : "s"} de libertad</b> activo${gdl === 1 ? "" : "s"}. `;
+      if (gdl === 0) {
+        txt += "Todo bloqueado: la punta solo está en <b>un punto</b>.";
+        note.textContent = "Sin movimientos independientes no hay espacio de trabajo: el brazo es una estructura.";
+      } else if (gdl === 1) {
+        txt += `La punta recorre una <b>línea curva</b> (un arco o un círculo). Distancia a la base: de ${fmt(dmin)} a ${fmt(dmax)} pasos.`;
+        note.textContent = "Con un solo movimiento solo alcanzas una línea. Para cubrir una superficie necesitas otro.";
+      } else {
+        txt += `Alcance máximo ≈ <b>${fmt(dmax)} pasos</b> (${cm(dmax)} cm) · mínimo ≈ <b>${fmt(dmin)} pasos</b> (${cm(dmin)} cm).`;
+        note.textContent = lm
+          ? "Con servos de 180° el espacio de trabajo es solo una parte de la corona: los límites de giro también cuentan."
+          : `Corona completa: máximo = ${L1} + ${L2} = ${L1 + L2} pasos, mínimo = |${L1} − ${L2}| = ${Math.abs(L1 - L2)} pasos (1 paso = 8 mm).`;
+      }
+      out.innerHTML = txt;
+    }
+
+    for (const i of [j1, j2, lim, a1, a2]) i.addEventListener("input", update);
+    update();
+  }
+</script>
+
+<style>
+  .lab { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin: 20px 0; overflow: hidden; }
+  .head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .head b { font-family: var(--font-head); color: var(--accent); }
+  svg { display: block; width: 100%; height: auto; }
+  .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px; }
+  fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px 12px; margin: 0; min-width: 0; }
+  legend { font: 600 .8rem var(--font-mono); color: var(--accent); padding: 0 6px; }
+  label { display: block; margin-top: 8px; font-size: .92rem; }
+  label.chk { display: flex; gap: 8px; align-items: flex-start; }
+  label.chk input { margin-top: 4px; width: 18px; height: 18px; flex: none; accent-color: var(--accent); }
+  input[type="range"] { display: block; width: 100%; accent-color: var(--accent); margin-top: 6px; height: 28px; }
+  .out { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 1.02rem; }
+  .ride { margin: 0; padding: 0 14px 12px; font-size: .92rem; }
+  @media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; } }
+</style>

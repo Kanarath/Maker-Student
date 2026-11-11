@@ -1,0 +1,157 @@
+---
+id: m10-03
+unit: fluidos
+order: 3
+title: "Neumática y un brazo hidráulico casero"
+summary: "Compara el aire con el agua, calcula una fuerza neumática con avisos de seguridad y monta un brazo de cartón movido por jeringuillas con agua, sin burbujas ni fugas."
+practice: [l_neum, l_hidr_arm]
+cover: fluidos/f_b_hero
+duration: 45
+status: revisada
+prerequisites: [m10-02]
+objectives:
+  - "Explicar por qué la neumática (aire) es rápida y limpia pero menos precisa que la hidráulica"
+  - "Calcular la fuerza de un cilindro neumático con presión × área"
+  - "Aplicar las precauciones de seguridad con aire a presión y con jeringuillas"
+  - "Montar un brazo hidráulico de una articulación y purgar las burbujas"
+materials:
+  - "Dos jeringuillas SIN AGUJA iguales y 30-40 cm de tubo flexible"
+  - "Cartón rígido, un palo o una pieza larga para el brazo, un sujetador (broche, tornillo) como eje, cinta o gomas"
+  - "Agua, bandeja o toalla de papel, tijeras (con cuidado) y gafas de protección"
+piece:
+  name: "Brazo hidráulico de jeringuillas (una articulación)"
+  hint: "Foto del brazo levantado y una nota: cuánto empujaste el émbolo y cuánto subió el brazo"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **brazo de cartón** que sube cuando empujas una jeringuilla con agua: la fuerza viaja por un **tubo flexible**, sin ejes ni engranajes en la articulación. Antes, compararás el **aire** con el **agua**.
+
+<Fig src="fluidos/f_b_hero" alt="Un brazo amarillo sobre una base de cartón, levantado sobre un pivote, empujado por una jeringuilla transparente con agua azul. Un tubo azul sale de esa jeringuilla y llega a otra jeringuilla a la derecha, donde una flecha naranja empuja el émbolo. Una flecha curva cian muestra el brazo subiendo." caption="Empujas la jeringuilla de la derecha (naranja); el agua empuja la otra y el brazo sube (cian)." />
+
+<Warn title="Aire y agua: seguridad">
+Solo jeringuillas **sin aguja**. Si usas **aire**, ponte **gafas**, **no apuntes a nadie** y no fuerces los émbolos más de lo que aguantan: un émbolo o un tapón puede salir disparado. Trabaja con las presiones de tus propias manos. Con **agua**, usa una bandeja y mantén todo **lejos de enchufes y aparatos eléctricos**.
+</Warn>
+</Block>
+
+<Block kind="concepto">
+## Neumática: el aire es un muelle
+
+La **neumática** usa **aire comprimido** para producir fuerza y movimiento. Es **rápida y limpia**, pero **menos precisa**, porque el aire se comprime y actúa como un **muelle**. Se usa donde hace falta mucha fuerza con un mecanismo sencillo y seguro: **puertas de autobús**, herramientas de aire y **frenos de trenes**.
+
+**Predice:** un brazo accionado con una jeringuilla de aire se detiene bruscamente. ¿Qué verás?
+
+<details>
+<summary>Respuesta</summary>
+
+Un **rebote o un temblor**: el aire comprimido guarda y devuelve energía, y sin frenos ni amortiguación el extremo oscila antes de pararse.
+</details>
+
+<Fig src="fluidos/f_b_aire_agua" alt="Dos jeringuillas con la punta tapada por un tapón rojo. La de agua azul tiene el émbolo casi sin entrar; la de aire blanco tiene el émbolo mucho más metido, con flechas naranja de igual longitud en las dos." caption="Mismo empuje: con agua casi no cede; con aire se comprime y rebota." />
+
+### La fuerza de un cilindro neumático
+
+**fuerza = presión × área** (ideal). Con las unidades de este problema, un kilopascal sobre un centímetro cuadrado son **una décima de newton**.
+
+Ejemplo: aire a **100 kPa** sobre un émbolo de **50 cm²** → 100 × 50 × 0,1 = **500 N**.
+
+<Quiz id="q1" q="Un cilindro neumático recibe aire a 150 kPa y su émbolo tiene 20 cm² de área. ¿Qué fuerza empuja (ideal)? (un kilopascal sobre un centímetro cuadrado son una décima de newton)" options={["30 N", "300 N", "3000 N"]} answer={1}>
+150 × 20 × 0,1 = **300 N**.
+</Quiz>
+
+## Hidráulica en un brazo
+
+En una máquina con articulaciones, un **brazo hidráulico** mueve la fuerza por **tubos flexibles**: un tubo puede curvarse y llegar a cualquier articulación, sin ejes ni engranajes en cada una. A cambio hay **fugas**, **burbujas** y movimientos algo más lentos.
+
+Sus dos enemigos son las **burbujas** y las **fugas**: llena **sin aire** y revisa las uniones.
+
+<Why title="¿Por qué empuja el brazo?">
+Es el principio de Pascal de la lección anterior: la jeringuilla que empujas crea presión en el agua; esa presión llega a la otra jeringuilla y empuja su émbolo, que a su vez empuja el brazo. Si las dos jeringuillas son iguales, cada centímetro que metes sale un centímetro por el otro lado.
+</Why>
+
+<Quiz id="q2" q="¿Qué ventaja tiene un brazo hidráulico frente a uno con engranajes?" options={["Siempre es más rápido", "Puedes llevar la fuerza por tubos flexibles a donde quieras, sin ejes ni engranajes en cada articulación", "No tiene ninguna fuga"]} answer={1}>
+Un tubo puede curvarse y llegar a cualquier articulación. A cambio hay fugas, burbujas y movimientos algo más lentos.
+</Quiz>
+
+<Tip title="Sabías que… la neumática antigua">
+Se cuenta que **Ctesibio de Alejandría**, en el siglo III a. C., ya construyó **bombas y mecanismos de aire**. Es una de las ramas más antiguas de la ingeniería. Los frenos de aire de los trenes y las puertas de autobús usan hoy la misma idea.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cinco pasos, **en este orden**: primero se llena sin burbujas, luego se conecta, se prueba a mano y solo después se fija. Lo nuevo sale en color; lo anterior, en gris. Los dibujos son esquemas.
+
+<Step n={1} title="Base de cartón y brazo" img="fluidos/f_b_s1" alt="Una base de cartón con un soporte gris y un brazo amarillo que pivota en un extremo, levantado en diagonal.">
+Corta una **base** de cartón y fija el **brazo** (un palo o una viga) con un sujetador como **eje** en un extremo, de modo que suba y baje sin apretar.
+</Step>
+
+<Step n={2} title="Llena y conecta las dos jeringuillas" img="fluidos/f_b_s2" alt="Se añaden una jeringuilla transparente con agua azul junto al brazo, un tubo azul que sale de su punta y una segunda jeringuilla con agua a la derecha, todo conectado.">
+Llena las dos jeringuillas y el tubo **sin burbujas** (con la punta hacia arriba, empuja un poco para sacar el aire) y conecta cada jeringuilla a un extremo del tubo. Una será la **esclava** (junto al brazo) y otra la **maestra** (la que empujas).
+</Step>
+
+<Step n={3} title="Prueba a mano">
+Todavía **sin fijar nada**, empuja el émbolo de la maestra y comprueba que el de la esclava se mueve. Si va «blando» o con retraso, hay aire o una fuga en una unión: vacía y vuelve a llenar.
+</Step>
+
+<Step n={4} title="Fija la esclava al brazo y a la base" img="fluidos/f_b_s3" alt="Dos pasadores oscuros sujetan la jeringuilla esclava: uno a la base de cartón y otro al brazo, a unos agujeros del eje.">
+Ahora fija la **esclava**: un extremo a la **base** y el émbolo al **brazo**, **cerca del eje**.
+<Why>Cerca del eje, un recorrido pequeño del émbolo mueve el brazo un ángulo grande (como en la palanca). Más lejos, harías más fuerza pero el brazo subiría menos.</Why>
+</Step>
+
+<Step n={5} title="Empuja y mide" img="fluidos/f_b_s4" alt="La flecha naranja empuja el émbolo de la jeringuilla maestra y una flecha curva cian marca el brazo subiendo hacia arriba alrededor del eje.">
+Empuja la maestra y mira subir el brazo. **Anota** cuánto empujaste y cuánto se movió el émbolo de la esclava: así podrás compararlo con el cálculo.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Con aire.** Cambia el agua por aire (con gafas y presión baja). **Predice:** ¿cómo se mueve el brazo cuando lo detienes de golpe?
+2. **Más fuerza, menos recorrido.** Pon una esclava **más ancha** que la maestra. ¿Sube más fuerte? ¿Cuánto tienes que empujar?
+3. **Provoca una burbuja** (déjala a propósito en el tubo) y fíjate en cómo cambia el movimiento.
+
+<details>
+<summary>Respuestas</summary>
+
+1. **Rebota o tiembla** antes de pararse: el aire actúa como un muelle.
+2. Sube con **más fuerza**, pero necesitas empujar **más recorrido** con la maestra: lo que ganas en fuerza lo pagas en recorrido.
+3. El movimiento sale **blando** y con retraso: parte de tu empuje comprime la burbuja.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Una burbuja en el circuito" wrongLabel="Así no: burbujas atrapadas" rightLabel="Así sí: purgado, sin aire">
+  <Fig slot="wrong" src="fluidos/f_b_burbuja_mal" alt="El brazo hidráulico con varias burbujas blancas atrapadas en la jeringuilla maestra entre el agua azul." />
+  <Fig slot="right" src="fluidos/f_b_burbuja_bien" alt="El mismo circuito completamente lleno de agua azul, sin ninguna burbuja." />
+
+El aire se comprime y absorbe parte de tu empuje: el brazo se mueve con **retraso y blando**. Se arregla **vaciando y volviendo a llenar** con cuidado y sacando el aire con la punta hacia arriba.
+</Mistake>
+
+<Warn title="El brazo «blando» y que gotea">
+Si el brazo se mueve con retraso, «esponjoso», y a veces gotea por una unión, lo más probable es que haya **aire dentro** y alguna **fuga**. Lo primero es **vaciar, volver a llenar sin burbujas y revisar las uniones**, antes de rediseñar nada. Y trabaja lejos de aparatos eléctricos.
+</Warn>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Solo he usado jeringuillas sin aguja y llevaba gafas si probé con aire",
+  "Trabajé sobre una bandeja, lejos de enchufes y aparatos eléctricos",
+  "El circuito no tiene burbujas ni gotea por las uniones",
+  "Probé el circuito a mano antes de fijarlo al brazo",
+  "He anotado cuánto empujé y cuánto se movió el brazo",
+]} />
+
+<Quiz id="q3" q="Conectas dos jeringuillas del mismo tamaño con un tubo. Empujas una 2 cm. ¿Cuánto se mueve la otra (ideal)?" options={["4 cm", "Unos 2 cm: mismo tamaño, mismo recorrido", "1 cm"]} answer={1}>
+Con la misma área, el volumen desplazado es el mismo y el recorrido también. Con tamaños distintos, cambia fuerza y recorrido.
+</Quiz>
+
+<Quiz id="q4" q="¿Qué precaución tomas al hacer experimentos con aire a presión y jeringuillas?" options={["Apuntar a la cara para ver si sale", "Ninguna: el aire no hace daño", "No apuntar a nadie, usar gafas y no forzar los émbolos más de lo que aguantan"]} answer={2}>
+Un émbolo o un tapón puede salir disparado si fuerzas la presión. Con aire, no apuntes a nadie, usa gafas y trabaja con presiones bajas, las de tus propias manos.
+</Quiz>
+
+<RegisterPiece piece="Brazo hidráulico de jeringuillas (una articulación)" />
+</Block>

@@ -1,0 +1,200 @@
+---
+id: m11-02
+unit: cad
+order: 2
+title: "Cómo imprime una impresora 3D: capas, voladizos y orientación"
+summary: "Entiende la impresión FDM como una pila de capas: cuenta capas, detecta voladizos que piden soporte y elige la orientación para que la pieza no se parta."
+practice: [l_fdm]
+cover: cad/c_impresora
+duration: 35
+status: revisada
+prerequisites: [m11-01]
+objectives:
+  - "Calcular cuántas capas tiene una pieza (altura ÷ altura de capa)"
+  - "Reconocer un voladizo que necesita soporte (regla práctica: más de unos 45° respecto a la vertical)"
+  - "Elegir la orientación para que el esfuerzo no separe las capas"
+  - "Explicar qué es el relleno y cómo cambian el detalle y el tiempo con la altura de capa"
+materials:
+  - "Papel, lápiz y regla"
+  - "Una pieza tuya (o el modelo de la lección anterior) para estudiar"
+  - "Opcional: acceso a una impresora FDM, siempre con alguien que sepa usarla"
+piece:
+  name: "Mapa de capas de mi pieza"
+  hint: "Foto de tu dibujo: nº de capas, orientación elegida y dónde irían los soportes"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a hacer el **mapa de capas** de una pieza: cuántas capas tendrá, **cómo la colocarías** en la impresora y **dónde necesitaría soporte**. Todo antes de imprimir nada.
+
+<Fig src="cad/c_impresora" alt="Una impresora 3D muy simplificada: una base oscura con una cama azul, dos postes grises, un puente rojo horizontal y sobre él un cabezal amarillo con una boquilla naranja. Debajo del cabezal hay una pieza a medio imprimir hecha de capas finas de dos tonos de amarillo, con la última capa en naranja. Un hilo blanco baja desde un carrete verde hasta el cabezal." caption="Una impresora FDM, dibujada con formas sencillas: el cabezal funde plástico y lo deposita capa a capa. La capa naranja es la que se está depositando." />
+
+<Warn title="Calor">
+La **boquilla** suele estar a unos **200 °C** y la **cama** también se calienta. No los toques para «ver si funciona». Ventila el sitio y no dejes la impresora funcionando sola mucho tiempo.
+</Warn>
+
+<Tip title="Sabías que… la patente de la impresión FDM">
+El método FDM (deposición fundida) lo patentó **Scott Crump** a finales de los años 80, y de ahí nació la empresa Stratasys.
+
+Las impresoras caseras de hoy se basan en el mismo principio: plástico fundido, capa a capa.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Una pieza es una pila de capas
+
+**FDM** (deposición fundida) funde un hilo de plástico, el **filamento**, y lo deposita **capa a capa**. Piensa en una pistola de silicona muy precisa y automática.
+
+<Fig src="cad/c_capas" alt="Un jarrón dibujado como una pila de discos finos, en dos tonos de amarillo alternados. Es más ancho en el centro y más estrecho abajo y arriba." caption="La pieza está hecha de discos finísimos apilados. Cada capa se apoya en la de abajo." />
+
+Esa idea explica casi todo lo que viene después:
+
+- La unión **entre capas** es el punto débil.
+- Lo que **sobresale en el aire** necesita **soporte**.
+- Capas **más finas** dan más detalle, pero tardan más.
+- Importa **cómo orientas** la pieza.
+
+### Contar capas
+
+**Número de capas = altura de la pieza ÷ altura de capa.**
+
+**Predice antes de calcular.** Una pieza mide **30 mm** de alto y la imprimes con capas de **0,2 mm**. ¿Cuántas capas tiene? Y si usas capas de **0,1 mm**, ¿cuántas hay y tardará más o menos?
+
+<details>
+<summary>Ver la respuesta</summary>
+
+30 ÷ 0,2 = **150 capas**. Con 0,1 mm: 30 ÷ 0,1 = **300 capas**, el doble. Más capas suelen significar **más tiempo**, a cambio de **más detalle** y un acabado más fino.
+</details>
+
+<Quiz id="q1" q="Una pieza mide 30 mm de alto y la imprimes con capas de 0,2 mm. ¿Cuántas capas tendrá?" options={["15", "150", "300"]} answer={1}>
+Capas = 30 ÷ 0,2 = **150**. Si te salió 15, dividiste entre 2 en vez de entre 0,2.
+</Quiz>
+
+### El relleno (infill)
+
+Por dentro, la pieza **no suele ser maciza**: tiene una estructura que se indica con un **porcentaje**. A más porcentaje, más material por dentro. Ahorra plástico y tiempo.
+
+### Voladizo: cuando una capa no tiene dónde apoyarse
+
+Cada capa necesita **apoyarse en la anterior**. Pruébalo: inclina la pared y mira la parte rayada de rojo, la que queda **en el aire**.
+
+<CadOverhangLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Con poca inclinación, cada capa se apoya casi entera en la de abajo.
+- Al pasar de **unos 45° respecto a la vertical**, cada capa queda cada vez más en el aire.
+- A 45° la mitad del ancho de la capa queda sin apoyo **en este dibujo simplificado**. Es el límite habitual, no una ley exacta: depende de tu impresora.
+- Las imágenes de debajo usan una pared más gruesa que el laboratorio, así que a igual ángulo muestran menos parte en el aire.
+</details>
+
+<Fig src="cad/c_vol_ok" alt="Una pared inclinada hecha de siete capas amarillas apiladas, cada una desplazada un poco a la derecha de la de abajo. Todas se apoyan casi enteras en la capa anterior." caption="Pared poco inclinada (unos 30°): cada capa se apoya casi entera en la anterior." />
+
+<Fig src="cad/c_vol_limite" alt="Una pared inclinada hecha de siete capas amarillas, desplazadas algo más que en la imagen anterior: cada capa sobresale un poco de la de abajo pero se apoya en su mayor parte." caption="A unos 45° cada capa sobresale un poco más y aún se apoya en gran parte. Es el límite práctico habitual." />
+
+<Fig src="cad/c_vol_mal" alt="Una pared muy inclinada hecha de siete capas. Cada capa tiene una parte amarilla apoyada y una parte roja que sobresale en el aire; en todas las capas menos la primera, la parte roja es mayor que la amarilla." caption="Hacia 70°, más de la mitad de cada capa queda en el aire (en rojo). Sin ayuda, el plástico no tiene dónde apoyarse." />
+
+<Fig src="cad/c_vol_soporte" alt="La misma pared muy inclinada, ahora con muchas láminas verticales finas de color azul claro debajo de la parte que sobresale, desde la cama hasta cada capa." caption="Soporte: una estructura temporal, de láminas finas, que sostiene lo que sobresale. Después se retira." />
+
+<Why title="¿Por qué hace falta el soporte?">
+El plástico sale fundido y blando. Si debajo no hay nada, **cae o se deforma** antes de endurecer. El soporte da un suelo provisional. La otra opción es **reorientar la pieza** para que no haya voladizos grandes.
+</Why>
+
+<Quiz id="q2" q="Una parte de tu pieza sobresale casi en horizontal, sin nada debajo. ¿Qué suele hacer falta?" options={["Nada: el plástico se queda en el aire", "Soportes (una estructura temporal) o reorientar la pieza", "Imprimir más rápido"]} answer={1}>
+Cada capa necesita apoyarse en la anterior. Como regla práctica, ángulos de más de unos 45° respecto a la vertical suelen requerir soportes o cambiar la orientación. Ir más rápido no ayuda.
+</Quiz>
+
+### Orientación: hacia dónde van las capas
+
+La unión entre una capa y otra es **más débil que el plástico continuo de cada capa**. Por eso las piezas suelen romperse **entre capas**.
+
+Una pieza que va a **doblarse** (una palanca, por ejemplo) debe colocarse de modo que el esfuerzo **no intente separar las capas**.
+
+<Quiz id="q3" q="Vas a imprimir una palanca que se doblará al usarla. ¿Cómo la orientas?" options={["De pie, con las capas apiladas a lo largo de la palanca", "Da igual cómo la imprimas", "De modo que el esfuerzo no tienda a separar las capas: tumbada, con las capas a lo largo del esfuerzo"]} answer={2}>
+Si la flexión intenta abrir la unión entre capas, se partirá por ahí. Colocarla **tumbada**, con las capas a lo largo del esfuerzo, suele resistir más.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Hoy el «montaje» es tu **mapa de capas**. Usa la pieza de la lección anterior o cualquier objeto sencillo. Trabaja en papel.
+
+<Step n={1} title="Mide la altura y cuenta las capas">
+Mide la **altura de tu pieza tal y como irá colocada** en la cama de la impresora. Divídela entre una altura de capa que elijas (0,2 mm es una opción habitual). Apunta el resultado: **«X capas»**.
+<Why>Si la giras, cambia la altura y cambia el número de capas, y con él el tiempo de impresión.</Why>
+</Step>
+
+<Step n={2} title="Decide la orientación">
+Dibuja tu pieza **en dos posiciones** (por ejemplo, de pie y tumbada). En cada una marca con flechas **dónde irá el esfuerzo** al usarla y señala si ese esfuerzo **intenta separar capas**.
+
+<Fig src="cad/c_orient_bien" alt="Una barra amarilla tumbada, hecha de tres capas largas apiladas, sujeta por un bloque gris en su extremo izquierdo. Una flecha naranja empuja hacia abajo el extremo libre. Las capas corren a lo largo de la barra." caption="Barra tumbada: las capas van a lo largo de la barra, así que al doblarla no se intentan abrir." />
+
+Elige la colocación en la que el esfuerzo **no abra las uniones entre capas**.
+</Step>
+
+<Step n={3} title="Busca los voladizos">
+Con la orientación elegida, recorre tu dibujo de abajo arriba y **marca en rojo** cualquier parte que sobresalga con más de unos **45° respecto a la vertical**, o que quede **en el aire** sin nada debajo.
+</Step>
+
+<Step n={4} title="Soporte o reorientar">
+Para cada marca roja decide: **a)** ¿la puedo girar para que desaparezca? **b)** ¿si no, dibujo un soporte debajo? Apunta cuál eliges y por qué.
+
+<Why>Cada soporte gasta plástico y deja marcas al quitarlo. Si puedes evitarlo con un giro, mejor.</Why>
+</Step>
+
+<Step n={5} title="Foto del mapa">
+Haz una foto de tu dibujo con: **nº de capas**, **orientación elegida**, **voladizos en rojo** y **soportes** si los hay. Esa es tu pieza de hoy.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba (con el laboratorio si quieres):
+
+1. **Cambiar capa:** una pieza de **45 mm** de alto, ¿cuántas capas con 0,15 mm? ¿Y con 0,3 mm? *(Comprueba con la calculadora: 45 ÷ 0,15 y 45 ÷ 0,3.)*
+2. **Tejado:** una pared inclinada **30°** y otra a **60°**. ¿Cuál necesitará soporte? Compruébalo en el laboratorio.
+3. **Cambiar de posición:** coge una pieza con forma de «T». Dibuja tres posiciones posibles y busca la que tenga **menos voladizos** y los **esfuerzos mejor repartidos**.
+
+<details>
+<summary>Comprueba el reto 1</summary>
+
+45 ÷ 0,15 = **300 capas**. 45 ÷ 0,3 = **150 capas**.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Dejar un voladizo sin soporte" wrongLabel="Sin soporte, en el aire" rightLabel="Con soporte debajo">
+  <Fig slot="wrong" src="cad/c_vol_mal" alt="Pared muy inclinada de capas con las partes que sobresalen marcadas en rojo, sin nada debajo." />
+  <Fig slot="right" src="cad/c_vol_soporte" alt="La misma pared con láminas azules finas de soporte debajo de lo que sobresale." />
+
+Si una parte sobresale mucho y no tiene nada debajo, el plástico **se descuelga** y la zona sale mal. Solución: **soporte**, o **girar la pieza** para que ya no sobresalga.
+</Mistake>
+
+<Mistake title="Imprimir de pie una pieza que se va a doblar" wrongLabel="De pie, capas apiladas" rightLabel="Tumbada, capas a lo largo">
+  <Fig slot="wrong" src="cad/c_orient_mal" alt="Una barra amarilla de pie hecha de muchas capas apiladas. Una flecha naranja empuja su parte alta hacia la derecha y, cerca de la base, una capa se separa de la de abajo con un pequeño hueco; una flecha roja señala esa rotura." />
+  <Fig slot="right" src="cad/c_orient_bien" alt="La barra tumbada, con las capas a lo largo, sujeta por un bloque gris y empujada hacia abajo en el extremo libre." />
+
+Si empujas una barra de pie, el esfuerzo **tira de las uniones entre capas**, que son el punto débil. Tumbada, esas uniones no se abren. Es lo mismo que pasa con la **palanca que se parte** de la tercera lección.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu mapa:
+
+<Checklist items={[
+  "He calculado las capas con altura ÷ altura de capa",
+  "He dibujado al menos dos posiciones y elegido una con una razón",
+  "He marcado los voladizos de más de unos 45° respecto a la vertical",
+  "Para cada voladizo he elegido soporte o girar la pieza",
+  "Sé que la boquilla y la cama están calientes y no se tocan",
+]} />
+
+<Quiz id="q4" q="En una pieza impresa en FDM, ¿por dónde suele romperse más fácilmente?" options={["Entre capas: la unión entre una capa y otra es más débil", "A lo largo de las capas, siempre", "Todas las direcciones aguantan igual"]} answer={0}>
+Cada capa se funde con la anterior, pero esa unión resiste menos que el plástico continuo. Por eso la **orientación** importa.
+</Quiz>
+
+<RegisterPiece piece="Mapa de capas de mi pieza" />
+</Block>

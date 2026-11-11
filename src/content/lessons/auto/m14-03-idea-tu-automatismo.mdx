@@ -1,0 +1,169 @@
+---
+id: m14-03
+unit: auto
+order: 3
+title: "Idea tu automatismo: de un problema a una máquina"
+summary: "Convierte una tarea repetitiva que te molesta en una máquina sencilla: esquema, prototipo, prueba y mejora; y no olvides cómo pararla de forma segura."
+practice: [l_idear]
+cover: auto/a_cort_hero
+duration: 40
+status: revisada
+prerequisites: [m14-02, m3-03]
+objectives:
+  - "Seguir el camino de un problema cotidiano a un automatismo: tarea, esquema, prototipo, prueba y mejora"
+  - "Preferir la solución mecánica más simple y añadir sensor y actuador solo si hacen falta"
+  - "Diseñar siempre una forma segura de parar la máquina"
+  - "Montar una cortina de láminas que sube con motor, hilo y final de carrera"
+materials:
+  - "Dos vigas largas de pie y una viga corta para el travesaño"
+  - "Un eje con dos carretes (o dos poleas pequeñas) y una manivela, o un motor pequeño con reducción"
+  - "Hilo resistente"
+  - "Tiras de cartón o plástico ligero para las láminas, y una barra inferior"
+  - "Una palanca para el final de carrera"
+piece:
+  name: "Cortina de láminas con final de carrera"
+  hint: "Foto de tu cortina subida hasta el final de carrera, con tu esquema sensor → mecanismo → actuador"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a convertir un problema cotidiano, **subir y bajar una cortina**, en un **automatismo**: un eje que enrolla el hilo, una cortina de láminas ligera y un **final de carrera** que para todo cuando llega arriba.
+
+<Fig src="auto/a_cort_hero" alt="Un marco de vigas grises con un eje horizontal arriba, dos carretes amarillos y un motor azul con su caja de reducción gris a la derecha. De cada carrete baja un hilo hasta una barra roja inferior, y entre ellos hay láminas verdes horizontales repartidas hasta arriba. Una flecha naranja hacia arriba indica que la cortina sube. En la columna izquierda hay un final de carrera rojo con una palanca." caption="La cortina sube cuando el motor enrolla el hilo en los carretes. Arriba, el final de carrera avisará de que debe parar." />
+
+<Tip title="Sabías que… las máquinas de Rube Goldberg">
+El dibujante **Rube Goldberg** se hizo famoso por sus dibujos de máquinas absurdamente complicadas que hacían tareas muy simples.
+
+Es lo contrario de un buen diseño: tú busca **la solución más sencilla que funcione**.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Lo más simple que funcione
+
+Empieza por una **tarea repetitiva** que te moleste. Busca primero la **solución mecánica más simple**. Si una palanca, una polea o un engranaje resuelve el problema, **no hace falta más**. Cada pieza extra es otro sitio por donde puede fallar.
+
+Añade un **sensor** y un **actuador** solo si hace falta. Y piensa siempre en **cómo parar** la máquina de forma segura.
+
+<Fig src="auto/a_bloques" alt="Tres bloques en fila unidos por flechas naranja: sensor azul con un ojo, control amarillo con tres pilotos y motor rojo con un engranaje pequeño." caption="Tu esquema de partida: qué detecta, qué decide y qué mueve." />
+
+### El camino del inventor
+
+1. Elige una **tarea repetitiva** que te moleste.
+2. Piensa **qué debe detectar** y **qué debe mover**.
+3. Dibuja un **esquema** con sensor, actuador y mecanismo.
+4. Construye una **versión de cartón o piezas** y pruébala.
+5. **Mide qué falla** y mejora **una cosa cada vez**.
+
+Es el ciclo del inventor aplicado a una máquina: problema, esquema, prototipo, prueba y mejora.
+
+**Predice.** Quieres una cortina ligera que suba y baje sola con un **motor pequeño**. Tienes un motor de pilas, una polea y un hilo resistente. ¿Qué mecanismo encaja mejor?
+
+<details>
+<summary>Ver la respuesta</summary>
+
+Un **motor con reducción** que **enrolle el hilo en una polea o eje**. El motor da el giro, la reducción da fuerza (ya lo viste con los engranajes) y la polea convierte el giro en **recorrido del hilo**, lo que ya conoces.
+</details>
+
+<Quiz id="q1" q="Quieres que una cortina ligera suba y baje sola con un motor pequeño. ¿Qué mecanismo encaja mejor para mover la cortina?" options={["Un trinquete sin motor", "Un motor con reducción que enrolle el hilo en una polea o eje", "Una leva que se mueva a mano"]} answer={1}>
+El motor da el giro, la reducción da fuerza y la polea convierte el giro en recorrido del hilo, lo que ya conoces.
+</Quiz>
+
+<Quiz id="q2" q="¿Por qué conviene probar primero una solución mecánica sencilla antes de añadir más piezas?" options={["Porque es más simple, tiene menos cosas que fallar y te ayuda a entender el problema", "Porque la mecánica nunca falla", "Porque así no hace falta probar nada"]} answer={0}>
+Si una palanca, una polea o un engranaje resuelve el problema, no hace falta más. Cada pieza extra es otro sitio por donde puede fallar.
+</Quiz>
+
+### La seguridad no es un añadido
+
+Un automatismo con partes que pueden **pellizcar o golpear** (una puerta, una cortina, un brazo) necesita **sí o sí una forma segura de pararlo**:
+
+- **limitar su fuerza**,
+- poner **finales de carrera**,
+- poder **cortar la corriente rápido**.
+
+Cuanta más fuerza tiene una máquina, más daño puede hacer.
+
+<Quiz id="q3" q="Un automatismo con partes que pueden pellizcar o golpear (puerta, cortina, brazo). ¿Qué necesita sí o sí?" options={["Que sea lo más potente posible", "Que funcione sin supervisión desde el primer día", "Una forma segura de pararlo: limitar su fuerza y poder desconectarlo rápido"]} answer={2}>
+Cuanto más fuerza tiene una máquina, más daño puede hacer. Limitar la fuerza, poner finales de carrera y poder cortar la corriente rápido son parte del diseño.
+</Quiz>
+
+### ¿Qué evita que el motor siga tirando arriba?
+
+<Fig src="auto/a_cort_mal" alt="La cortina subida del todo: las láminas apiladas arriba y la barra roja pegada a los carretes. No hay final de carrera. Una flecha roja hacia arriba y una bolita roja arriba marcan que el motor sigue tirando." caption="Sin final de carrera, la barra llega arriba y el motor sigue enrollando el hilo." />
+
+Un **final de carrera** que corte la corriente. Sin él, el motor se bloquea, consume mucho y se calienta.
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos de construcción y uno de pruebas. **En cada imagen, lo nuevo sale en color y lo anterior en gris.**
+
+<Step n={1} title="El marco" img="auto/a_cort_s1" alt="Un marco gris: dos vigas largas verticales unidas por una viga corta horizontal arriba.">
+Pon **dos vigas largas de pie**, paralelas, unidas por una viga **arriba**. Debe quedar rígido.
+</Step>
+
+<Step n={2} title="El eje, los carretes y el motor" img="auto/a_cort_s2" alt="En color, un eje horizontal cerca de la parte alta del marco con dos carretes amarillos y a la derecha un motor azul seguido de una caja de reducción gris. El marco queda en gris.">
+Monta un **eje horizontal** que cruce el marco por arriba, con **dos carretes** (uno a cada lado). En un extremo, el **motor con su reducción**. Si no tienes motor, deja una **manivela**.
+<Why>La reducción baja la velocidad y sube la fuerza, como los engranajes de antes. Dos carretes tiran por los dos lados y la barra no se tuerce.</Why>
+</Step>
+
+<Step n={3} title="Hilo, barra y láminas" img="auto/a_cort_s3" alt="En color, dos hilos claros bajan de los carretes hasta una barra roja horizontal, y entre ellos hay ocho láminas verdes horizontales repartidas de arriba abajo. El marco, el eje y el motor quedan en gris.">
+Ata un **hilo** a cada carrete y sujeta el otro extremo a una **barra inferior**. Cuelga entre medias las **láminas** ligeras de la cortina.
+<Warn title="Dedos y hilos">
+Mientras el eje gira, no metas los dedos entre el hilo y el carrete. **Prueba con la manivela, despacio**, antes de poner un motor.
+</Warn>
+</Step>
+
+<Step n={4} title="El final de carrera" img="auto/a_cort_s4" alt="En color, un interruptor rojo pequeño fijado a la columna izquierda, en la parte alta, con una palanca plateada que baja y termina en un pie horizontal sobre el recorrido de la barra roja. El resto de la cortina está en gris.">
+Fija una **palanca** a la columna, arriba, con su extremo **sobre el recorrido de la barra**: cuando la barra llegue, la **pulsa**. Si montas la versión eléctrica, esa palanca es el **final de carrera** que corta la corriente del motor (un interruptor normalmente cerrado, como en la lección del carro).
+<Fig src="auto/a_cort_bien" alt="La cortina subida del todo, con la barra roja tocando la palanca plateada del final de carrera. Una bolita verde junto al interruptor marca el aviso." caption="La barra pulsa la palanca justo antes de tocar los carretes: el motor se para." />
+</Step>
+
+<Step n={5} title="Predice y prueba">
+Gira la manivela despacio. **Predice**: ¿a qué altura toca la barra la palanca? ¿Se para el giro **antes** de que la barra llegue a los carretes? Ajusta la palanca hasta que sí.
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa a la vez, **predice** y comprueba:
+
+1. **Otra tarea:** elige otra tarea repetitiva que te moleste (abrir una caja, girar un letrero, echar comida a una mascota…). Escribe los cinco pasos del inventor y dibuja las tres cajas: sensor, mecanismo, actuador.
+2. **Más simple:** ¿puede resolverse tu tarea **solo con mecánica** (palanca, polea, engranaje) y sin motor ni sensor? Explícalo en dos frases.
+3. **Final de carrera abajo:** añade otra palanca para que la cortina también pare al bajar del todo. ¿Qué pasa con las láminas si falta?
+
+<details>
+<summary>Pista para el reto 3</summary>
+
+El final de carrera de abajo evita que el hilo **se afloje del todo** y pueda enredarse en el carrete. Colócalo de modo que la barra lo pulse **antes** de llegar al suelo.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="La cortina sin final de carrera" wrongLabel="El motor sigue tirando" rightLabel="El final de carrera para el motor">
+  <Fig slot="wrong" src="auto/a_cort_mal" alt="La barra roja pegada a los carretes arriba, sin final de carrera, con una flecha roja y una bolita roja que marcan que el motor sigue tirando." />
+  <Fig slot="right" src="auto/a_cort_bien" alt="La barra roja pulsa la palanca del final de carrera, con una bolita verde que indica el aviso." />
+
+Sin aviso, el motor **sigue enrollando** con la barra ya arriba: se bloquea, consume mucho y se calienta. Un **final de carrera** que corte la corriente evita el problema.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu cortina:
+
+<Checklist items={[
+  "El eje gira libre con la manivela y el hilo se enrolla sin enredarse",
+  "Los dos hilos tiran por igual y la barra sube recta",
+  "La palanca se pulsa antes de que la barra toque los carretes",
+  "Tengo un esquema de tres cajas: sensor, mecanismo, actuador",
+  "Sé cómo pararía la máquina en caso de problema (final de carrera, desconectar)",
+]} />
+
+<Quiz id="q4" q="La cortina llega arriba y quieres que el motor se pare solo. ¿Qué evita que el motor siga tirando?" options={["Un final de carrera que corte la corriente", "Un hilo más largo", "Un tope más fuerte"]} answer={0}>
+Un final de carrera avisa de que se ha llegado al extremo. Sin él, el motor se bloquea, consume mucho y se calienta. Un tope más fuerte o un hilo más largo no avisan de nada.
+</Quiz>
+
+<RegisterPiece piece="Cortina de láminas con final de carrera" />
+</Block>

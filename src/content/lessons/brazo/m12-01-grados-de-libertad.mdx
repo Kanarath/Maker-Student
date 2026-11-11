@@ -1,0 +1,183 @@
+---
+id: m12-01
+unit: brazo
+order: 1
+title: "Grados de libertad y espacio de trabajo"
+summary: "Monta un brazo plano de dos eslabones con un lápiz en la punta, dibuja la zona que alcanza y aprende a contar sus grados de libertad."
+practice: [l_gdl]
+cover: brazo/g_hero
+duration: 30
+status: revisada
+prerequisites: []
+objectives:
+  - "Contar los grados de libertad de un brazo mirando sus articulaciones, no sus piezas"
+  - "Calcular el alcance máximo (L1 + L2) y mínimo (|L1 − L2|) de un brazo de dos eslabones"
+  - "Dibujar el espacio de trabajo de tu brazo y explicar qué es el efector final"
+materials:
+  - "Dos vigas con agujeros (9 y 7 agujeros) y una de 5 agujeros para la base"
+  - "Tres pasadores largos y un lápiz que entre en un agujero (o un palillo con rotulador)"
+  - "Un folio grande y cinta de carrocero"
+piece:
+  name: "Espacio de trabajo dibujado de tu brazo plano"
+  hint: "Foto del folio con las dos curvas (alcance máximo y mínimo) dibujadas por el lápiz de tu brazo"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Esta unidad termina en un **brazo con base giratoria, hombro, codo y pinza**, como el de la imagen. Hoy empiezas por lo más sencillo: un **brazo plano de dos eslabones** que se mueve a mano y dibuja con un lápiz **hasta dónde llega**.
+
+<Fig src="brazo/g_hero" alt="Brazo de piezas tipo Technic sobre una base gris con un disco azul giratorio. Una columna gris sostiene el hombro, con un servo oscuro; de él sale una viga amarilla y, tras el codo, una viga roja que lleva una pinza verde de dos dedos. Tres flechas curvas marcan los movimientos: una naranja horizontal (la base gira), una cian en el hombro y una verde en el codo." caption="Tres articulaciones, tres movimientos independientes: giro de la base (naranja), hombro (cian) y codo (verde)." />
+
+Cada flecha es **un movimiento independiente**. Esa es la clave de toda la lección: **los grados de libertad se cuentan en las articulaciones**.
+
+<Tip title="Sabías que… el primer robot industrial">
+Unimate, considerado el primer **robot industrial**, empezó a trabajar en una fábrica de General Motors en 1961, moviendo piezas calientes de metal. Era un brazo de varias articulaciones: ya entonces, el secreto eran los **grados de libertad**.
+</Tip>
+</Block>
+
+<Block kind="concepto">
+## Una cadena de articulaciones
+
+Un brazo es una **cadena de eslabones** (las piezas rígidas) unidos por **articulaciones** (los puntos donde giran o se deslizan).
+
+- **Grado de libertad (GDL):** cada movimiento independiente que puede hacer. Una articulación que gira, o un carro que se desliza, cuenta como **uno**.
+- **Efector final:** la «mano» del brazo, la herramienta del extremo: una pinza, una ventosa, un lápiz…
+- **Espacio de trabajo:** el conjunto de puntos que puede alcanzar el extremo. Es lo que «barre» el brazo al moverse.
+
+**Predice antes de mirar:** el brazo de la imagen gira sobre su base, sube y baja el hombro y dobla el codo. ¿Cuántos GDL tiene?
+
+<details>
+<summary>La respuesta</summary>
+
+**3**: base, hombro y codo. La pinza abre y cierra, pero eso es la herramienta del extremo, no cuenta para colocar la punta. Si le añadieras una **muñeca que gira**, serían 4.
+
+Y ojo: un brazo que **gira sobre su base y dobla el codo** tiene **2 GDL**. Se cuentan los movimientos independientes, no las piezas.
+</details>
+
+<Why title="¿Por qué importa contarlos?">
+Cada GDL añade un motor, más peso, más cableado y más juego. Por eso conviene **tener los justos**. Para colocar un objeto en cualquier posición **y con cualquier orientación** en el espacio hacen falta **6** (tres para la posición y tres para la orientación). Un brazo de 2 o 3 GDL no puede orientar libremente la mano: está limitado a ciertos movimientos, y para un primer proyecto es más que suficiente.
+</Why>
+
+### Hasta dónde llega: alcance máximo y mínimo
+
+Con **dos eslabones** de longitudes **L1** y **L2** y el extremo libre:
+
+- **Alcance máximo** = L1 + L2 (brazo estirado).
+- **Alcance mínimo** = |L1 − L2| (codo totalmente doblado: un eslabón queda sobre el otro).
+
+El extremo solo puede estar dentro de esa **corona**: el espacio de trabajo.
+
+<Fig src="brazo/g_max" alt="Brazo plano sobre un folio, totalmente estirado: la viga amarilla y la roja forman una línea recta. Una flecha naranja junto a la amarilla y una cian junto a la roja marcan cada tramo; un círculo cian grande pasa justo por la punta." caption="Estirado: el alcance es L1 + L2 y la punta toca el círculo exterior." />
+
+<Fig src="brazo/g_min" alt="El mismo brazo con el codo doblado del todo: la viga roja queda encima de la amarilla, volviendo hacia la base. Una flecha naranja va hacia fuera y una cian vuelve hacia dentro; un pequeño círculo verde alrededor de la base pasa por la punta." caption="Doblado: el alcance es |L1 − L2|. La punta toca el círculo pequeño, no la base." />
+
+<Fig src="brazo/g_espacio" alt="El brazo en una posición intermedia sobre el folio. Una corona de color turquesa rellena todo el espacio entre un círculo exterior cian y un círculo interior verde pequeño alrededor de la base." caption="El espacio de trabajo es la corona entre los dos círculos. Fuera, el brazo no llega; en el centro, tampoco." />
+
+Pruébalo tú. **Antes de mover nada, predice** qué zona alcanzará la punta y luego activa y bloquea articulaciones:
+
+<ArmGdlLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Con **las dos articulaciones activas**, la punta cubre una **superficie** (la corona).
+- Con **una sola**, la punta solo recorre una **línea** (un arco o un círculo). Con **ninguna**, un punto.
+- Con **giros limitados** (como los de un servo de 180°), el espacio de trabajo es solo **una parte** de la corona.
+</details>
+
+<Quiz id="q1" q="Un brazo plano tiene dos eslabones, de 12 cm y de 8 cm, con el extremo libre. ¿Cuál es su alcance máximo desde la base?" options={["4 cm", "20 cm", "96 cm"]} answer={1}>
+El alcance máximo es con el brazo **estirado**: 12 + 8 = **20 cm**. (El alcance mínimo, con el codo plegado, sería 12 − 8 = 4 cm.)
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.** Una distancia de «1 paso» es la que hay entre dos agujeros contiguos (8 mm).
+
+<Step n={1} title="El folio y la base" img="brazo/g_s1" alt="Un folio grande y claro sobre la mesa con una viga gris de 5 agujeros pegada encima.">
+Pega el folio a la mesa con cinta de carrocero y fija encima, con más cinta, la viga de 5 agujeros. Esa será la **base**: no se mueve.
+<Why>Si la base se mueve, el dibujo sale torcido. La base fija es la «tierra» a la que se une todo lo demás.</Why>
+</Step>
+
+<Step n={2} title="El eslabón 1" img="brazo/g_s2" alt="Una viga amarilla de 9 agujeros apoyada sobre el extremo de la viga gris, unida a ella con un pasador negro.">
+Une con un **pasador** el primer agujero de la viga de 9 con el agujero del extremo de la base. Esa es la **articulación 1**. Debe girar libre con un empujón suave.
+
+<Warn title="Que gire libre">
+Si aprietas demasiado, la viga roza el papel y falsea el dibujo. Si queda muy suelta, el lápiz tiembla. Busca el punto medio.
+</Warn>
+</Step>
+
+<Step n={3} title="El eslabón 2" img="brazo/g_s3" alt="Una viga roja de 7 agujeros apoyada sobre el extremo libre de la amarilla, con un pasador negro en el codo.">
+Une con otro pasador el último agujero de la viga de 9 con el primero de la de 7. Esa es la **articulación 2**, el codo.
+<Why>Cada articulación es un grado de libertad: ya tienes **2 GDL**.</Why>
+</Step>
+
+<Step n={4} title="El lápiz y el dibujo" img="brazo/g_s4" alt="Un lápiz rojo clavado en el último agujero de la viga roja, con la punta tocando el folio.">
+Mete el lápiz en el **último agujero** de la viga de 7 (el efector final). Con la otra mano, **estira el brazo del todo** y dibuja un arco girando la base: esa es la curva exterior. Luego **dobla el codo del todo** y dibuja otro arco: la curva interior.
+
+Mide: ¿cuánto vale L1 + L2 en pasos? ¿Y |L1 − L2|? Compruébalo con una regla (1 paso = 8 mm).
+
+<Warn title="Lápiz con cuidado">
+Con la punta hacia abajo, no lo dejes apuntando a tu mano ni a la cara. Mueve el brazo despacio y con una sola mano.
+</Warn>
+
+<details>
+<summary>Cuentas que deberías obtener</summary>
+
+Las vigas de 9 y 7 agujeros dan **L1 = 8 pasos** y **L2 = 6 pasos**.
+
+- Máximo: 8 + 6 = **14 pasos** (14 × 8 mm = 112 mm).
+- Mínimo: 8 − 6 = **2 pasos** (16 mm).
+</details>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba. Elige un reto:
+
+1. **Eslabón corto:** cambia la viga de 7 por una de 5 agujeros (L2 = 4 pasos). ¿Cuánto valen ahora el máximo y el mínimo? Dibújalo y compara.
+2. **Eslabones iguales:** pon dos vigas de 9. ¿Qué alcance mínimo predices? ¿Llega la punta hasta la base? (Mira si algo se choca antes de llegar.)
+3. **Codo bloqueado:** sujeta el codo con cinta para que no gire. ¿Cuántos GDL tienes ahora? ¿Qué dibuja la punta?
+
+O prueba el laboratorio y bloquea las articulaciones una por una:
+
+<ArmGdlLab />
+</Block>
+
+<Block kind="errores">
+<Mistake title="Contar piezas en vez de articulaciones" wrongLabel="3 marcas en las piezas" rightLabel="2 marcas en las articulaciones">
+  <Fig slot="wrong" src="brazo/g_err_mal" alt="El brazo plano con tres esferas rojas: una en la viga amarilla, otra en la roja y otra junto a la base." />
+  <Fig slot="right" src="brazo/g_err_bien" alt="El mismo brazo con dos esferas verdes, una en el pasador de la base y otra en el pasador del codo." />
+
+Un grado de libertad es un **movimiento independiente**, es decir, una **articulación**, no una pieza. Aquí hay tres piezas (la base fija y dos eslabones), pero solo **dos articulaciones**: **2 GDL**. La base fija no se mueve, así que no suma.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu montaje:
+
+<Checklist items={[
+  "La base está fija y las dos articulaciones giran libres",
+  "He dibujado la curva exterior con el brazo estirado y la interior con el codo doblado",
+  "He medido L1 + L2 y |L1 − L2| en pasos y coinciden con el dibujo",
+  "Sé decir cuántos GDL tiene mi brazo y por qué",
+  "Sé qué es el efector final de mi brazo (el lápiz)",
+]} />
+
+<Quiz id="q2" q="Un brazo gira sobre su base y además dobla el codo. ¿Cuántos grados de libertad tiene?" options={["1", "2", "3"]} answer={1}>
+Cada movimiento independiente cuenta: giro de la base (1) y codo (2). Si añades una muñeca que gira, serían 3.
+</Quiz>
+
+<Quiz id="q3" q="Un brazo plano tiene eslabones de 12 cm y 8 cm. Con el codo totalmente doblado, ¿a qué distancia mínima de la base queda el extremo?" options={["20 cm", "10 cm", "4 cm"]} answer={2}>
+Con el codo plegado, un eslabón queda sobre el otro: 12 − 8 = **4 cm**. (Con eslabones iguales, llegaría a 0.)
+</Quiz>
+
+<Quiz id="q4" q="Para colocar un objeto en cualquier posición Y con cualquier orientación en el espacio, ¿cuántos grados de libertad hacen falta como mínimo?" options={["3", "6", "12"]} answer={1}>
+**6**: tres para llegar al punto y tres giros para orientar la mano. Un brazo de 2 o 3 GDL no puede orientar libremente.
+</Quiz>
+
+<RegisterPiece piece="Espacio de trabajo dibujado de tu brazo plano" />
+</Block>

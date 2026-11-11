@@ -1,0 +1,164 @@
+---
+id: m4-01
+unit: simples
+order: 1
+title: "Rampa y cuña: menos fuerza a cambio de más camino"
+summary: "Monta una rampa de 3 de altura y unos 12 agujeros de largo, predice cuánta fuerza pide la subida y descubre por qué una rampa larga es más suave que una corta."
+practice: [l_inclinado]
+cover: simples/ri_hero
+duration: 30
+status: revisada
+prerequisites: [m3-01]
+objectives:
+  - "Calcular la fuerza para subir una carga con fuerza = peso × altura ÷ largo"
+  - "Explicar por qué una rampa larga y suave pide menos fuerza pero más camino"
+  - "Reconocer una cuña como una rampa que se mueve y separa lo que tiene delante"
+materials:
+  - "Una viga de 13 agujeros para la rampa, otra de 13 para la base y una de 4 para el poste, con dos pasadores"
+  - "Una carga que puedas apoyar (una bolsita con tornillos) y una goma elástica larga para notar el tirón"
+  - "Una regla"
+piece:
+  name: "Rampa de subida medida"
+  hint: "Foto de tu rampa con la altura y el largo medidos y la estimación de la fuerza"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar una **rampa**: una viga inclinada que sube una carga hasta una altura de 3 agujeros. Antes de tirar de la carga, **predecirás cuánta fuerza** hace falta comparada con levantarla a pulso.
+
+<Fig src="simples/ri_hero" alt="Una viga amarilla inclinada de 13 agujeros apoya su extremo alto en un poste azul y baja hasta la izquierda sobre una viga gris horizontal. Una caja verde descansa sobre la rampa, con una flecha cian larga hacia abajo (el peso) y una flecha naranja corta a lo largo de la rampa (la fuerza para subirla)." caption="La carga pesa lo que indica la flecha cian. Para subirla por la rampa basta una fuerza mucho menor (la flecha naranja)… pero recorres más camino." />
+</Block>
+
+<Block kind="concepto">
+## Una rampa es una máquina
+
+Subir una caja **en vertical** pide toda su fuerza en un camino corto. Subirla por una **rampa** pide menos fuerza, pero el camino es más largo.
+
+La regla (sin rozamiento):
+
+**fuerza = peso × altura ÷ largo de la rampa**
+
+Con el ejemplo de la rampa de este montaje, de unos 12 de largo y 3 de alto: la fuerza es 3 ÷ 12 = **¼ del peso**. Y lo que ahorras en fuerza lo pagas en camino: recorres **4 veces más**.
+
+Compara dos rampas a la misma altura. **Predice** antes de mirar: ¿cuál pide menos fuerza?
+
+<Fig src="simples/ri_corta" alt="Una rampa azul corta y empinada con una caja verde encima. La flecha naranja que tira de la caja a lo largo de la rampa es larga; la flecha cian del peso apunta hacia abajo." caption="Rampa corta y empinada: fuerza grande, poco camino." />
+
+<Fig src="simples/ri_larga" alt="Una rampa azul larga y suave con la misma altura que la anterior. La flecha naranja de la fuerza a lo largo de la rampa es mucho más corta que el peso, la flecha cian hacia abajo." caption="Rampa larga y suave: fuerza pequeña, mucho camino." />
+
+Ahora juega con los números:
+
+<RampLab />
+
+<details>
+<summary>¿Qué has debido notar?</summary>
+
+- Con la **misma altura**, cuanto **más larga** es la rampa, **menos fuerza** hace falta.
+- La fuerza baja exactamente lo que sube el camino: con 4 veces más camino, 4 veces menos fuerza.
+- No se gana nada gratis: el **trabajo** (fuerza × camino) es el mismo. Con 40 N subidos 1 m son 40 N·m; con la rampa de 4 m son 10 N × 4 m, también 40 N·m.
+</details>
+
+<Why title="¿Por qué sale una cuenta tan simple?">
+Subir la caja una altura cuesta lo mismo por cualquier camino (sin rozamiento). Si el camino es 4 veces más largo, cada tramo del camino pide 4 veces menos fuerza. Es la misma idea de la palanca: lo que ganas en fuerza lo pagas en recorrido.
+</Why>
+
+<Quiz id="q1" q="Quieres subir una carga de 60 N hasta 2 m de altura con una rampa de 6 m de largo (sin rozamiento). ¿Qué fuerza mínima hace falta?" options={["10 N", "20 N", "30 N"]} answer={1}>
+Fuerza = peso × altura ÷ largo = 60 × 2 ÷ 6 = **20 N**.
+</Quiz>
+
+### La cuña: una rampa que se mueve
+
+Una **cuña** son dos rampas pegadas que **se empujan** hacia dentro de algo. Al empujarla hacia abajo, su forma convierte tu empujón en una fuerza **hacia los lados** que separa lo que tiene delante. Un hacha, un cuchillo o una cuña para partir leña funcionan así.
+
+<Fig src="simples/ri_cuna" alt="Dos bloques grises con una grieta en V entre ellos y una cuña amarilla clavada en la grieta. Una flecha naranja empuja la cuña hacia abajo y dos flechas cian empujan los bloques hacia los lados, una a cada lado." caption="Empujas la cuña hacia abajo (naranja) y los bloques se separan hacia los lados (cian)." />
+
+<Quiz id="q2" q="Un calzo de madera bajo una puerta impide que se cierre. ¿Por qué se queda ahí?" options={["Porque el rozamiento y su forma de cuña lo mantienen encajado", "Porque pesa mucho", "Porque el suelo lo atrae"]} answer={0}>
+Al empujar la puerta, la cuña se encaja y el **rozamiento** con el suelo y con la puerta la mantiene en su sitio.
+</Quiz>
+
+<Tip title="Sabías que… las carreteras en zigzag">
+Las carreteras de montaña van en **zigzag** porque son una **rampa larga y suave** enrollada en la ladera: con la misma altura, cuanto más largo el camino, menos pendiente y **menos fuerza** hace falta. Es el plano inclinado en versión gigante.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Tres pasos. Lo nuevo sale en color; lo anterior, en gris.
+
+<Step n={1} title="La base y el poste" img="simples/ri_s1" alt="Una viga gris horizontal en la base y, en su extremo derecho, una viga azul de 4 agujeros colocada en vertical.">
+Pon la viga de 13 en **horizontal** y, en su extremo derecho, la viga de 4 en **vertical**. La altura de tu rampa será de **3 pasos** entre agujeros (el poste tiene 4 agujeros).
+<Why>La altura es la distancia **en vertical** entre el suelo y donde acaba la rampa, no la longitud del poste entero. Con 4 agujeros hay 3 saltos entre el primero y el último.</Why>
+</Step>
+
+<Step n={2} title="La viga de la rampa" img="simples/ri_s2" alt="Una viga amarilla inclinada que va desde el extremo izquierdo de la base hasta el agujero de arriba del poste azul, sujeta con un pasador negro en cada extremo.">
+Fija un extremo de la viga amarilla de 13 al extremo izquierdo de la base con un pasador, y apoya el otro en el **agujero de arriba** del poste (otro pasador). Queda una rampa de unos **12 pasos de largo**.
+<Why>Las medidas reales no encajarán exactamente en los agujeros (la rampa mide algo más que 12 si el poste está en el último agujero). Para el cálculo usaremos «unos 12 de largo y 3 de alto», que es suficiente para predecir.</Why>
+</Step>
+
+<Step n={3} title="La carga y el tirón" img="simples/ri_s3" alt="Una caja verde apoyada sobre la viga inclinada, hacia la mitad de la rampa.">
+Pon la carga a mitad de la rampa y ata la goma por el **lado de arriba**. Tira **en paralelo a la rampa** y fíjate en cuánto se estira la goma.
+
+**Predice:** si colgaras la carga de la goma estirándola a pulso, se estiraría una cantidad. ¿Cuánto se estirará al tirar por la rampa: igual, la mitad o la cuarta parte?
+
+<details>
+<summary>Respuesta</summary>
+
+Aproximadamente **una cuarta parte** (3 ÷ 12 = ¼). En la práctica notarás **algo más**, porque el rozamiento de la carga con la viga también hay que vencerlo; la fórmula es la del caso ideal.
+</details>
+
+<Warn title="Carga estable">
+No pongas una carga pesada o con cantos duros: si se desliza, puede caer sobre tus pies. Una bolsita de tornillos o una pieza ligera basta.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Rampa a la mitad de largo** (unos 6 pasos con la misma altura de 3). ¿Cuánta fuerza pide ahora? Calcula 3 ÷ 6.
+2. **Poste el doble de alto** (altura de unos 6 con la rampa de 12). ¿La fuerza sube o baja? Calcula 6 ÷ 12.
+3. **Una cuña:** mete un calzo de cartón bajo un libro para levantarlo un poco. Predice: ¿una cuña **larga y fina** o una **corta y gruesa** pide menos esfuerzo para levantar lo mismo?
+
+<details>
+<summary>Respuestas</summary>
+
+1. 3 ÷ 6 = **½ del peso**: el doble de fuerza que antes, pero la mitad de camino.
+2. 6 ÷ 12 = **½ del peso**: más empinada pide más fuerza.
+3. La **larga y fina**: es como una rampa más larga. Pagas con más recorrido de empuje.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Rampa corta y empinada" wrongLabel="Corta: fuerza grande" rightLabel="Larga y suave: fuerza pequeña">
+  <Fig slot="wrong" src="simples/ri_corta" alt="Una rampa azul corta y empinada con una flecha naranja larga para subir la caja verde." />
+  <Fig slot="right" src="simples/ri_larga" alt="Una rampa azul larga y suave con una flecha naranja corta para subir la caja verde." />
+
+Con la **misma altura**, la rampa más larga reparte el trabajo en más camino y pide menos fuerza.
+</Mistake>
+
+<Mistake title="Medir la altura a lo largo de la rampa" wrongLabel="Altura medida por la rampa" rightLabel="Altura en vertical">
+  <Fig slot="wrong" src="simples/ri_error_mal" alt="La rampa amarilla con una flecha roja que va de un extremo al otro de la viga, midiendo la longitud de la rampa como si fuera la altura." />
+  <Fig slot="right" src="simples/ri_error_bien" alt="La misma rampa con una flecha verde vertical junto al poste azul que mide la altura en línea recta hacia arriba." />
+
+La **altura** se mide en **vertical**, del suelo al punto más alto. La longitud de la rampa es el **largo**. Si las confundes, la cuenta sale mal: la fuerza es peso × **altura** ÷ **largo**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "He medido la altura en vertical y el largo de la rampa",
+  "He predicho la fuerza con peso × altura ÷ largo antes de tirar",
+  "He comparado con la goma lo que cuesta subir por la rampa y a pulso",
+  "Sé decir qué pago a cambio de usar menos fuerza (más camino)",
+  "Sé explicar qué es una cuña con un ejemplo de casa",
+]} />
+
+<Quiz id="q3" q="Quieres subir la misma carga a la misma altura. ¿Qué rampa pide menos fuerza?" options={["La más corta y empinada", "Las dos igual", "La más larga y suave"]} answer={2}>
+Con la misma altura, más largo significa **menos fuerza** y más camino.
+</Quiz>
+
+<RegisterPiece piece="Rampa de subida medida" />
+</Block>

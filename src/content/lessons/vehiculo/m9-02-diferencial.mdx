@@ -1,0 +1,151 @@
+---
+id: m9-02
+unit: vehiculo
+order: 2
+title: "Diferencial: dos ruedas, dos velocidades"
+summary: "Monta un diferencial abierto, predice qué hace una rueda cuando frenas la otra y descubre por qué en una curva las ruedas no pueden ir a la misma velocidad."
+practice: [l_diferencial]
+cover: vehiculo/v_dif_hero
+duration: 40
+status: revisada
+prerequisites: [m9-01, m3-03]
+objectives:
+  - "Explicar por qué las ruedas motrices necesitan girar a velocidades distintas en una curva"
+  - "Calcular la velocidad de una rueda sabiendo la del eje de entrada y la de la otra rueda (entrada = media)"
+  - "Montar un diferencial abierto y comprobarlo frenando una rueda con la mano"
+  - "Explicar qué pasa con una rueda sobre hielo y para qué sirve un autoblocante"
+materials:
+  - "Un diferencial de tu kit (caja con engranajes cónicos) o, si no tienes, piezas equivalentes: un engranaje grande hueco, cuatro engranajes cónicos y un eje cruzado"
+  - "Dos semiejes largos, dos ruedas, un engranaje de 8 dientes, un eje y una manivela"
+piece:
+  name: "Diferencial abierto con manivela"
+  hint: "Foto del diferencial con las dos ruedas y una frase: qué hizo la rueda libre cuando sujetaste la otra"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a montar un **diferencial abierto**: un mecanismo que reparte el giro de un eje entre **dos ruedas** y deja que cada una gire a su velocidad. Después sujetarás una rueda con la mano y **predecirás** qué hace la otra.
+
+<Fig src="vehiculo/v_dif_hero" alt="Un eje con una rueda gris a cada lado y, en el centro, una corona amarilla de dientes con el centro hueco. Dentro se ven dos engranajes cónicos azules en los extremos de los ejes y dos más pequeños rojos en un eje cruzado. Un piñón verde con manivela roja mueve la corona. Flechas naranja y cian marcan los giros: la de una rueda es más larga que la de la otra." caption="Una sola entrada (naranja) y dos salidas (cian) con arcos de distinta longitud: cada rueda gira a su ritmo." />
+</Block>
+
+<Block kind="concepto">
+## En una curva, las ruedas recorren distancias distintas
+
+En una curva, la rueda de **fuera** recorre un círculo más grande que la de **dentro** (lo viste en la dirección). Si las dos ruedas motrices fueran **una sola pieza rígida**, tendrían que girar igual, y una tendría que **patinar**.
+
+<Fig src="vehiculo/v_dif_curva" alt="Coche visto desde arriba girando a la izquierda. Del eje trasero salen dos flechas curvas alrededor del punto verde del centro de la curva: la de la rueda interior, naranja, es corta y la de la rueda exterior, cian, es larga." caption="Mismo tiempo, distinto camino: la rueda exterior (cian) recorre más que la interior (naranja)." />
+
+El **diferencial** lo resuelve: reparte el giro entre las dos ruedas y les permite girar a **velocidades distintas**. Y reparte el **par** (la fuerza de giro) **por igual**.
+
+En un diferencial abierto la regla es:
+
+**velocidad del eje de entrada = media de las velocidades de las dos ruedas**
+
+**Predice:** si sujetas la rueda izquierda con la mano para que no gire, ¿qué hace la derecha mientras giras la manivela?
+
+<details>
+<summary>Respuesta</summary>
+
+Gira **el doble** de rápido que la entrada: 0 y 2 × entrada tienen de media la entrada. Por eso, si una rueda patina, la otra casi no empuja.
+</details>
+
+<DiffLab />
+
+<Why title="¿Por qué hace falta repartir y no solo girar?">
+Dentro de la caja, los dos engranajes pequeños (**satélites**) pueden girar sobre su propio eje. Si las dos ruedas ofrecen la misma resistencia, los satélites no giran y arrastran a las dos por igual. Si una rueda se frena, los satélites **ruedan por encima** del engranaje de esa rueda y empujan más a la otra. Así se reparte el movimiento sin forzar nada.
+</Why>
+
+### Cuando una rueda patina
+
+Con **una rueda sobre hielo** y otra sobre asfalto, el diferencial abierto reparte el par por igual, así que solo puede dar a la rueda de asfalto **lo que aguante la del hielo**. Resultado: la del hielo patina y el coche apenas avanza.
+
+<Fig src="vehiculo/v_dif_hielo" alt="El mismo eje con diferencial. La rueda de un lado está sobre una placa azul claro que representa hielo y una flecha naranja larga indica que gira muy deprisa; la rueda del otro lado, sobre una placa gris de asfalto, no gira y lleva una bola roja." caption="Una rueda patina en el hielo (gira rápido) y la otra, la que agarra, casi no empuja." />
+
+Para eso existen los diferenciales **autoblocantes** o con **bloqueo**: limitan que una rueda gire mucho más que la otra, y así la que agarra sigue recibiendo par.
+
+En Technic, el diferencial lo forman **engranajes cónicos** (de bisel): engranan en ángulo y permiten cambiar el giro 90° y repartirlo entre dos salidas. Es lo que viste en los engranajes, a escala de coche.
+
+<Quiz id="q1" q="En una curva, el eje de entrada de un diferencial abierto gira a 90 rpm y la rueda izquierda a 70 rpm. ¿A cuántas rpm gira la rueda derecha?" options={["20 rpm", "90 rpm", "110 rpm"]} answer={2}>
+La entrada es la media: 90 = (70 + derecha) ÷ 2, así que derecha = 2 × 90 − 70 = **110 rpm**.
+</Quiz>
+
+<Tip title="Sabías que… el diferencial de 1827">
+El francés **Onésiphore Pecqueur** patentó en **1827** un mecanismo diferencial para un carro de vapor, y se le considera un pionero del diferencial del automóvil. Lo que hace es permitir que las ruedas giren a velocidades distintas en una curva.
+</Tip>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. Lo nuevo sale en color; lo anterior, en gris. El dibujo es un **esquema**; tu diferencial de kit tendrá su propia caja, pero hace lo mismo.
+
+<Step n={1} title="Dos semiejes y dos ruedas" img="vehiculo/v_dif_s1" alt="Dos ejes alineados con una rueda en el extremo exterior de cada uno; entre los dos ejes hay un hueco en el centro.">
+Pon **dos semiejes** en línea, cada uno con su rueda. Entre sus extremos internos queda un **hueco**: ahí va el diferencial.
+<Why>Los dos semiejes **no están unidos entre sí**: es lo que permite que giren distinto.</Why>
+</Step>
+
+<Step n={2} title="La caja con la corona" img="vehiculo/v_dif_s2" alt="Una corona amarilla de 24 dientes con el centro hueco, colocada en el hueco entre los dos ejes grises.">
+Coloca la **corona hueca** (la caja del diferencial) en el hueco, con los dos semiejes entrando por el centro. Es la pieza que recibirá el movimiento de entrada.
+</Step>
+
+<Step n={3} title="Planetarios y satélites" img="vehiculo/v_dif_s3" alt="Dentro de la corona, dos engranajes cónicos azules en los extremos de los dos semiejes y dos engranajes cónicos rojos pequeños en un eje cruzado que los une.">
+En el extremo de cada semieje, un **engranaje cónico** (planetario). Entre los dos, un **eje cruzado** con dos engranajes cónicos pequeños (**satélites**) que **engranan con los dos planetarios**.
+<Why>Los satélites son los que reparten: si una rueda se frena, ruedan sobre su planetario y empujan a la otra.</Why>
+</Step>
+
+<Step n={4} title="Piñón de entrada y manivela" img="vehiculo/v_dif_s4" alt="Un engranaje verde pequeño con una manivela roja, engranado por un lado con la corona amarilla, a dos agujeros de distancia entre los ejes.">
+Engrana un **piñón de 8 dientes** con la corona, con los ejes a (24 + 8) ÷ 16 = **2 agujeros** (con la corona de 24 del dibujo; si la tuya tiene otros dientes, haz esa cuenta con los suyos). Añade una **manivela**.
+
+**Predice y comprueba:** sujeta una rueda con la mano y gira la manivela despacio. ¿Qué hace la otra? ¿Gira el doble?
+
+<Warn title="Dedos y pelo">
+Los dientes en marcha pellizcan. Sujeta la rueda por fuera, gira despacio y no metas los dedos cerca de la corona.
+</Warn>
+</Step>
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** el resultado y compruébalo:
+
+1. **Cuenta vueltas.** Sujeta la rueda izquierda y da 10 vueltas de manivela con cuidado. Cuenta las vueltas de la derecha y compáralas con tu predicción.
+2. **Hielo y asfalto.** Pon una rueda sobre una superficie **lisa** (un folio plastificado) y la otra sobre una **rugosa** (un trapo). Empuja el eje con la manivela. **Predice:** ¿cuál gira? ¿se mueve el coche?
+3. **Calcula con el laboratorio.** Con la entrada a 100 rpm, mira el botón «Curva a la izquierda»: ¿a cuántas rpm va cada rueda? ¿Y con «Rueda izquierda sobre hielo»?
+
+<details>
+<summary>Respuesta del reto 2</summary>
+
+Gira la rueda de la superficie **lisa** (la que menos agarra) y la rugosa casi se queda parada: el coche apenas avanza. Es el efecto de la rueda sobre hielo.
+</details>
+</Block>
+
+<Block kind="errores">
+<Mistake title="Las dos ruedas en un eje rígido" wrongLabel="Así no: las dos igual de largo" rightLabel="Así sí: la de fuera recorre más">
+  <Fig slot="wrong" src="vehiculo/v_dif_mal" alt="Coche visto desde arriba girando a la izquierda. Las flechas rojas de las dos ruedas traseras tienen la misma longitud, aunque la rueda exterior debería recorrer más." />
+  <Fig slot="right" src="vehiculo/v_dif_bien" alt="El mismo coche con dos flechas verdes en las ruedas traseras: la de la rueda exterior es más larga que la de la interior." />
+
+Con las dos ruedas atadas al mismo eje giran **igual**: en la curva una tiene que arrastrarse. El diferencial deja que la de fuera dé más vueltas que la de dentro.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+<Checklist items={[
+  "Los dos semiejes giran libres y no están unidos entre sí",
+  "Los satélites engranan con los dos planetarios sin atascarse",
+  "He predicho qué hace una rueda al sujetar la otra y lo he comprobado",
+  "Sé explicar por qué en el hielo una rueda patina y la otra casi no empuja",
+  "Sé decir para qué sirve un diferencial autoblocante",
+]} />
+
+<Quiz id="q2" q="Un coche con diferencial abierto tiene una rueda motriz sobre hielo y otra sobre asfalto. ¿Qué suele pasar?" options={["La del asfalto empuja con toda la fuerza", "La del hielo patina y el coche apenas avanza", "Las dos agarran igual"]} answer={1}>
+El diferencial abierto reparte el par por igual: solo puede entregar a la rueda de asfalto lo que aguante la del hielo.
+</Quiz>
+
+<Quiz id="q3" q="¿Qué hace un diferencial autoblocante?" options={["Limita que una rueda gire mucho más que la otra para que la que agarra siga empujando", "Hace que las ruedas giren siempre al revés", "Funciona como un freno"]} answer={0}>
+Al limitar la diferencia de giro, la rueda con agarre sigue recibiendo par aunque la otra patine.
+</Quiz>
+
+<RegisterPiece piece="Diferencial abierto con manivela" />
+</Block>

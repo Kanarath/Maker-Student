@@ -1,0 +1,139 @@
+---
+id: m7-02
+unit: compras
+order: 2
+title: "Medir en Technic: todo va de 8 en 8 mm"
+summary: "Mide una viga contando saltos entre agujeros (8 mm cada uno), calcula una palanca de 15 agujeros sin regla y entiende las ruedas dentadas de 8, 16, 24 y 40 dientes."
+practice: [l_medir]
+cover: compras/m_hero
+duration: 30
+status: revisada
+prerequisites: [m7-01]
+objectives:
+  - "Medir contando saltos: la distancia entre agujeros contiguos es de 8 mm"
+  - "Calcular cuántas veces multiplica la fuerza una palanca contando saltos"
+  - "Calcular la relación de transmisión de dos engranajes con dientes conducida ÷ piñón"
+materials:
+  - "Una viga larga de tu kit (si no tienes, vale cualquier tira con agujeros o el dibujo)"
+  - "Una regla (para comprobar que 1 salto son unos 8 mm) y papel con lápiz"
+piece:
+  name: "Viga medida por saltos"
+  hint: "Foto de tu viga junto a la regla con los saltos numerados y la cuenta de milímetros"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a medir una viga **sin mirar la regla**: solo contando **saltos** entre agujeros. Cada salto mide **8 mm**, así que **contar agujeros es medir**.
+
+<Fig src="compras/m_hero" alt="Una viga amarilla larga tumbada con quince agujeros. Un pin gris está puesto en el cuarto agujero y una pesa verde en el segundo. Una flecha naranja larga baja sobre la pesa y una flecha cian corta baja sobre el agujero catorce. Debajo, una flecha naranja corta señala los dos saltos del apoyo a la pesa y una flecha cian larga, los diez saltos del apoyo al agujero catorce." caption="Apoyo en el agujero 4, carga en el 2 y mano en el 14: dos saltos a un lado y diez al otro. Tu fuerza se multiplica 10 ÷ 2 = 5 veces." />
+
+Es la misma regla de las palancas, pero con **piezas reales** y sin sacar la regla.
+</Block>
+
+<Block kind="concepto">
+## Los saltos son tu regla
+
+- Entre dos agujeros contiguos hay **8 mm** (de centro a centro).
+- Entre el agujero **2** y el **9** hay **7 saltos** (9 − 2). Son 7 × 8 = **56 mm**.
+- Se cuentan **los saltos, no los agujeros**.
+
+Predice: **¿cuántos mm hay entre el centro del agujero 2 y el del agujero 9?**
+
+<details>
+<summary>La respuesta</summary>
+
+Entre el 2 y el 9 hay **7 saltos** de 8 mm: 7 × 8 = **56 mm**. Una viga «5» mide unos 40 mm de largo (5 × 8).
+</details>
+
+### Una palanca contando saltos
+
+Con una viga de 15 agujeros, apoyo en el 4, carga en el 2 y tu mano en el 14:
+
+- Brazo de la carga: 4 − 2 = **2 saltos**.
+- Brazo de tu mano: 14 − 4 = **10 saltos**.
+- Tu fuerza se multiplica por 10 ÷ 2 = **5**.
+
+Se pueden contar **saltos en vez de milímetros** porque el factor 8 mm se **cancela** al dividir.
+
+<Why title="¿Por qué el 8 se cancela?">
+Los brazos miden 2 × 8 mm = 16 mm y 10 × 8 mm = 80 mm. Al dividir, 80 ÷ 16 = 5, igual que 10 ÷ 2. El 8 aparece arriba y abajo y se va.
+</Why>
+
+### Engranajes: dientes contra dientes
+
+Los engranajes rectos más habituales tienen **8, 16, 24 y 40 dientes**. La **relación de transmisión** es **dientes de la conducida ÷ dientes del piñón**.
+
+<Fig src="compras/m_engranajes" alt="Dos engranajes engranados sobre la mesa: uno pequeño azul de 8 dientes y otro grande amarillo de 24. Una flecha naranja curva casi completa rodea al pequeño y una flecha cian curva más corta rodea al grande." caption="Un piñón de 8 dientes mueve una rueda de 24: 24 ÷ 8 = 3. El pequeño da 3 vueltas por cada vuelta del grande." />
+
+<Quiz id="q1" q="Un piñón de 8 dientes mueve una rueda de 24 dientes. ¿Qué relación de transmisión tiene?" options={["1 : 3", "4 : 1", "3 : 1"]} answer={2}>
+24 ÷ 8 = **3**: relación **3 : 1**. El pequeño gira 3 veces por cada vuelta del grande.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos para medir tu viga. **En cada imagen, lo nuevo sale en color y lo anterior, en gris.** Usamos una viga de 10 agujeros como ejemplo; si la tuya es distinta, cambia los números.
+
+<Step n={1} title="La viga junto a la regla" img="compras/m_s1" alt="Una viga amarilla de diez agujeros tumbada junto a una regla blanca con marcas oscuras, con el borde izquierdo de la viga a la altura del cero de la regla." >
+Coloca tu viga **al lado de la regla**, con su extremo en el **0**. Mide su largo total y anótalo: una viga de 10 mide algo menos de 80 mm.
+<Why>Así comprobarás que el «8 mm» de la teoría se parece a la realidad.</Why>
+</Step>
+
+<Step n={2} title="Marca dos agujeros" img="compras/m_s2" alt="La viga amarilla (ahora en gris) con diez esferas sobre sus agujeros: dos esferas naranjas en el segundo y el noveno agujero y el resto negras." >
+Elige **dos agujeros** (por ejemplo, el 2 y el 9) y márcalos con un trozo de cinta. Apunta qué número tiene cada uno, empezando por la izquierda.
+</Step>
+
+<Step n={3} title="Cuenta los saltos" img="compras/m_s3" alt="Siete flechas pequeñas alternando cian y verde unen un agujero con el siguiente, desde el segundo hasta el noveno, sobre la viga." >
+Cuenta los **saltos** entre los dos: ve de agujero en agujero. Entre el 2 y el 9 son **7 saltos**. Multiplica: 7 × 8 = **56 mm**.
+</Step>
+
+<Step n={4} title="Una palanca de 15 agujeros" img="compras/m_hero" alt="Una viga amarilla de quince agujeros con un pin gris en el agujero 4, una pesa verde en el 2 y flechas: naranja larga sobre la pesa, cian corta en el agujero 14, y debajo dos flechas que marcan los dos saltos y los diez saltos desde el apoyo." >
+Con una viga larga, pon el **apoyo** en el agujero 4, la **carga** en el 2 y tu **mano** en el 14. Cuenta los saltos de cada lado y calcula **cuántas veces multiplica tu fuerza**. Comprueba en la imagen que te sale **5**.
+</Step>
+</Block>
+
+<Block kind="version">
+Elige un reto, **predice** y comprueba:
+
+1. **Otro apoyo:** con la misma viga de 15, pon el apoyo en el agujero 6 y la carga en el 2. ¿Cuántos saltos hay de cada lado? Predice cuántas veces multiplica tu fuerza si la mano está en el 14 (**brazo carga 4, brazo mano 8: ×2**).
+2. **Dos medidas:** mide tres vigas distintas contando saltos y comprueba con la regla. ¿Alguna se desvía?
+3. **Piñón y rueda:** si un engranaje de 8 mueve uno de 40, ¿qué relación sale? (**40 ÷ 8 = 5 : 1**). Predice cuántas vueltas dará el pequeño por cada vuelta del grande.
+</Block>
+
+<Block kind="errores">
+<Mistake title="Contar agujeros en vez de saltos" wrongLabel="8 agujeros contados" rightLabel="7 saltos contados">
+  <Fig slot="wrong" src="compras/m_error_mal" alt="Una viga amarilla junto a una regla con ocho esferas rojas sobre los agujeros del segundo al noveno, ambos incluidos." />
+  <Fig slot="right" src="compras/m_error_bien" alt="La misma viga con siete flechas verdes entre los agujeros, una por cada salto del segundo al noveno." />
+
+Del agujero 2 al 9 hay **7 saltos**, no 8 agujeros. Si cuentas agujeros te sale **un salto de más** (64 mm en vez de 56 mm). Cuenta **los espacios entre agujeros**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu medida:
+
+<Checklist items={[
+  "He medido mi viga con la regla y con saltos y el resultado es parecido",
+  "Cuento los saltos, no los agujeros",
+  "Sé por qué puedo usar saltos en vez de milímetros en una palanca",
+  "Sé calcular la relación de transmisión de dos engranajes",
+  "Sé qué pin usar si quiero que algo gire",
+]} />
+
+<Quiz id="q2" q="Una viga de 15 agujeros: apoyo en el 4, carga en el 2 y tu mano en el 14. ¿Cuántas veces multiplica tu fuerza?" options={["5 veces", "7 veces", "La divide entre 5"]} answer={0}>
+Brazo de la carga: 4 − 2 = 2 saltos. Brazo de tu mano: 14 − 4 = 10 saltos. 10 ÷ 2 = **5**.
+</Quiz>
+
+<Quiz id="q3" q="Entre el centro del agujero 2 y el del 9 de una viga, ¿qué distancia hay?" options={["64 mm", "7 mm", "56 mm"]} answer={2}>
+7 saltos × 8 mm = **56 mm**. Los 64 mm saldrían de contar 8 agujeros: es el error típico.
+</Quiz>
+
+<Quiz id="q4" q="¿Qué distancia hay entre los centros de dos agujeros contiguos de una viga Technic?" options={["8 mm", "5 mm", "16 mm"]} answer={0}>
+Todo el sistema va de **8 en 8 mm**. Una viga «5» mide unos 40 mm (5 × 8).
+</Quiz>
+
+<RegisterPiece piece="Viga medida por saltos" />
+</Block>

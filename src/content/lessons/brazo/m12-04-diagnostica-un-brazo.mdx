@@ -1,0 +1,153 @@
+---
+id: m12-04
+unit: brazo
+order: 4
+title: "Diagnostica un brazo: cae, vibra o no llega"
+summary: "Haz cuatro pruebas sencillas a un brazo articulado (juego, caída, vibración y cables) y rellena una ficha que dice qué falla y qué cambiar."
+practice: [l_arm_diag]
+cover: brazo/d_cae
+duration: 35
+status: revisada
+prerequisites: [m12-01, m12-02]
+objectives:
+  - "Reconocer si un fallo es de par, de rigidez, de juego o de peso lejos de la base"
+  - "Hacer pruebas cambiando una sola cosa cada vez y anotar lo medido"
+  - "Elegir un arreglo: contrapeso, freno, triángulos, eslabones más cortos o cables con holgura"
+materials:
+  - "Un brazo articulado de piezas con pasadores (el plano de la primera lección sirve) y una pieza pequeña de carga"
+  - "Una regla, cinta de carrocero y papel para anotar; unas bridas o gomas para los cables"
+piece:
+  name: "Ficha de diagnóstico de tu brazo"
+  hint: "Foto de tu ficha con cuatro pruebas: qué hiciste, qué mediste y qué cambiarías"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Un brazo que **cae**, **vibra** o **no llega** casi nunca falla por algo misterioso. La causa casi siempre está en lo que ya sabes: **par** insuficiente, **rigidez** escasa, **juego** en las uniones o **peso** lejos de la base. Hoy vas a **medir** en vez de adivinar.
+
+<Fig src="brazo/d_cae" alt="Brazo vertical con una pieza blanca en la pinza, en una posición alta con la viga amarilla casi horizontal. Detrás, en gris, la posición más baja a la que caería por su propio peso, y una flecha curva roja marca la caída desde la posición alta a la baja." caption="El brazo sostenido (en color) y su posición después de caer (en gris). Una flecha roja marca el recorrido." />
+
+Tu producto de hoy es una **ficha de diagnóstico**: cuatro pruebas con lo que hiciste, lo que mediste y lo que cambiarías. **Cambia una sola cosa cada vez** y mide qué mejora.
+</Block>
+
+<Block kind="concepto">
+## Cuando algo falla, mide
+
+Antes de arreglar, recuerda el **orden de un buen diseño** (es el mismo que seguirás en el proyecto):
+
+1. Define qué debe hacer el brazo y a qué distancia.
+2. Dibuja el esquema con las articulaciones y los eslabones.
+3. Calcula el par que necesita cada articulación.
+4. Elige motores y reducción **con margen**.
+5. Monta y prueba **sin carga**.
+6. Añade carga poco a poco y corrige lo que falle.
+
+### Tres síntomas, tres sospechosos
+
+**El brazo se cae al parar el motor.** Con engranajes rectos y poco rozamiento, el peso puede **mover el motor hacia atrás**: el mecanismo no se autobloquea. Un **tornillo sin fin** con poca inclinación puede bloquear, aunque no es seguro garantizarlo. Soluciones: un **freno**, un tornillo sin fin o un **contrapeso** que equilibre el brazo (con el contrapeso, el motor tiene que aguantar mucho menos par).
+
+**El brazo vibra al parar.** Un brazo largo y flexible rebota como una regla, y los pines con holgura añaden juego. Se arregla con **rigidez**: eslabones más cortos, **diagonales** y menos masa lejos de la base. Un motor más rápido solo hace más brusco el arranque.
+
+<Fig src="brazo/d_vibra" alt="Brazo largo y fino de vigas amarilla y roja, con dos posiciones fantasma de la punta, una más alta y otra más baja, y una flecha cian de doble punta en el extremo que marca la oscilación." caption="Eslabones largos y finos: la punta oscila arriba y abajo antes de pararse." />
+
+<Fig src="brazo/d_diagonal" alt="El mismo brazo largo con un triángulo montado sobre la viga amarilla: dos vigas azules en diagonal que se juntan en un vértice por encima de la viga, formando un triángulo con ella como base." caption="Un triángulo no se deforma: las dos diagonales azules y la viga amarilla (3-4-5 por 2) rigidizan el eslabón." />
+
+<Why title="¿Por qué un triángulo y no un cuadrado?">
+Un cuadrado de vigas con pasadores se deforma como un paralelogramo. Un **triángulo** no puede cambiar de forma sin romper una viga: es la forma rígida por excelencia (lo verás con detalle en la unidad «Estructuras y rigidez»).
+</Why>
+
+**El brazo termina siempre un poco a un lado.** Los pequeños márgenes de cada unión se **acumulan**, y más cuanto más largo es el brazo. Menos uniones, y más rígidas, dan más precisión.
+
+**Los cables se enredan o se pellizcan.** Con las articulaciones en sus extremos el cable no debe tensarse ni quedar pillado. Revisa el recorrido completo **a mano y con el motor desconectado**.
+
+**Predice antes de mirar:** tu brazo tiene un motor con reducción en el hombro y levanta bien la pieza. Al parar el motor, el brazo cae lentamente. ¿Qué ocurre?
+
+<details>
+<summary>La respuesta</summary>
+
+El mecanismo **no se autobloquea**: el peso del brazo mueve el motor hacia atrás. No hace falta un motor «más fuerte»: hace falta **frenar** o **equilibrar** el brazo (freno, sin fin o contrapeso).
+</details>
+
+<Quiz id="q1" q="Tu brazo cae lentamente por su propio peso al parar el motor del hombro. ¿Qué ocurre?" options={["El mecanismo no se autobloquea: el peso mueve el motor hacia atrás", "El motor está roto", "El brazo no pesa bastante"]} answer={0}>
+Con engranajes rectos y poco rozamiento el peso puede mover el motor hacia atrás. Un tornillo sin fin con poca inclinación puede bloquear, aunque no es seguro garantizarlo.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cuatro pruebas, una por síntoma. En cada una **anota** qué haces, qué mides y qué cambiarías. Si no tienes todavía un brazo vertical, usa el plano de la primera lección o cualquier mecanismo articulado de vigas.
+
+<Step n={1} title="Prueba 1: el juego" img="brazo/d_juego" alt="Brazo con la viga amarilla inclinada y la roja casi horizontal, y una segunda posición de la viga roja en gris, ligeramente más alta. Dos flechas naranjas verticales junto a la punta marcan que se empuja arriba y abajo.">
+Con el motor desconectado, **empuja la punta hacia arriba y hacia abajo** con un dedo. Mide con una regla **cuánto se mueve** (en mm) sin que el motor se mueva.
+<Why>Ese margen es el **juego** de las uniones. Se suma a lo largo del brazo y explica por qué la punta no termina donde esperabas.</Why>
+</Step>
+
+<Step n={2} title="Prueba 2: ¿se cae?" img="brazo/d_cae" alt="El brazo con carga en una posición alta y, en gris, la posición más baja a la que caería, con una flecha roja curva entre ambas.">
+Pon el brazo **horizontal con la carga** y deja de sujetarlo (motor sin energía, sin forzar nada). ¿Se queda o cae? ¿Con qué velocidad?
+<Warn title="Cuidado con la caída">
+Mantén los dedos y la cara lejos del recorrido del brazo. Sujétalo con la otra mano para que no golpee.
+</Warn>
+</Step>
+
+<Step n={3} title="Prueba 3: ¿vibra?" img="brazo/d_vibra" alt="Un brazo largo y fino con dos posiciones fantasma de la punta, una arriba y otra abajo, y una flecha cian vertical de doble punta.">
+Mueve el brazo y **para de golpe**. Cuenta cuántas veces oscila la punta antes de quedarse quieta. Repite con eslabones **más cortos** y con una **diagonal** (el triángulo).
+</Step>
+
+<Step n={4} title="Prueba 4: los cables" img="brazo/d_cable_bien" alt="El brazo doblado casi en ángulo recto con un cable verde que sigue las vigas por fuera y hace un bucle holgado en el codo, sujeto con pequeñas bridas azules.">
+Pasa un cable (o una cuerda) a lo largo del brazo, con **holgura** en cada articulación, y súbelo con **bridas o gomas**. Mueve cada articulación hasta sus extremos **a mano**: el cable no debe tensarse ni quedar pillado.
+</Step>
+
+Cuando termines, **rellena tu ficha**: para cada prueba, escribe qué observaste y qué cambio concreto harás.
+</Block>
+
+<Block kind="version">
+Cambia una cosa, **predice** y comprueba:
+
+1. **Más corto:** quita dos agujeros del eslabón 2 (una viga más corta). ¿Disminuyen la vibración y el juego en la punta? Mídelo.
+2. **Triángulo:** monta un triángulo rígido con una viga de 9 agujeros y dos de 6 agujeros (sus lados miden 8, 5 y 5 pasos). Comprueba que no se deforma. ¿Y con tres vigas que no formen triángulo?
+3. **Contrapeso:** equilibra el brazo con un contrapeso detrás del hombro. ¿Se cae menos? ¿Por qué el motor sufre menos?
+
+Prueba también a **añadir carga poco a poco**, anotando en qué momento aparece cada fallo.
+</Block>
+
+<Block kind="errores">
+<Mistake title="Cables tensos que se pillan" wrongLabel="Cable tenso" rightLabel="Cable con holgura">
+  <Fig slot="wrong" src="brazo/d_cable_mal" alt="El brazo doblado con un cable rojo recto de la columna a la pinza, cruzando por dentro del codo, completamente tenso." />
+  <Fig slot="right" src="brazo/d_cable_bien" alt="El mismo brazo con un cable verde que sigue las vigas con un bucle holgado en el codo y pequeñas bridas azules que lo sujetan." />
+
+Al doblar el codo, un cable tenso **tira** del brazo, se pellizca o se rompe. Deja **holgura**, recógelos con bridas o guías y revisa el recorrido completo **antes de conectar**.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu ficha:
+
+<Checklist items={[
+  "He hecho las cuatro pruebas (juego, caída, vibración, cables)",
+  "En cada una he anotado qué hice, qué medí y qué cambiaría",
+  "He cambiado una sola cosa cada vez",
+  "He revisado el recorrido de los cables con el motor desconectado",
+  "Sé decir si un fallo es de par, de rigidez, de juego o de peso lejos de la base",
+]} />
+
+<Quiz id="q2" q="Al parar bruscamente, la punta del brazo oscila arriba y abajo. Los eslabones son largos y finos. ¿Qué cambio es más eficaz?" options={["Pintar los eslabones", "Un motor más rápido", "Acortar los eslabones y añadir diagonales"]} answer={2}>
+Menos longitud y triángulos rigidizan la estructura (flecha y juego). Un motor más rápido solo hará más brusco el arranque.
+</Quiz>
+
+<Quiz id="q3" q="Tu brazo termina siempre un poco más a la izquierda de donde esperabas. ¿Qué puede causarlo?" options={["Que la gravedad cambia durante el día", "Juego en las uniones y falta de rigidez, que se suman a lo largo del brazo", "Que los motores se cansan"]} answer={1}>
+Los pequeños márgenes de cada unión se acumulan, y más cuanto más largo es el brazo. Menos uniones y más rígidas dan más precisión.
+</Quiz>
+
+<Quiz id="q4" q="Los cables de tu brazo se enredan y se pellizcan al girar las articulaciones. ¿Qué haces?" options={["Los tensas para que no cuelguen", "Los atas fuerte a los ejes", "Dejas holgura, los recoges con bridas o guías y compruebas el recorrido completo antes de conectar"]} answer={2}>
+Con las articulaciones en sus extremos el cable no debe tensarse ni quedar pillado. Revisa el recorrido completo a mano y con el motor desconectado.
+</Quiz>
+
+<Quiz id="q5" q="¿Qué mejoraría un brazo que cae lentamente por su propio peso?" options={["Un freno, un tornillo sin fin o un contrapeso que equilibre el brazo", "Un brazo más largo", "Quitar la reducción"]} answer={0}>
+Equilibrar el brazo con un contrapeso reduce el par que debe aguantar el motor; un freno o un sin fin evitan que retroceda.
+</Quiz>
+
+<RegisterPiece piece="Ficha de diagnóstico de tu brazo" />
+</Block>

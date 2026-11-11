@@ -1,0 +1,134 @@
+---
+id: m2-03
+unit: fuerza
+order: 3
+title: "Trabajo y energía: por qué nada es gratis"
+summary: "Sube un libro de dos maneras (en vertical y por una rampa) y comprueba con tu goma que menos fuerza obliga a recorrer más camino."
+practice: [l_trabajo]
+cover: fuerza/t_hero
+duration: 35
+status: revisada
+prerequisites: [m2-01]
+objectives:
+  - "Calcular trabajo = fuerza × distancia (J) y potencia = trabajo ÷ tiempo (W)"
+  - "Explicar con números por qué una palanca o una rampa cambian fuerza por recorrido"
+  - "Entender que la energía no se crea ni se destruye, solo se transforma"
+materials:
+  - "Tu medidor de goma y un libro"
+  - "Una tabla, cartón rígido o una bandeja para la rampa, y algo estable de unos 5 cm de alto (un libro más) como escalón"
+piece:
+  name: "Comparativa: subir recto o por la rampa"
+  hint: "Foto de las dos lecturas de goma (en vertical y por la rampa) con la altura y la longitud de la rampa"
+xp: { concept: 10, build: 20, piece: 40 }
+review:
+  examplesChecked: false
+  imagesChecked: false
+  testedByLearner: false
+---
+
+<Block kind="pieza">
+Vas a subir un libro **la misma altura de dos maneras**: recto hacia arriba y por una **rampa**. Con tu goma verás que por la rampa haces **menos fuerza**… pero **recorres más camino**.
+
+<Fig src="fuerza/t_hero" alt="A la izquierda, un libro rojo sostenido en el aire por una goma amarilla muy estirada hacia arriba, junto a un escalón gris de la misma altura. A la derecha, el libro sobre una rampa de cartón con una goma poco estirada que sube por la rampa hasta otro escalón. Flechas naranjas marcan la fuerza (larga a la izquierda, corta a la derecha) y flechas cian marcan la distancia (corta a la izquierda, larga a la derecha)." caption="Naranja: tu fuerza. Cian: el camino que recorres. Recto: fuerza grande, camino corto. Por la rampa: fuerza pequeña, camino largo." />
+
+Es la regla de las palancas de la unidad de ventaja mecánica, vista con **números**.
+</Block>
+
+<Block kind="concepto">
+## La moneda de las máquinas
+
+- **Trabajo** = fuerza × distancia, en **julios (J)**. Solo cuenta la distancia **en la dirección de la fuerza**. Empujar una pared sin moverla no es «trabajo» para la física.
+- **Potencia** = trabajo ÷ tiempo, en **vatios (W)**. Mismo trabajo en menos tiempo = más potencia.
+- **Energía:** la capacidad de realizar trabajo. **No se crea ni se destruye**, solo se transforma (en movimiento, en calor…).
+
+Una máquina **no puede darte más trabajo del que recibe**: solo cambia **fuerza** por **recorrido**.
+
+Predice: **con una palanca levantas una carga de 100 N a 0,2 m de altura (20 J) empujando con 25 N. ¿Cuánto tiene que bajar tu mano?**
+
+<details>
+<summary>La respuesta</summary>
+
+<Fig src="fuerza/t_palanca" alt="Una palanca de viga amarilla apoyada en un soporte azul, un poco inclinada: a la izquierda, a un agujero del apoyo, cuelga una pesa verde con una flecha violeta larga hacia abajo; a la derecha, a cuatro agujeros del apoyo, una flecha naranja corta. Dos arcos cian marcan el recorrido de cada extremo: uno pequeño a la izquierda y uno cuatro veces mayor a la derecha." caption="Carga a 1 agujero del apoyo y mano a 4: la mano hace 4 veces menos fuerza y se mueve 4 veces más." />
+
+El trabajo es el mismo (20 J, sin rozamiento): 25 N × **0,8 m** = 20 J. Cuatro veces menos fuerza, cuatro veces más recorrido.
+</details>
+
+Ahora juega con los números. **Predice** antes de cambiar nada y comprueba que el trabajo de tu mano **no cambia** (salvo que añadas pérdidas):
+
+<TrabajoLab />
+
+<Why title="¿Por qué no existen las máquinas que se mueven solas?">
+Una máquina nunca entrega más energía de la que recibe, y parte se «pierde» como **calor por rozamiento**. Por eso no hay máquinas que se muevan solas sin parar.
+</Why>
+
+<Tip title="Sabías que… el «caballo de vapor»">
+James Watt inventó el **caballo de vapor** (horsepower) para explicar a sus clientes cuánto trabajo hacían sus máquinas de vapor comparadas con los caballos. Un caballo de vapor equivale a unos **746 vatios**. Cómo calculó exactamente ese valor se cuenta de formas distintas y no hay una fuente histórica clara: es un buen ejemplo de que una unidad puede nacer de una necesidad práctica.
+</Tip>
+
+<Quiz id="q1" q="Levantas una caja con una fuerza de 20 N a lo largo de 3 m. ¿Qué trabajo haces?" options={["23 J", "60 J", "120 J"]} answer={1}>
+Trabajo = fuerza × distancia = 20 N × 3 m = **60 J**.
+</Quiz>
+</Block>
+
+<Block kind="montaje">
+Cuatro pasos. **En cada imagen, lo nuevo sale en color y lo que ya tenías, en gris.** Usa el medidor de goma de la lección anterior. Lo importante es **comparar** lecturas, no convertir a newtons.
+
+<Step n={1} title="La altura a subir" img="fuerza/t_s1" alt="Un libro rojo en el suelo y, a la derecha, un escalón gris. Una flecha cian vertical entre los dos marca la altura que hay que subir." >
+Pon el libro en el suelo y un **escalón** (otro libro, una caja) al lado. La flecha cian es la **altura h** que hay que subir: mídela con la regla y anótala.
+</Step>
+
+<Step n={2} title="Subirlo en vertical" img="fuerza/t_s2" alt="El libro rojo sostenido en el aire por una goma amarilla muy estirada hacia arriba, a la altura del escalón. Una flecha naranja larga sube junto a la goma y una flecha cian vertical marca la altura." >
+Sube el libro **recto hacia arriba** con la goma hasta la altura del escalón. Apunta **cuánto se estira** la goma: es tu **fuerza**. El camino de tu mano es la altura h.
+<Warn title="Libro y goma">
+Sube despacio y no pases el libro por encima de tu cara. Si la goma se suelta, el libro cae: aparta los pies.
+</Warn>
+</Step>
+
+<Step n={3} title="Subirlo por la rampa" img="fuerza/t_s3" alt="Una rampa de cartón inclinada con el libro rojo cerca de abajo y una goma amarilla poco estirada que sube por la rampa hasta una anilla. Una flecha naranja corta apunta hacia arriba a lo largo de la rampa; arriba hay un escalón gris." >
+Apoya una tabla del suelo al escalón y **arrastra el libro por la rampa** tirando paralelo a ella. Apunta cuánto se estira la goma: debería ser **mucho menos**.
+<Why>En el caso ideal sin rozamiento, la fuerza por la rampa sería **altura ÷ longitud** de la fuerza vertical. Con rampa de 12 de largo para subir 5, es 5 ÷ 12 ≈ 0,42: **menos de la mitad**. Con rozamiento real saldrá algo más.</Why>
+</Step>
+
+<Step n={4} title="Compara: fuerza × camino" img="fuerza/t_s4" alt="Las dos configuraciones lado a lado: el libro subido en vertical con goma muy estirada a la izquierda y el libro en la rampa con goma poco estirada a la derecha. Flechas naranjas (fuerza) y cian (camino): larga y corta a la izquierda, corta y larga a la derecha." >
+Anota las dos lecturas y mide el **camino de tu mano**: la altura h en vertical y la **longitud de la rampa L** por la rampa. Compara **fuerza × camino**: deberían ser **parecidos** (algo mayor en la rampa por el rozamiento).
+</Step>
+</Block>
+
+<Block kind="version">
+Elige un reto, **predice** y comprueba:
+
+1. **Rampa más larga:** alarga la rampa al doble (misma altura). Predice: ¿la goma se estira la mitad? ¿Y el camino se dobla?
+2. **Rampa con rodillos:** pon lápices bajo el libro. ¿Qué parte de la diferencia que ves entre fuerza × camino de la rampa y de la vertical era rozamiento?
+3. **Tu potencia:** sube el libro por la rampa en 10 s y luego en 5 s. El trabajo es el mismo, ¿qué cambia? (**Potencia = trabajo ÷ tiempo**: con la mitad de tiempo, el doble de potencia.)
+</Block>
+
+<Block kind="errores">
+<Mistake title="Medir la altura en vez del camino" wrongLabel="Contando solo la altura" rightLabel="Contando el camino por la rampa">
+  <Fig slot="wrong" src="fuerza/t_error_mal" alt="Una rampa de cartón con una goma poco estirada. Seis bolitas rojas están alineadas en vertical junto al escalón, a lo largo de la altura." />
+  <Fig slot="right" src="fuerza/t_error_bien" alt="La misma rampa. Siete bolitas verdes siguen la inclinación de la rampa desde abajo hasta arriba, a lo largo del camino." />
+
+El trabajo es **fuerza × distancia en la dirección de la fuerza**. Por la rampa tu mano recorre **la longitud de la rampa**, no la altura. Si usas la altura, el «ahorro» de fuerza parece un regalo… y no lo es.
+</Mistake>
+</Block>
+
+<Block kind="calidad">
+Antes de registrar, comprueba tu comparativa:
+
+<Checklist items={[
+  "He medido la altura h y la longitud L de la rampa",
+  "Con la rampa la goma se estira menos que en vertical",
+  "He comparado fuerza × camino en los dos casos",
+  "Sé decir por qué en la realidad sale algo mayor por la rampa (rozamiento)",
+  "Sé calcular trabajo (J) y potencia (W)",
+]} />
+
+<Quiz id="q2" q="Un motor hace 600 J de trabajo en 5 s. ¿Qué potencia tiene?" options={["3000 W", "240 W", "120 W"]} answer={2}>
+Potencia = trabajo ÷ tiempo = 600 J ÷ 5 s = **120 W**.
+</Quiz>
+
+<Quiz id="q3" q="¿Qué significa que la energía «se conserva»?" options={["Que siempre se guarda en una pila", "Que no se crea ni se destruye: solo se transforma (por ejemplo, en movimiento o en calor)", "Que una máquina puede dar más energía de la que recibe"]} answer={1}>
+Una máquina nunca entrega más energía de la que recibe; parte se «pierde» como calor por rozamiento.
+</Quiz>
+
+<RegisterPiece piece="Comparativa: subir recto o por la rampa" />
+</Block>
