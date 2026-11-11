@@ -470,4 +470,10 @@ function renderExamResults(x) {
 document.title = APP.name;
 go('home');
 ({ '#repaso': () => go('review'), '#taller': () => go('dojo') })[location.hash]?.();
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+// Enlaces profundos desde las lecciones nuevas: ?leccion=l_palanca · ?compras=1 · ?examen=all
+{
+  const q = new URLSearchParams(location.search);
+  if (q.get('leccion') && LESSON_BY_ID[q.get('leccion')]) startLesson(LESSON_BY_ID[q.get('leccion')]);
+  else if (q.get('compras')) viewCompras();
+  else if (q.get('examen')) startExam(q.get('examen'));
+}

@@ -6,6 +6,7 @@ import { visibleLessons, lessonXp, type Lesson } from "../../lib/lessons";
 import { UNITS } from "../../data/units";
 import { url } from "../../lib/url";
 import { lessonComponents } from "../../components/lesson";
+import legacy from "../../../docs/legacy-content.json";
 import LessonProgress from "../../components/lesson/LessonProgress.astro";
 
 export async function getStaticPaths() {
@@ -24,6 +25,7 @@ const same = all.filter((x) => x.data.unit === l.unit);
 const i = same.findIndex((x) => x.data.id === l.id);
 const prev = same[i - 1];
 const next = same[i + 1];
+const legacyTitle = (id: string) => (legacy as { units: { lessons: { id: string; title: string }[] }[] }).units.flatMap((u) => u.lessons).find((x) => x.id === id)?.title ?? id;
 const statusLabel = { borrador: "Borrador · solo en local", revisada: "En prueba", publicada: "" }[l.status];
 ---
 
@@ -74,9 +76,18 @@ const statusLabel = { borrador: "Borrador · solo en local", revisada: "En prueb
       )}
     </aside>
 
-    <article class="body" data-lesson-id={l.id}>
-      <Content components={lessonComponents} />
-    </article>
+    <div class="main">
+      <article class="body" data-lesson-id={l.id}>
+        <Content components={lessonComponents} />
+      </article>
+      {l.practice.length > 0 && (
+        <section class="panel practice" aria-labelledby="pr-t">
+          <h2 id="pr-t">🎯 Practica lo aprendido</h2>
+          <p class="muted">Ejercicios cortos con repaso espaciado: lo que falles vuelve antes. Sin vidas ni castigos.</p>
+          <div class="btns">{l.practice.map((p) => <a class="btn" href={url(`practica/?leccion=${p}`)}>Practicar: {legacyTitle(p)}</a>)}</div>
+        </section>
+      )}
+    </div>
   </div>
 
   <nav class="pager" aria-label="Lecciones">
@@ -101,7 +112,11 @@ const statusLabel = { borrador: "Borrador · solo en local", revisada: "En prueb
   .toc ol { padding-left: 1.4em; margin: 0; }
   .toc a { color: var(--text); text-decoration: none; }
   .toc a:hover { color: var(--accent); }
-  .body { max-width: 780px; min-width: 0; }
+  .main { max-width: 780px; min-width: 0; }
+  .body { min-width: 0; }
+  .practice { margin-top: 48px; border-color: var(--accent); }
+  .practice h2 { font-size: 1.3rem; }
+  .practice .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
   .body :global(code) { font-family: var(--font-mono); background: var(--panel-2); padding: 1px 6px; font-size: .9em; border-radius: 3px; }
   .body :global(h2) { font-size: 1.5rem; }
   .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }

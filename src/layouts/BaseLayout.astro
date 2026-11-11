@@ -20,6 +20,9 @@ const fullTitle = title === "Taller" ? "Maker Student · aprende mecánica monta
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="manifest" href={`${base}manifest.webmanifest`} />
+    <link rel="apple-touch-icon" href={`${base}apple-touch-icon.png`} />
+    <meta name="theme-color" content="#0b0d12" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -39,6 +42,10 @@ const fullTitle = title === "Taller" ? "Maker Student · aprende mecánica monta
     <script type="application/json" id="maker-catalog" set:html={JSON.stringify(catalog)} />
     <script>
       import "../lib/ui/progress-ui";
+    </script>
+    <script is:inline define:vars={{ base }}>
+      // Modo sin conexión: el service worker guarda lo que visitas (red primero, caché de respaldo).
+      if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register(base + "sw.js").catch(() => {});
     </script>
   </body>
 </html>

@@ -8,6 +8,9 @@ import { url } from "../lib/url";
     <nav aria-label="Principal">
       <a href={url("")}>Taller</a>
       <a href={url("montajes/")}>Mis montajes</a>
+      <a href={url("practica/")}>Práctica</a>
+      <a href={url("practica/?examen=all")}>Examen</a>
+      <a href={url("practica/?compras=1")}>Compras</a>
     </nav>
     <a class="xp" href={url("")} title="Tu XP y tu rango" data-xp-pill hidden>
       <b data-xp-total>0</b> XP · <span data-xp-rank></span>
@@ -21,11 +24,12 @@ import { url } from "../lib/url";
   .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 700 1.05rem var(--font-head); letter-spacing: .04em; }
   .mark { display: grid; place-items: center; width: 30px; height: 30px; background: var(--amber); color: #0b0d12; border-radius: 6px; }
   .sl { color: var(--amber); margin: 0 1px; }
-  nav { display: flex; gap: 18px; margin-left: 8px; }
+  nav { display: flex; gap: 18px; margin-left: 8px; flex-wrap: wrap; }
   nav a { text-decoration: none; color: var(--muted); font-weight: 500; }
   nav a:hover { color: var(--text); }
   .xp { margin-left: auto; text-decoration: none; font: 500 .82rem var(--font-mono); color: var(--muted); border: 1px solid var(--line); padding: 5px 10px; border-radius: 999px; }
   .xp b { color: var(--accent); }
   [hidden] { display: none !important; }
-  @media (max-width: 560px) { .bar { gap: 12px; } nav { gap: 12px; font-size: .9rem; } .logo span:last-child { font-size: .9rem; } }
+  @media (max-width: 760px) { .xp { display: none; } }
+  @media (max-width: 560px) { .bar { gap: 12px; padding-block: 6px; } nav { gap: 12px; font-size: .9rem; } .logo span:last-child { font-size: .9rem; } }
 </style>

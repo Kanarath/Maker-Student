@@ -9,3 +9,4 @@ Thumbs.db
 .validate-dist/
 __pycache__/
 *.pyc
+.build-*/

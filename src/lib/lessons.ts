@@ -1,6 +1,9 @@
 // Acceso a las lecciones + comprobaciones que necesitan ver TODAS a la vez.
 import { getCollection, type CollectionEntry } from "astro:content";
 import { UNITS } from "../data/units";
+import legacy from "../../docs/legacy-content.json";
+
+const LEGACY_LESSONS = new Set((legacy as { units: { lessons: { id: string }[] }[] }).units.flatMap((u) => u.lessons.map((l) => l.id)));
 
 export type Lesson = CollectionEntry<"lessons">;
 
@@ -33,7 +36,10 @@ function validate(list: Lesson[]) {
     const where = `src/content/lessons/${l.id}.mdx`;
     if (ids.has(id)) errors.push(`${where}: id «${id}» repetido (también en ${ids.get(id)})`);
     ids.set(id, where);
-    if (!UNITS.some((u) => u.id === unit)) errors.push(`${where}: la unidad «${unit}» no existe en src/data/units.ts`);
+    const u = UNITS.find((x) => x.id === unit);
+    if (!u) errors.push(`${where}: la unidad «${unit}» no existe en src/data/units.ts`);
+    else if (!id.startsWith(`m${u.n}-`)) errors.push(`${where}: el id «${id}» no empieza por m${u.n}- (módulo de la unidad ${unit})`);
+    for (const p of l.data.practice) if (!LEGACY_LESSONS.has(p)) errors.push(`${where}: practice «${p}» no existe en el motor de práctica`);
   }
   for (const l of list)
     for (const p of l.data.prerequisites) if (!ids.has(p)) errors.push(`src/content/lessons/${l.id}.mdx: prerrequisito «${p}» no existe`);

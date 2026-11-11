@@ -10,11 +10,12 @@ const lessons = defineCollection({
   loader: glob({ pattern: "**/*.mdx", base: "./src/content/lessons" }),
   schema: z
     .object({
-      id: z.string().regex(/^m\d{1,2}-\d{2}$/, "El id debe tener la forma m1-02 (módulo-lección)"),
-      unit: z.string().regex(/^[a-z_]+$/, "unit: id de la unidad (p. ej. vm)"),
+      id: z.string().regex(/^m\d{1,2}-\d{2}$/, "El id debe tener la forma m3-02 (módulo-lección)"),
+      unit: z.string().regex(/^[a-z]+$/, "unit: id de la unidad (p. ej. vm)"),
       order: z.number().int().min(1),
       title: z.string().min(4),
       summary: z.string().min(10).max(220),
+      practice: z.array(z.string()).default([]), // ids de lecciones del motor de práctica (public/practica) que cubren esta lección
       cover: z.string().regex(/^[a-z0-9_]+\/[a-z0-9_]+$/, "cover: ruta de la imagen sin extensión, p. ej. vm/p_hero"),
       duration: z.number().int().min(5).max(60),
       status: z.enum(["borrador", "revisada", "publicada"]),
