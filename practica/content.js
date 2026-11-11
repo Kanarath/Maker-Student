@@ -1,0 +1,848 @@
+// =====================================================================
+// CONFIGURACIÓN Y CONTENIDO — Taller de Inventor (MVP: unidad «Ventaja mecánica»)
+// Reglas: ids estables para siempre · ≤ 7 items por lección · explicación siempre · nada se usa antes de enseñarse.
+// =====================================================================
+const APP = {
+  key: 'tallerinventor',                 // clave de localStorage (única por app)
+  name: 'Maker Student',
+  greetings: ['Sin presión: cualquier ejercicio suma.', 'Dos minutos bastan. Cada sesión cuenta.', 'Aquí no se pierde nada. Solo se avanza.', 'Todo invento empieza con: «¿cómo funciona esto?»'],
+  good: ['¡Bien!', '¡Eso es!', '¡Excelente!', '¡Perfecto!', '¡Funciona!', '¡Bien montado!'],
+  ranks: [
+    { xp: 0, name: 'Aprendiz', icon: '🔧' }, { xp: 150, name: 'Montador', icon: '🔩' }, { xp: 400, name: 'Manitas', icon: '⚙️' },
+    { xp: 800, name: 'Mecánico', icon: '🛠️' }, { xp: 1400, name: 'Diseñador', icon: '📐' }, { xp: 2400, name: 'Inventor', icon: '💡' }, { xp: 4000, name: 'Maestro inventor', icon: '🏆' }
+  ],
+  // Colección: piezas, herramientas e inventos (emojis del sistema; ver docs/06 sobre emojis como arte)
+  treasures: [['🔧', 'Llave inglesa'], ['🔩', 'Tornillo y tuerca'], ['⚙️', 'Engranaje'], ['🧰', 'Caja de herramientas'], ['⛓️', 'Cadena'], ['🧲', 'Imán'], ['📐', 'Escuadra'], ['📏', 'Regla'],
+    ['🔨', 'Martillo'], ['⚖️', 'Balanza'], ['🏗️', 'Grúa'], ['🚲', 'Bicicleta'], ['🦾', 'Brazo mecánico'], ['🕰️', 'Reloj mecánico'], ['🛠️', 'Herramientas cruzadas'], ['💡', 'Idea']],
+  kinds: { term: 'Conceptos', fact: 'Teoría', calc: 'Cálculo', order: 'Procedimientos', case: 'Casos y diagnóstico' },
+  kindIcon: { term: '🔤', fact: '❓', calc: '🧮', order: '🔢', case: '🔍' }
+};
+
+const ITEMS = {};
+function addItem(it) { ITEMS[it.id] = it; return it.id; }
+
+// ---- Constructores de contenido (un item = una idea) ----
+// término ↔ definición   (hint: truco para recordar; short: versión corta para emparejar)
+const T = (id, term, def, group, hint, short) => addItem({ id: 't_' + id, kind: 'term', term, def, group, hint, short });
+// pregunta con distractores propios (explain: el POR QUÉ; fig: dibujo SVG opcional)
+const F = (id, q, a, wrong, explain, group, fig) => addItem({ id: 'f_' + id, kind: 'fact', q, a, wrong, explain, group, fig });
+// cálculo con generador opcional de números aleatorios: gen() → { q, a, wrong:[...], explain, fig? }
+const C = (id, q, a, wrong, explain, group, gen, fig) => addItem({ id: 'c_' + id, kind: 'calc', q, a, wrong, explain, group, gen, fig });
+// ordenar pasos
+const O = (id, prompt, steps, explain, group) => addItem({ id: 'o_' + id, kind: 'order', prompt, steps, explain, group });
+// caso/lectura con preguntas: qs = [[pregunta, [opciones], índiceCorrecto, explicación]]
+const X = (id, title, lines, qs, group) => addItem({ id: 'x_' + id, kind: 'case', title, lines, qs, group });
+
+// Utilidades para generadores (`pick` se define en app.js; estos generadores solo corren con la app cargada)
+const fmt = (n, d = 1) => (Math.round(n * 10 ** d) / 10 ** d).toString().replace('.', ',');
+const uniq = (arr, correct) => [...new Set(arr)].filter(x => x !== correct);
+
+// =====================================================================
+// FIGURAS SVG PROPIAS (sin derechos de autor): dibujos técnicos de línea. Usan variables CSS (teal, dorado, blancos).
+// =====================================================================
+const SV = {
+  ink: 'stroke="var(--teal)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"',      // contorno de piezas
+  key: 'stroke="var(--gold)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"',      // lo que importa (apoyo, carga, fuerza)
+  wire: 'stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round"',                              // cuerdas
+  fill: 'fill="var(--fillt)"',
+  wrap: (vb, inner, label, extra = '') => `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label}" style="width:100%;height:auto;max-height:210px"${extra}>${inner}</svg>`,
+  txt: (x, y, s, size = 12, anchor = 'middle', w = 600) => `<text x="${x}" y="${y}" font-size="${size}" font-weight="${w}" text-anchor="${anchor}" fill="var(--ink)" font-family="ui-monospace,Consolas,monospace">${s}</text>`,
+  arrowDown: (x, y1, y2) => `<path d="M${x} ${y1}V${y2}M${x - 7} ${y2 - 10}L${x} ${y2}L${x + 7} ${y2 - 10}" fill="none" stroke="var(--gold)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`,
+  // cota de dibujo técnico: línea con topes y rótulo
+  dim: (x1, x2, y, label) => `<path d="M${x1} ${y - 5}V${y + 5}M${x2} ${y - 5}V${y + 5}M${x1} ${y}H${x2}" stroke="var(--muted)" stroke-width="1.3" fill="none"/>` + SV.txt((x1 + x2) / 2, y + 17, label, 12)
+};
+// Palanca con la carga a la izquierda y tu mano a la derecha. dc / de = distancias al apoyo (cm).
+function leverSVG(dc, de, loadLabel) {
+  const x0 = 32, x1 = 296, fx = x0 + (x1 - x0) * dc / (dc + de), y = 84;
+  return SV.wrap('0 0 320 166',
+    `<rect x="${x0 - 8}" y="${y - 5}" width="${x1 - x0 + 16}" height="10" rx="4" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M${fx} ${y + 5}L${fx - 17} ${y + 38}H${fx + 17}Z" ${SV.fill} ${SV.key}/>` +
+    `<rect x="${x0 - 22}" y="${y - 42}" width="48" height="36" rx="6" ${SV.fill} ${SV.ink}/>` + SV.txt(x0 + 2, y - 19, loadLabel, 12) +
+    SV.arrowDown(x1 - 6, y - 54, y - 8) + SV.txt(x1 - 6, y - 60, 'tu mano', 12) +
+    `<path d="M${x0 + 2} ${y + 8}V${y + 52}M${fx} ${y + 40}V${y + 52}M${x1 - 6} ${y + 8}V${y + 52}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>` +
+    SV.dim(x0 + 2, fx, y + 56, dc + ' cm') + SV.dim(fx, x1 - 6, y + 56, de + ' cm'), 'Palanca con la carga a la izquierda y tu mano a la derecha');
+}
+// Balancín: niño pesado cerca del centro, niño ligero lejos.
+function seesawSVG() {
+  return SV.wrap('0 0 320 150',
+    `<rect x="24" y="86" width="272" height="10" rx="4" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M160 96L144 128H176Z" ${SV.fill} ${SV.key}/>` +
+    `<circle cx="112" cy="62" r="20" ${SV.fill} ${SV.key}/>` + SV.txt(112, 34, 'pesado', 11) +
+    `<circle cx="276" cy="70" r="11" ${SV.fill} ${SV.ink}/>` + SV.txt(276, 50, 'ligero', 11) +
+    SV.dim(112, 160, 128, 'cerca') +SV.dim(160, 276, 128, 'lejos'), 'Balancín en equilibrio: uno pesado cerca del centro y uno ligero lejos');
+}
+// Polea fija: solo cambia la dirección.
+function fixedPulleySVG() {
+  return SV.wrap('0 0 320 190',
+    `<rect x="100" y="10" width="120" height="10" rx="3" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M160 20V34" ${SV.ink} fill="none"/><circle cx="160" cy="56" r="22" ${SV.fill} ${SV.ink}/><circle cx="160" cy="56" r="3.5" fill="var(--ink)"/>` +
+    `<path d="M138 56V150M182 56V120" fill="none" ${SV.wire}/>` +
+    `<rect x="116" y="150" width="44" height="30" rx="6" ${SV.fill} ${SV.key}/>` + SV.txt(138, 170, 'carga', 12) +
+    SV.arrowDown(182, 100, 150) + SV.txt(198, 140, 'tiras ↓', 13, 'start') + SV.txt(108, 168, 'sube ↑', 13, 'end'), 'Polea fija: tiras hacia abajo y la carga sube');
+}
+// n tramos de cuerda sujetan la carga (polea móvil / polipasto simplificado).
+function ropesSVG(n) {
+  const w = 150, x0 = 160 - w / 2, xs = Array.from({ length: n }, (_, i) => x0 + 10 + (w - 20) * (n === 1 ? .5 : i / (n - 1)));
+  return SV.wrap('0 0 320 190',
+    `<rect x="${x0 - 20}" y="10" width="${w + 40}" height="10" rx="3" ${SV.fill} ${SV.ink}/>` +
+    xs.map(x => `<path d="M${x} 20V104" fill="none" ${SV.wire}/>`).join('') +
+    `<rect x="${x0}" y="104" width="${w}" height="40" rx="8" ${SV.fill} ${SV.key}/>` + SV.txt(160, 129, 'carga', 14) +
+    SV.txt(160, 168, n + (n === 1 ? ' tramo sujeta' : ' tramos sujetan') + ' la carga', 13), n + ' tramos de cuerda sujetan la carga');
+}
+// Dos engranajes engranados. z1 = piñón (motriz, a la izquierda), z2 = rueda conducida.
+function gearsSVG(z1, z2) {
+  const th = 2.4, ro1 = z1 + th / 2, ro2 = z2 + th / 2;           // radio de paso = nº de dientes (módulo 2)
+  const m = 6, W0 = 2 * ro1 + 2 * ro2 - th + 2 * m, H0 = 2 * Math.max(ro1, ro2) + 2 * m, s = 300 / W0, sw = (2.4 / s).toFixed(2);   // escala a 300 px de ancho; trazo constante
+  const c1 = m + ro1, c2 = c1 + z1 + z2, cy = m + Math.max(ro1, ro2);
+  const gear = (cx, z, off, stroke, role) => {
+    const a = 2 * Math.PI / z, p = [];
+    for (let i = 0; i < z; i++) { const t = off + i * a; [[-.5, z - th / 2], [-.2, z + th / 2], [.2, z + th / 2], [.5, z - th / 2]].forEach(([d, r]) => p.push((cx + r * Math.cos(t + d * a)).toFixed(1) + ',' + (cy + r * Math.sin(t + d * a)).toFixed(1))); }
+    return `<g data-r="${role}" data-cx="${cx}" data-cy="${cy}"><polygon points="${p.join(' ')}" fill="var(--fillt)" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy}" r="${Math.max(2.5, z * .14)}" fill="var(--ink)"/><circle cx="${cx}" cy="${cy - z * .62}" r="${Math.max(2, z * .09)}" fill="var(--gold)"/></g>`;
+  };
+  const H = H0 * s + 30;
+  return SV.wrap(`0 0 320 ${H.toFixed(0)}`,
+    `<g transform="translate(10 0) scale(${s.toFixed(3)})">${gear(c1, z1, 0, 'var(--gold)', 'g1')}${gear(c2, z2, Math.PI + Math.PI / z2, 'var(--teal)', 'g2')}</g>` +
+    SV.txt(10, H - 8, 'piñón: ' + z1 + ' dientes', 13, 'start') + SV.txt(310, H - 8, 'rueda: ' + z2 + ' dientes', 13, 'end'), `Dos engranajes: piñón de ${z1} dientes y rueda de ${z2} dientes`, ` data-anim="gears" data-z1="${z1}" data-z2="${z2}"`);
+}
+
+// =====================================================================
+// UNIDAD «VENTAJA MECÁNICA»
+// =====================================================================
+
+// ---- Lección 1 · La palanca ----
+T('palanca', 'Palanca', 'Barra rígida que gira alrededor de un punto fijo para multiplicar fuerza o recorrido.', 'p1', 'Un balancín de parque es una palanca.', 'Barra que gira sobre un apoyo');
+T('apoyo', 'Punto de apoyo (fulcro)', 'Punto fijo sobre el que gira la palanca.', 'p1', 'El centro del balancín.', 'Punto sobre el que gira');
+T('brazo', 'Brazo de palanca', 'Distancia entre el punto de apoyo y el lugar donde actúa una fuerza.', 'p1', 'Cuanto más largo, más efecto de giro hace la misma fuerza.', 'Distancia del apoyo a la fuerza');
+T('ventaja', 'Ventaja mecánica', 'Cuántas veces una máquina multiplica la fuerza que aplicas (a cambio de mover más la mano).', 'p1', 'Ganas fuerza, pagas con recorrido.', 'Veces que multiplica tu fuerza');
+F('balancin', 'En un balancín, un niño pesado se sienta cerca del centro y uno ligero lejos, y quedan equilibrados. ¿Por qué?', 'Lo que cuenta es el peso × la distancia al apoyo, y puede ser igual en los dos lados', ['El niño ligero pesa más por estar lejos', 'El apoyo absorbe parte del peso', 'La distancia al apoyo no influye'],
+  'Cada lado hace un efecto de giro igual a su peso multiplicado por su distancia al apoyo. Poco peso con mucha distancia puede igualar a mucho peso con poca distancia.', 'p1', seesawSVG());
+F('gratis', 'Con una palanca levantas algo muy pesado haciendo poca fuerza. ¿Qué pagas a cambio?', 'Recorrido: tu mano se mueve mucho más que la carga', ['Nada: la palanca crea fuerza extra', 'Que la carga pese más', 'Que la carga suba más deprisa que tu mano'],
+  'La palanca no crea energía: cambia fuerza por recorrido. Si haces la mitad de fuerza, tu mano debe recorrer el doble de distancia.', 'p1');
+
+// ---- Lección 2 · Calcular palancas ----
+C('palanca_f', 'La carga está a 20 cm del apoyo y tu mano a 60 cm del apoyo. Para sostener una carga de 90 N (unos 9 kg), ¿qué fuerza haces con la mano?', '30 N', ['90 N', '270 N', '22,5 N'],
+  'Tu brazo es 60 / 20 = 3 veces más largo, así que la fuerza se divide entre 3: 90 ÷ 3 = 30 N. Comprobación: 30 × 60 = 90 × 20.', 'p2', () => {
+    const k = pick([2, 3, 4, 5]), dc = pick([10, 15, 20, 25]), de = dc * k, F = pick([10, 15, 20, 25]), W = F * k;
+    return { q: `La carga está a ${dc} cm del apoyo y tu mano a ${de} cm del apoyo. Para sostener una carga de ${W} N, ¿qué fuerza haces con la mano?`, a: F + ' N', wrong: uniq([W + ' N', W * k + ' N', fmt(W / (k + 1)) + ' N'], F + ' N'),
+      explain: `Tu brazo es ${de} / ${dc} = ${k} veces más largo, así que la fuerza se divide entre ${k}: ${W} ÷ ${k} = ${F} N. Comprobación: ${F} × ${de} = ${W} × ${dc}.`, fig: leverSVG(dc, de, W + ' N') };
+  }, leverSVG(20, 60, '90 N'));
+C('palanca_v', 'La carga está a 20 cm del apoyo y tu mano a 60 cm del apoyo. ¿Cuántas veces multiplica la fuerza esta palanca?', '3 veces', ['4 veces', '6 veces', 'La divide entre 3'],
+  'Ventaja mecánica = brazo de tu mano ÷ brazo de la carga = 60 / 20 = 3.', 'p2', () => {
+    const k = pick([2, 3, 4, 5]), dc = pick([10, 15, 20, 25]), de = dc * k;
+    return { q: `La carga está a ${dc} cm del apoyo y tu mano a ${de} cm del apoyo. ¿Cuántas veces multiplica la fuerza esta palanca?`, a: k + ' veces', wrong: uniq([(k + 1) + ' veces', (k * 2) + ' veces', 'La divide entre ' + k], k + ' veces'),
+      explain: `Ventaja mecánica = brazo de tu mano ÷ brazo de la carga = ${de} / ${dc} = ${k}.`, fig: leverSVG(dc, de, '?') };
+  });
+F('equilibrio', 'Una palanca está en equilibrio: a un lado hay 30 N a 2 m del apoyo. Del otro lado, a 1 m del apoyo, ¿qué fuerza la equilibra?', '60 N', ['15 N', '30 N', '90 N'],
+  'Fuerza × distancia debe ser igual en los dos lados: 30 × 2 = 60, así que a 1 m hace falta 60 / 1 = 60 N. A mitad de distancia, doble de fuerza.', 'p2');
+F('colocar', 'Quieres levantar una piedra pesada con una barra. ¿Dónde conviene poner el apoyo?', 'Lo más cerca posible de la piedra', ['Lo más lejos posible de la piedra', 'Justo en el centro de la barra, siempre', 'Da igual dónde se ponga'],
+  'Cuanto más corto es el brazo de la piedra y más largo el tuyo, mayor es la ventaja mecánica. Con el apoyo pegado a la piedra, tu empuje se multiplica más.', 'p2', leverSVG(10, 70, 'piedra'));
+
+// ---- Lección 3 · Poleas ----
+T('polipasto', 'Polipasto', 'Conjunto de poleas fijas y móviles con una sola cuerda, para multiplicar mucho la fuerza.', 'p3', 'Los talleres lo usan para sacar motores.', 'Varias poleas con una cuerda');
+T('polea_fija', 'Polea fija', 'Polea con el eje sujeto: solo cambia la dirección de la fuerza, no la multiplica.', 'p3', 'Tiras hacia abajo para que algo suba.', 'Solo cambia la dirección');
+T('polea_movil', 'Polea móvil', 'Polea que se mueve junto con la carga: la cuerda la sujeta por dos tramos y se reparte el peso.', 'p3', 'Dos tramos de cuerda sujetan la carga: cada uno aguanta la mitad.', 'Se mueve con la carga');
+F('polea_fija', '¿Para qué sirve una polea fija?', 'Para cambiar la dirección de la fuerza (tirar hacia abajo para subir)', ['Para multiplicar la fuerza por dos', 'Para que la carga pese menos', 'Para ahorrar cuerda'],
+  'En una polea fija la cuerda tiene el mismo esfuerzo en los dos lados: tiras con la misma fuerza que pesa la carga. Lo útil es poder tirar hacia abajo, aprovechando tu peso.', 'p3', fixedPulleySVG());
+F('polea_cuerda', 'Para subir una carga 1 m con una polea móvil de 2 tramos de cuerda, ¿cuánta cuerda tienes que recoger?', '2 m', ['1 m', '0,5 m', '4 m'],
+  'Cada uno de los 2 tramos debe acortarse 1 m para que la carga suba 1 m: recoges 2 m. Es el precio de hacer la mitad de fuerza: nada es gratis.', 'p3', ropesSVG(2));
+C('polea_f', 'Una carga de 80 N cuelga de 2 tramos de cuerda. Sin contar el rozamiento, ¿qué fuerza hay que hacer para sostenerla?', '40 N', ['80 N', '160 N', '26,7 N'],
+  'La fuerza se reparte entre los tramos que sujetan la carga: 80 ÷ 2 = 40 N (en la práctica algo más por el rozamiento).', 'p3', () => {
+    const n = pick([2, 3, 4]), F = pick([10, 15, 20, 25]), W = F * n;
+    return { q: `Una carga de ${W} N cuelga de ${n} tramos de cuerda. Sin contar el rozamiento, ¿qué fuerza hay que hacer para sostenerla?`, a: F + ' N', wrong: uniq([W + ' N', W * n + ' N', fmt(W / (n + 1)) + ' N'], F + ' N'),
+      explain: `La fuerza se reparte entre los tramos que sujetan la carga: ${W} ÷ ${n} = ${F} N (en la práctica algo más por el rozamiento).`, fig: ropesSVG(n) };
+  }, ropesSVG(2));
+
+// ---- Lección 4 · Engranajes ----
+T('pinon', 'Piñón (engranaje motriz)', 'Engranaje que recibe el giro del motor o de tu mano y lo transmite a otro.', 'p4', 'Es el que empuja.', 'El que empuja');
+T('conducida', 'Rueda conducida', 'Engranaje que recibe el giro del piñón con el que engrana.', 'p4', 'Es el que es empujado.', 'El que es movido');
+T('relacion', 'Relación de transmisión', 'Dientes de la rueda conducida ÷ dientes del piñón. Si es mayor que 1, la salida gira más lenta y con más fuerza de giro.', 'p4', 'Más dientes en la rueda conducida = más lento y más fuerte.', 'Dientes conducida ÷ piñón');
+F('sentido', 'Dos engranajes engranan directamente. Uno gira a la derecha (sentido horario). El otro gira…', 'a la izquierda (sentido contrario)', ['a la derecha (el mismo sentido)', 'a la derecha, pero más despacio', 'no gira'],
+  'Los dientes del primero empujan a los del segundo en el punto de contacto, y el segundo gira en sentido contrario. Para conservar el sentido hace falta un tercer engranaje intermedio.', 'p4', gearsSVG(12, 20));
+C('relacion', 'Un piñón de 20 dientes mueve una rueda de 60 dientes. ¿Cuál es la relación de transmisión?', '3 : 1', ['1 : 3', '2 : 1', '40 : 1'],
+  '60 ÷ 20 = 3. La rueda gira 3 veces más lenta que el piñón y, en el caso ideal, con 3 veces más fuerza de giro.', 'p4', () => {
+    const z1 = pick([8, 10, 12, 16, 20]), k = pick([2, 3, 4]), z2 = z1 * k;
+    return { q: `Un piñón de ${z1} dientes mueve una rueda de ${z2} dientes. ¿Cuál es la relación de transmisión?`, a: k + ' : 1', wrong: uniq(['1 : ' + k, (k + 1) + ' : 1', (k * 2) + ' : 1'], k + ' : 1'),
+      explain: `${z2} ÷ ${z1} = ${k}. La rueda gira ${k} veces más lenta que el piñón y, en el caso ideal, con ${k} veces más fuerza de giro.`, fig: gearsSVG(z1, z2) };
+  }, gearsSVG(20, 60));
+C('velocidad', 'Un piñón de 10 dientes gira a 120 vueltas por minuto (rpm) y mueve una rueda de 30 dientes. ¿A qué velocidad gira la rueda?', '40 rpm', ['360 rpm', '120 rpm', '30 rpm'],
+  'La rueda tiene 3 veces más dientes, así que gira 3 veces más lenta: 120 ÷ 3 = 40 rpm.', 'p4', () => {
+    const z1 = pick([10, 12, 15, 20]), k = pick([2, 3, 4]), m = pick([20, 30, 40, 50]), n1 = m * k, z2 = z1 * k;
+    return { q: `Un piñón de ${z1} dientes gira a ${n1} vueltas por minuto (rpm) y mueve una rueda de ${z2} dientes. ¿A qué velocidad gira la rueda?`, a: m + ' rpm', wrong: uniq([n1 * k + ' rpm', n1 + ' rpm', fmt(n1 / (k + 1)) + ' rpm'], m + ' rpm'),
+      explain: `La rueda tiene ${k} veces más dientes, así que gira ${k} veces más lenta: ${n1} ÷ ${k} = ${m} rpm.`, fig: gearsSVG(z1, z2) };
+  }, gearsSVG(10, 30));
+
+// ---- Lección 5 · Engranajes en acción ----
+T('par', 'Par (fuerza de giro)', 'Cuánto «retuerce» una fuerza a un eje: fuerza × distancia al centro. Se mide en newton-metro (N·m).', 'p5', 'Abrir un bote difícil: con más brazo, más par.', 'Fuerza de giro (N·m)');
+F('par_vel', 'Un reductor baja la velocidad a la mitad. Sin contar pérdidas, el par de salida…', 'se duplica', ['se reduce a la mitad', 'se queda igual', 'se cuadruplica'],
+  'La potencia (par × velocidad) se conserva, aproximadamente. Si la velocidad baja a la mitad, el par sube al doble. En la práctica hay rozamiento y sale algo menos.', 'p5');
+C('tren', 'Un tren de dos etapas: la primera tiene relación 2 : 1 y la segunda 3 : 1. ¿Qué relación total tiene?', '6 : 1', ['5 : 1', '12 : 1', '1 : 6'],
+  'Las relaciones de etapas encadenadas se multiplican, no se suman: 2 × 3 = 6. El eje de salida gira 6 veces más lento.', 'p5', () => {
+    const k1 = pick([2, 3]), k2 = pick([3, 4, 5]), p = k1 * k2, a = p + ' : 1';
+    return { q: `Un tren de dos etapas: la primera tiene relación ${k1} : 1 y la segunda ${k2} : 1. ¿Qué relación total tiene?`, a, wrong: uniq([(k1 + k2) + ' : 1', (p * 2) + ' : 1', '1 : ' + p], a),
+      explain: `Las relaciones de etapas encadenadas se multiplican, no se suman: ${k1} × ${k2} = ${p}. El eje de salida gira ${p} veces más lento.` };
+  });
+O('tren', 'Ordena los pasos para montar y probar un tren de engranajes', ['Elige piñón y rueda según la relación que buscas', 'Fija los dos ejes a la distancia justa para que los dientes engranen', 'Gira a mano, despacio, para ver que no roza ni salta', 'Conecta el motor o la manivela', 'Prueba con poca carga y súbela poco a poco'],
+  'Primero se piensa la relación, luego se monta con la distancia correcta, se prueba a mano y solo entonces se mete motor. Con poca carga primero, para no forzar los dientes.', 'p5');
+X('atasco', 'El tren que salta', [
+  'Has montado un piñón de 8 dientes y una rueda de 24.',
+  'Al girar la manivela la rueda gira, pero cuando le cuelgas peso se oye «clac, clac».',
+  'Ves que entre los dientes queda un hueco visible y a veces se deslizan uno sobre otro.',
+  'Los dientes y los ejes no están dañados.'
+], [
+  ['¿Qué relación de transmisión has montado?', ['3 : 1', '1 : 3', '8 : 1', '24 : 1'], 0, '24 ÷ 8 = 3. La rueda gira 3 veces más lenta.'],
+  ['¿Cuál es la causa más probable del «clac, clac»?', ['Los ejes están demasiado separados y los dientes no engranan a fondo', 'La relación 3 : 1 es demasiado grande', 'La manivela es demasiado larga', 'Los dientes están al revés'], 0, 'Un hueco visible entre dientes indica poca profundidad de engrane: al meter carga, los dientes saltan. Se corrige acercando los ejes.'],
+  ['¿Qué haces primero?', ['Acercar los ejes hasta que engranen bien y repetir la prueba con poca carga', 'Cambiar el piñón por uno más grande sin mirar nada más', 'Añadir más peso para ver si se arregla', 'Tirar el montaje'], 0, 'Diagnóstico: cambia una sola cosa a la vez, empezando por lo más simple y barato.']
+], 'p5');
+
+// =====================================================================
+// UNIDAD «GUÍA DE COMPRAS TECHNIC»
+// Fuentes consultadas en octubre de 2026 (foros de aficionados como Eurobricks, tiendas de piezas sueltas y reseñas de marcas compatibles).
+// NO incluye precios: cambian y no se han podido verificar. Todo lo que dependa de un vendedor o modelo es orientativo.
+// =====================================================================
+// Catálogo de piezas básicas: A viga · B pin · C eje · D tope (buje) · E engranaje
+function partsSVG() {
+  const badge = (x, y, l) => `<circle cx="${x}" cy="${y}" r="10" fill="var(--gold)"/><text x="${x}" y="${y + 4.5}" font-size="13" font-weight="800" text-anchor="middle" fill="var(--on-gold)" font-family="ui-monospace,Consolas,monospace">${l}</text>`;
+  const holes = [40, 67, 94, 121, 148].map(x => `<circle cx="${x}" cy="40" r="5.5" fill="var(--bg)" ${SV.ink}/>`).join('');
+  const gearPts = Array.from({ length: 12 }, (_, i) => { const a = 2 * Math.PI / 12, t = i * a; return [[-.5, 16], [-.2, 22], [.2, 22], [.5, 16]].map(([d, r]) => (258 + r * Math.cos(t + d * a)).toFixed(1) + ',' + (136 + r * Math.sin(t + d * a)).toFixed(1)).join(' '); }).join(' ');
+  return SV.wrap('0 0 320 190',
+    `<rect x="20" y="28" width="150" height="24" rx="12" ${SV.fill} ${SV.ink}/>${holes}` + badge(14, 20, 'A') +
+    `<rect x="214" y="36" width="64" height="10" rx="4" ${SV.fill} ${SV.ink}/><rect x="206" y="30" width="12" height="22" rx="3" ${SV.fill} ${SV.ink}/><path d="M238 36v10M246 36v10M254 36v10" ${SV.ink} fill="none"/>` + badge(196, 22, 'B') +
+    `<rect x="20" y="124" width="100" height="8" rx="2" ${SV.fill} ${SV.ink}/>` + badge(14, 108, 'C') + `<g transform="translate(138 128)"><rect x="-8" y="-2.4" width="16" height="4.8" rx="1.5" ${SV.fill} ${SV.ink}/><rect x="-2.4" y="-8" width="4.8" height="16" rx="1.5" ${SV.fill} ${SV.ink}/></g>` +
+    `<rect x="170" y="118" width="26" height="28" rx="5" ${SV.fill} ${SV.ink}/><path d="M176 132h14M183 125v14" ${SV.ink} fill="none"/>` + badge(168, 112, 'D') +
+    `<polygon points="${gearPts}" ${SV.fill} ${SV.ink}/><circle cx="258" cy="136" r="5" fill="var(--ink)"/>` + badge(232, 112, 'E') +
+    SV.txt(160, 182, 'catálogo de piezas básicas (no está a escala)', 11, 'middle', 500), 'Cinco piezas Technic marcadas con las letras A a E: viga, pin, eje, tope y engranaje');
+}
+// Viga con n agujeros numerados: apoyo en el agujero a, carga en el c y tu mano en el h.
+function beamSVG(n, a, c, h) {
+  const x0 = 24, st = (300 - 2 * x0) / (n - 1), X = i => x0 + (i - 1) * st, y = 70;
+  const holes = Array.from({ length: n }, (_, i) => `<circle cx="${X(i + 1)}" cy="${y}" r="4.6" fill="var(--bg)" ${SV.ink}/>` + SV.txt(X(i + 1), y - 16, i + 1, 9, 'middle', 500)).join('');
+  return SV.wrap('0 0 320 190',
+    `<rect x="${x0 - 14}" y="${y - 12}" width="${300 - 2 * x0 + 28}" height="24" rx="12" ${SV.fill} ${SV.ink}/>${holes}` +
+    SV.arrowDown(X(h), 14, y - 28) + SV.txt(X(h), 11, 'tu mano', 11, X(h) > 250 ? 'end' : 'middle') +
+    `<path d="M${X(a)} ${y + 12}L${X(a) - 12} ${y + 36}H${X(a) + 12}Z" ${SV.fill} ${SV.key}/>` + SV.txt(X(a), y + 52, 'apoyo', 11) +
+    `<path d="M${X(c)} ${y + 12}V148" fill="none" ${SV.wire}/><rect x="${X(c) - 24}" y="148" width="48" height="26" rx="6" ${SV.fill} ${SV.key}/>` + SV.txt(X(c), 166, 'carga', 11),
+    `Viga de ${n} agujeros: apoyo en el ${a}, carga en el ${c} y la mano en el ${h}`);
+}
+
+// ---- Lección 1 · Las piezas ----
+T('viga', 'Viga (beam)', 'Barra con agujeros en línea. Se nombra por su número de agujeros: una viga «5» tiene 5.', 'q1', 'Es el «hueso» de cualquier montaje.', 'Barra con agujeros');
+T('pin', 'Pin (clavija)', 'Pieza que une dos vigas metiéndose por sus agujeros. Los hay que agarran fuerte y los hay que dejan girar.', 'q1', 'Sin pines, todo se cae a trozos.', 'Une vigas por sus agujeros');
+T('eje', 'Eje (cruceta)', 'Varilla en forma de cruz que atraviesa agujeros en cruz y transmite el giro.', 'q1', 'Su sección es una «+».', 'Varilla en cruz que gira');
+T('tope', 'Tope (buje)', 'Pieza pequeña que se coloca en un eje para que no se deslice ni se escape.', 'q1', 'Como el tope de una cortina.', 'Evita que el eje se escape');
+F('ident_eje', 'En el dibujo, ¿qué letra es el eje (cruceta)?', 'C', ['A', 'B', 'D'], 'El eje es la varilla larga y fina, y su sección es una cruz «+» (se ve su extremo al lado). La A es una viga, la B un pin y la D un tope.', 'q1', partsSVG());
+F('ident_pin', 'En el dibujo, ¿qué letra es el pin?', 'B', ['A', 'C', 'E'], 'El pin es la pieza con cabeza y estrías que se mete en los agujeros de las vigas para unirlas. La A es una viga, la C un eje y la E un engranaje.', 'q1', partsSVG());
+
+// ---- Lección 2 · Medir en Technic ----
+F('paso', '¿Qué distancia hay entre los centros de dos agujeros contiguos de una viga Technic?', '8 mm', ['5 mm', '10 mm', '16 mm'], 'Todo el sistema va de 8 en 8 mm. Una viga «5» mide unos 40 mm (5 × 8). Es tu regla para calcular brazos de palanca contando agujeros.', 'q2');
+C('dist_huecos', 'En una viga, ¿qué distancia hay entre el centro del agujero 2 y el del agujero 9?', '56 mm', ['64 mm', '7 mm', '88 mm'], 'Entre el 2 y el 9 hay 7 saltos de 8 mm: 7 × 8 = 56 mm. Se cuentan los saltos, no los agujeros.', 'q2', () => {
+  const i = pick([1, 2, 3, 4]), j = i + pick([3, 4, 5, 6, 7]), d = (j - i) * 8;
+  return { q: `En una viga, ¿qué distancia hay entre el centro del agujero ${i} y el del agujero ${j}?`, a: d + ' mm', wrong: uniq([(d + 8) + ' mm', (j - i) + ' mm', (i + j) * 8 + ' mm'], d + ' mm'), explain: `Entre el ${i} y el ${j} hay ${j - i} saltos de 8 mm: ${j - i} × 8 = ${d} mm. Se cuentan los saltos, no los agujeros.` };
+});
+C('palanca_viga', 'Palanca con una viga de 15 agujeros: apoyo en el agujero 4, carga en el 2 y tu mano en el 14. ¿Cuántas veces multiplica tu fuerza?', '5 veces', ['6 veces', '7 veces', 'La divide entre 5'], 'Brazo de la carga: 4 − 2 = 2 saltos. Brazo de tu mano: 14 − 4 = 10 saltos. 10 ÷ 2 = 5. Se pueden contar saltos en vez de milímetros porque el factor 8 mm se cancela.', 'q2', () => {
+  const dc = pick([1, 2]), k = pick([2, 3, 4, 5]), de = dc * k, ap = pick([3, 4]), ca = ap - dc, ma = ap + de;
+  return { q: `Palanca con una viga de 15 agujeros: apoyo en el agujero ${ap}, carga en el ${ca} y tu mano en el ${ma}. ¿Cuántas veces multiplica tu fuerza?`, a: k + ' veces', wrong: uniq([(k + 1) + ' veces', (k + 2) + ' veces', 'La divide entre ' + k], k + ' veces'),
+    explain: `Brazo de la carga: ${ap} − ${ca} = ${dc} ${dc === 1 ? 'salto' : 'saltos'}. Brazo de tu mano: ${ma} − ${ap} = ${de} saltos. ${de} ÷ ${dc} = ${k}. Se pueden contar saltos en vez de milímetros porque el factor 8 mm se cancela.`, fig: beamSVG(15, ap, ca, ma) };
+}, beamSVG(15, 4, 2, 14));
+C('engr_technic', 'Un piñón de 8 dientes mueve una rueda de 24 dientes. ¿Qué relación de transmisión tiene?', '3 : 1', ['1 : 3', '4 : 1', '6 : 1'], 'Dientes de la conducida ÷ dientes del piñón: 24 ÷ 8 = 3. Los engranajes rectos más habituales en Technic son de 8, 16, 24 y 40 dientes.', 'q2', () => {
+  const [z1, z2] = pick([[8, 16], [8, 24], [8, 40], [16, 24], [16, 40]]), r = z2 / z1, a = fmt(r) + ' : 1';
+  return { q: `Un piñón de ${z1} dientes mueve una rueda de ${z2} dientes. ¿Qué relación de transmisión tiene?`, a, wrong: uniq(['1 : ' + fmt(r), fmt(r + 1) + ' : 1', fmt(r * 2) + ' : 1'], a), explain: `Dientes de la conducida ÷ dientes del piñón: ${z2} ÷ ${z1} = ${fmt(r)}. Los engranajes rectos más habituales en Technic son de 8, 16, 24 y 40 dientes.`, fig: gearsSVG(z1, z2) };
+});
+F('pin_agarre', 'Quieres que dos vigas puedan girar una respecto a la otra, como una bisagra. ¿Qué pin conviene?', 'Uno con poco agarre (liso)', ['Uno con mucho agarre', 'Da igual cuál', 'Ninguno: las vigas se sujetan solas'], 'Los pines con estrías agarran fuerte y dejan la unión rígida; los lisos dejan girar. Por color, suele ser: negros y azules con agarre, grises o tostados lisos. Es una regla práctica, no oficial: comprueba la pieza real.', 'q2');
+
+// ---- Lección 3 · Dónde comprar ----
+F('comprar_sets', 'Quieres muchas piezas variadas gastando poco. ¿Qué suele recomendarse en los foros de aficionados?', 'Comprar sets usados completos, reutilizar sus piezas y completar lo que falte', ['Comprar solo piezas sueltas nuevas, una a una', 'Comprar el set más caro y nuevo', 'Esperar a que todo baje de precio'], 'En los foros se repite que, para sumar piezas, suele salir más barato comprar sets (sobre todo usados) y rellenar huecos con piezas sueltas. Es una opinión de aficionados, no una garantía de precio.', 'q3');
+F('comprar_suelta', 'Te faltan varios engranajes concretos de 24 dientes. ¿Dónde es más fácil encontrarlos sueltos?', 'En mercados de piezas sueltas como BrickLink o Brick Owl', ['En cualquier juguetería, sueltos', 'Solo en una tienda física oficial', 'No se venden sueltos'], 'Esos mercados venden piezas sueltas por referencia, de muchos vendedores. Mira envío y mínimos de pedido de cada vendedor: a veces el envío cuesta más que las piezas.', 'q3');
+F('comprar_lote', 'Vas a comprar un lote usado «por peso». ¿Qué conviene comprobar antes?', 'Que haya fotos o lista de lo que trae, y si son piezas originales o compatibles', ['Solo el precio', 'Que el color te guste', 'Nada: todos los lotes son parecidos'], 'Un lote «por peso» puede ser mayormente ladrillos normales. Sin fotos ni lista, no sabes si trae vigas, ejes y engranajes. En segunda mano a veces mezclan piezas originales y de otras marcas.', 'q3');
+F('comprar_compat', 'Una marca dice «compatible con Technic». ¿Qué es lo más prudente?', 'Mirar reseñas de ese modelo: el encaje puede variar entre modelos', ['Asumir que todo encaja perfecto', 'Asumir que es peor y no usarla', 'Pensar que sus motores servirán con la electrónica de LEGO'], 'Las reseñas de CaDA o Mould King dicen que muchas piezas mecánicas son combinables, pero que el ajuste de los pines no es uniforme y que su electrónica es un sistema propio. fischertechnik, en cambio, no es compatible.', 'q3');
+O('compra', 'Ordena los pasos de una compra segura', ['Haz la lista de piezas que necesita tu misión', 'Compara el precio por pieza en 2 o 3 sitios', 'Mira el envío y la opinión del vendedor', 'Compra poco al principio', 'Comprueba que encajan antes de pedir más'], 'Se empieza por la necesidad (la misión), se compara, y se compra poco para probar el encaje antes de gastar más. Así un fallo de compra cuesta poco.', 'q3');
+X('primera_compra', 'Tu primera compra', [
+  'Tienes unos 30 € y ningún Technic.',
+  'Quieres montar una palanca con una viga larga y un tren de engranajes con manivela.',
+  'En una web de segunda mano hay un lote «piezas Technic, 2 kg» con fotos y lista del contenido.',
+  'Otro lote, «piezas compatibles, 1 kg», no tiene fotos ni lista.'
+], [
+  ['¿Cuál miras primero?', ['El lote con fotos y lista: puedes comprobar que trae vigas largas, pines, ejes y engranajes', 'El lote sin fotos: seguro que es mejor sorpresa', 'El más barato, sea cual sea', 'Ninguno: compras un set nuevo grande'], 0, 'Con fotos y lista puedes ver si trae lo que tu misión necesita. Sin ellas, es una lotería.'],
+  ['¿Qué haces con el lote sin fotos?', ['Pides fotos o la lista antes de decidir', 'Lo compras sin más', 'Lo compras si es más barato por kilo', 'Lo compras dos veces para asegurar'], 0, 'Un buen vendedor enseña lo que vende. Si no te lo enseña, mejor no comprarlo.'],
+  ['Cuando llegue el lote, ¿qué completas en una tienda de piezas sueltas?', ['Solo lo que falte tras mirar lo que trae (p. ej. engranajes de 8 y 24 dientes)', 'Todo lo de la lista, por si acaso', 'Nada: ya lo tienes todo seguro', 'Un motor y una batería'], 0, 'Primero se mira lo que ya tienes; luego se compra solo lo que falta. Menos gasto y menos piezas repetidas.']
+], 'q3');
+
+// ---- Lección 4 · Tu kit de 30 € ----
+C('precio_kg', 'Lote A: 12 € por 2 kg. Lote B: 15 € por 2,5 kg. ¿Cuál sale más barato por kilo?', 'Salen igual (6 € por kilo)', ['El lote A (6,5 € por kilo)', 'El lote B (5 € por kilo)', 'No se puede saber'], 'Se divide el precio entre el peso: A = 12 ÷ 2 = 6 €/kg; B = 15 ÷ 2,5 = 6 €/kg. Ojo: el precio por kilo no dice cuántas piezas útiles trae.', 'q4', () => {
+  const pa = pick([9, 12, 15, 18]), wa = pick([1, 1.5, 2, 2.5]), pb = pick([10, 14, 16, 20]), wb = pick([1, 1.5, 2, 3]), ka = pa / wa, kb = pb / wb;
+  if (Math.abs(ka - kb) < 0.3) return ITEMS.c_precio_kg.gen();
+  const win = ka < kb ? 'A' : 'B', kw = Math.min(ka, kb), kl = Math.max(ka, kb), other = win === 'A' ? 'B' : 'A';
+  return { q: `Lote A: ${pa} € por ${fmt(wa)} kg. Lote B: ${pb} € por ${fmt(wb)} kg. ¿Cuál sale más barato por kilo?`, a: `El lote ${win} (${fmt(kw)} € por kilo)`, wrong: uniq([`El lote ${other} (${fmt(kl)} € por kilo)`, 'Salen igual', 'No se puede saber'], `El lote ${win} (${fmt(kw)} € por kilo)`),
+    explain: `Se divide el precio entre el peso: A = ${pa} ÷ ${fmt(wa)} = ${fmt(ka)} €/kg; B = ${pb} ÷ ${fmt(wb)} = ${fmt(kb)} €/kg. Ojo: el precio por kilo no dice cuántas piezas útiles trae.` };
+});
+F('prioridad', 'Para empezar con palancas y engranajes, ¿qué conviene tener antes que un motor?', 'Vigas largas, pines, ejes, topes y engranajes', ['Un motor y una batería', 'Ruedas grandes', 'Piezas decorativas'], 'Con vigas, ejes y engranajes ya haces todas las lecciones de ventaja mecánica moviendo con la mano. El motor llega más tarde, con sus normas de seguridad.', 'q4');
+F('manivela', '¿Para qué sirve una manivela en tus primeros montajes sin motor?', 'Para girar los ejes a mano y notar el esfuerzo de cada relación de transmisión', ['Para ahorrar piezas', 'Para que el montaje sea más rápido que con motor', 'No sirve para nada útil'], 'Girar a mano te deja sentir en los dedos lo que dicen los cálculos: con una reducción grande cuesta menos girar, pero das más vueltas.', 'q4');
+F('bateria', 'Más adelante usarás motores con batería. ¿Qué regla de seguridad es correcta?', 'No usar ni cargar una batería hinchada, caliente o dañada, y usar solo el cargador indicado', ['Cualquier cargador vale si encaja el conector', 'Dejarla cargando tapada con una tela', 'Si está hinchada, basta con usarla poco'], 'Las baterías de litio dañadas o hinchadas pueden calentarse e incendiarse. Se retiran, no se usan ni se cargan, y se llevan a un punto de reciclaje.', 'q4');
+X('kit30', 'Tu kit de unos 30 €', [
+  'Tu objetivo: montar una palanca y un tren de engranajes con manivela, sin motor.',
+  'Ya tienes algunas piezas de Lego normal y ruedas, pero ningún Technic.',
+  'Has conseguido un lote usado con vigas largas, pines y ejes, pero casi sin engranajes ni topes.'
+], [
+  ['¿Qué te falta comprar primero?', ['Engranajes (8, 16, 24 y 40 dientes) y unos topes', 'Un motor y una batería', 'Más vigas largas, aunque ya tienes', 'Piezas de colores'], 0, 'Compra solo lo que falta para tu misión. Con engranajes y topes ya montas el tren con manivela.'],
+  ['Compras engranajes de otra marca «compatible». ¿Qué haces al recibirlos?', ['Pruebas el encaje con tus ejes y pines antes de pedir más', 'Los montas todos a la vez y fuerzas el encaje', 'Los tiras si no encajan a la primera, sin mirar nada', 'Los usas también como piezas de motor'], 0, 'El encaje puede variar entre marcas y modelos. Probar una unidad antes de pedir más ahorra dinero.'],
+  ['¿Cuándo pasas a pensar en motores y baterías?', ['Cuando ya domines las lecciones de mecánica con la manivela y sepas qué necesitas', 'Antes de montar nada', 'Nunca: no hacen falta', 'El primer día'], 0, 'El motor añade coste y seguridad. Primero se entiende el mecanismo a mano; después se automatiza.']
+], 'q4');
+
+// =====================================================================
+// UNIDAD «MECANISMOS QUE MUEVEN»
+// Anécdotas y datos reales comprobados en octubre de 2026 (Antikythera, Ginebra/Cruz de Malta, autobloqueo del tornillo sin fin, frase atribuida a Arquímedes).
+// =====================================================================
+let _cid = 0;   // ids únicos para los recortes (clipPath) de las figuras
+// Rueda dentada «de dibujo»: z dientes, radio de paso rp, altura de diente th, fase off (rad). Devuelve los puntos de un polígono.
+function toothPts(cx, cy, z, rp, th, off) {
+  const a = 2 * Math.PI / z, p = [];
+  for (let i = 0; i < z; i++) { const t = off + i * a; [[-.38, rp - th / 2], [-.16, rp + th / 2], [.16, rp + th / 2], [.38, rp - th / 2]].forEach(([d, r]) => p.push((cx + r * Math.cos(t + d * a)).toFixed(1) + ',' + (cy + r * Math.sin(t + d * a)).toFixed(1))); }
+  return p.join(' ');
+}
+
+// ---- Animaciones: app.js las llama con (svg, t) y t en segundos ----
+const ANIMS = {};
+const _q = (s, r) => s.querySelector(`[data-r="${r}"]`);
+const _a = (el, o) => { for (const k in o) el.setAttribute(k, (+o[k]).toFixed(2)); };
+const _rot = (el, deg) => el.setAttribute('transform', `rotate(${deg.toFixed(2)} ${el.dataset.cx} ${el.dataset.cy})`);
+ANIMS.gears = (s, t) => { const z1 = +s.dataset.z1, z2 = +s.dataset.z2, a = t * 45; _rot(_q(s, 'g1'), a); _rot(_q(s, 'g2'), -a * z1 / z2); };   // ω2 = −ω1 · z1/z2
+ANIMS.crank = (s, t) => {
+  const cx = +s.dataset.cx, cy = +s.dataset.cy, r = +s.dataset.r, L = +s.dataset.l, a = t * 1.7;
+  const px = cx + r * Math.cos(a), py = cy + r * Math.sin(a), sx = px + Math.sqrt(L * L - (py - cy) ** 2);
+  _a(_q(s, 'arm'), { x2: px, y2: py }); _a(_q(s, 'pin'), { cx: px, cy: py }); _a(_q(s, 'rod'), { x1: px, y1: py, x2: sx, y2: cy }); _a(_q(s, 'wrist'), { cx: sx, cy }); _a(_q(s, 'piston'), { x: sx - 15 });
+};
+ANIMS.cam = (s, t) => {
+  const cx = +s.dataset.cx, cy = +s.dataset.cy, R = +s.dataset.rr, e = +s.dataset.e, a = t * 1.6;
+  const Cx = cx + e * Math.cos(a), Cy = cy + e * Math.sin(a), yc = Cy - Math.sqrt(R * R - (e * Math.cos(a)) ** 2);   // punto de contacto bajo el seguidor
+  _a(_q(s, 'disc'), { cx: Cx, cy: Cy }); _a(_q(s, 'link'), { x2: Cx, y2: Cy }); _a(_q(s, 'rod'), { y: 22, height: yc - 22 }); _a(_q(s, 'tip'), { cy: yc });
+};
+ANIMS.rack = (s, t) => {
+  const rp = +s.dataset.rp, p = +s.dataset.p, a = 1.5 * Math.sin(t * 0.9);   // el piñón oscila para que la cremallera no se salga
+  _rot(_q(s, 'pin'), a * 180 / Math.PI);
+  _q(s, 'rack').setAttribute('transform', `translate(${(((-rp * a) % p) + p) % p} 0)`);          // dientes: solo importa el desplazamiento módulo el paso
+  _q(s, 'mark').setAttribute('transform', `translate(${(-rp * a).toFixed(2)} 0)`);               // marca dorada: desplazamiento real
+};
+ANIMS.worm = (s, t) => {
+  const z = +s.dataset.z, pw = +s.dataset.pw, revs = t * 0.5;   // 0,5 vueltas del tornillo por segundo
+  _rot(_q(s, 'wheel'), -revs * 360 / z);                         // un diente de la rueda por cada vuelta del tornillo
+  _q(s, 'thread').setAttribute('transform', `translate(${((revs * pw) % pw).toFixed(2)} 0)`);
+};
+
+// ---- Figuras ----
+// Los cuatro movimientos básicos
+function movimientosSVG() {
+  const P = (i, inner, label) => `<g transform="translate(${i * 80} 0)">${inner}${SV.txt(40, 104, label, 11)}</g>`;
+  const head = (x, y, dx1, dy1, dx2, dy2) => `<path d="M${x + dx1} ${y + dy1}L${x} ${y}L${x + dx2} ${y + dy2}" fill="none" ${SV.key}/>`;
+  return SV.wrap('0 0 320 112',
+    P(0, `<circle cx="40" cy="56" r="20" ${SV.fill} ${SV.ink}/><circle cx="40" cy="56" r="3" fill="var(--ink)"/><path d="M57 25A34 34 0 1 1 8 44" fill="none" ${SV.key}/><path d="M3 38L8 44L15 41" fill="none" ${SV.key}/>`, 'rotativo') +
+    P(1, `<rect x="6" y="44" width="26" height="24" rx="4" ${SV.fill} ${SV.ink}/><path d="M38 56H72" fill="none" ${SV.key}/>${head(72, 56, -7, -6, -7, 6)}`, 'lineal') +
+    P(2, `<path d="M6 78H74" ${SV.wire} fill="none"/><rect x="27" y="52" width="26" height="24" rx="4" ${SV.fill} ${SV.ink}/><path d="M12 38H68" fill="none" ${SV.key}/>${head(68, 38, -7, -6, -7, 6)}${head(12, 38, 7, -6, 7, 6)}`, 'alternativo') +
+    P(3, `<circle cx="40" cy="24" r="3.5" fill="var(--ink)"/><path d="M40 24V72" ${SV.wire} fill="none"/><circle cx="40" cy="78" r="8" ${SV.fill} ${SV.ink}/><path d="M20 76A52 52 0 0 0 60 76" fill="none" ${SV.key}/>${head(20, 76, -5, -9, 4, -9)}${head(60, 76, 5, -9, -4, -9)}`, 'oscilante'),
+    'Cuatro movimientos: rotativo, lineal, alternativo y oscilante', ' data-fig="mov"');
+}
+// Biela-manivela (animada): la manivela gira y la biela mueve el pistón
+function crankSVG() {
+  const cx = 70, cy = 100, r = 34, L = 120;
+  return SV.wrap('0 0 320 190',
+    `<rect x="132" y="${cy - 25}" width="120" height="50" rx="4" fill="none" ${SV.ink}/>` +
+    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 4"/>` +
+    `<rect data-r="piston" x="${cx + r + L - 15}" y="${cy - 18}" width="30" height="36" rx="3" ${SV.fill} ${SV.key}/>` +
+    `<line data-r="rod" x1="${cx + r}" y1="${cy}" x2="${cx + r + L}" y2="${cy}" ${SV.wire} style="stroke-width:3.2"/>` +
+    `<line data-r="arm" x1="${cx}" y1="${cy}" x2="${cx + r}" y2="${cy}" ${SV.key} style="stroke-width:4"/>` +
+    `<circle cx="${cx}" cy="${cy}" r="5" fill="var(--ink)"/><circle data-r="pin" cx="${cx + r}" cy="${cy}" r="4.5" fill="var(--gold)"/><circle data-r="wrist" cx="${cx + r + L}" cy="${cy}" r="3.5" fill="var(--ink)"/>` +
+    SV.txt(cx, cy + r + 24, 'manivela', 12) + SV.txt(cx + 70, cy - 40, 'biela', 12) + SV.txt(192, cy + 44, 'pistón en su cilindro', 12) +
+    SV.dim(cx - r + L + 0, cx + r + L, 170, 'carrera = 2 × radio'),
+    'Biela-manivela animada: la manivela gira y el pistón va y viene', ` data-anim="crank" data-cx="${cx}" data-cy="${cy}" data-r="${r}" data-l="${L}"`);
+}
+// Leva excéntrica (animada): el seguidor sube y baja 2 × la excentricidad
+function camSVG() {
+  const cx = 90, cy = 128, R = 40, e = 14;
+  return SV.wrap('0 0 320 190',
+    `<rect x="${cx - 22}" y="40" width="8" height="30" ${SV.fill} ${SV.ink}/><rect x="${cx + 14}" y="40" width="8" height="30" ${SV.fill} ${SV.ink}/>` +
+    `<circle data-r="disc" cx="${cx}" cy="${cy}" r="${R}" ${SV.fill} ${SV.ink}/>` +
+    `<line data-r="link" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="${cx}" cy="${cy}" r="4.5" fill="var(--ink)"/>` +
+    `<rect data-r="rod" x="${cx - 6}" y="22" width="12" height="${cy - R - e - 22}" rx="2" ${SV.fill} ${SV.key}/><circle data-r="tip" cx="${cx}" cy="${cy - R - e}" r="4" fill="var(--gold)"/>` +
+    `<path d="M${cx + 52} ${cy - R - e}H${cx + 90}M${cx + 52} ${cy - R + e}H${cx + 90}M${cx + 84} ${cy - R - e}V${cy - R + e}" stroke="var(--muted)" stroke-width="1.3" fill="none"/>` +
+    SV.txt(cx + 96, cy - R + 4, 'sube y baja', 11, 'start') + SV.txt(cx + 96, cy - R + 20, '2 × excentricidad', 11, 'start') +
+    SV.txt(cx, 182, 'leva excéntrica y seguidor', 12),
+    'Leva excéntrica animada: el seguidor sube y baja', ` data-anim="cam" data-cx="${cx}" data-cy="${cy}" data-rr="${R}" data-e="${e}"`);
+}
+// Piñón y cremallera (animados): el giro del piñón mueve la cremallera en línea recta
+function rackSVG() {
+  const cx = 160, cy = 70, z = 12, rp = 30, th = 5, p = 2 * Math.PI * rp / z, yr = cy + rp + th / 2, yt = cy + rp - th / 2;
+  let d = `M-80 ${yr + 22}V${yr}`;
+  for (let k = -17; k < 20; k++) { const c = cx + p / 2 + k * p; d += `L${(c - .38 * p).toFixed(1)} ${yr}L${(c - .16 * p).toFixed(1)} ${yt}L${(c + .16 * p).toFixed(1)} ${yt}L${(c + .38 * p).toFixed(1)} ${yr}`; }
+  d += `L420 ${yr}V${yr + 22}Z`;
+  return SV.wrap('0 0 320 170',
+    `<g data-r="rack"><path d="${d}" ${SV.fill} ${SV.ink}/></g>` +
+    `<g data-r="mark"><circle cx="${cx + 2.5 * p}" cy="${yr + 11}" r="4" fill="var(--gold)"/></g>` +
+    `<g data-r="pin" data-cx="${cx}" data-cy="${cy}"><polygon points="${toothPts(cx, cy, z, rp, th, Math.PI / 2)}" ${SV.fill} ${SV.ink}/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/><circle cx="${cx}" cy="${cy - 20}" r="4" fill="var(--gold)"/></g>` +
+    SV.txt(cx, 16, 'piñón (gira)', 12) + SV.txt(cx, 160, 'cremallera (avanza en línea recta)', 12),
+    'Piñón y cremallera animados', ` data-anim="rack" data-cx="${cx}" data-cy="${cy}" data-rp="${rp}" data-p="${p.toFixed(3)}"`);
+}
+// Tornillo sin fin y rueda (animados): una vuelta del tornillo = un diente de la rueda
+function wormSVG(z = 14) {
+  const cx = 160, cy = 66, Rw = 44, th = 6, pw = 2 * Math.PI * Rw / z, ty = cy + Rw + 2, id = 'wc' + (++_cid);
+  const threads = Array.from({ length: Math.ceil(260 / pw) + 4 }, (_, i) => { const x = 40 - 2 * pw + i * pw; return `<path d="M${x.toFixed(1)} ${ty + 30}L${(x + pw * .6).toFixed(1)} ${ty}" fill="none" ${SV.ink}/>`; }).join('');
+  return SV.wrap('0 0 320 190',
+    `<g data-r="wheel" data-cx="${cx}" data-cy="${cy}"><polygon points="${toothPts(cx, cy, z, Rw, th, Math.PI / 2)}" ${SV.fill} ${SV.key}/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--ink)"/><circle cx="${cx}" cy="${cy - 24}" r="4" fill="var(--gold)"/></g>` +
+    `<clipPath id="${id}"><rect x="40" y="${ty}" width="240" height="30" rx="8"/></clipPath><rect x="40" y="${ty}" width="240" height="30" rx="8" ${SV.fill} ${SV.ink}/>` +
+    `<g clip-path="url(#${id})"><g data-r="thread">${threads}</g></g>` +
+    SV.txt(310, 14, 'rueda de ' + z + ' dientes', 11, 'end') + SV.txt(160, 184, 'tornillo sin fin: 1 vuelta = 1 diente de la rueda', 11),
+    'Tornillo sin fin animado engranando con una rueda dentada', ` data-anim="worm" data-z="${z}" data-pw="${pw.toFixed(3)}"`);
+}
+// Trinquete: gira libre en un sentido y se bloquea en el otro
+function ratchetSVG() {
+  const cx = 160, cy = 100, z = 12, ri = 40, ro = 54, a = 2 * Math.PI / z;
+  const pts = Array.from({ length: z }, (_, i) => [[0, ri], [.8, ro], [.82, ri]].map(([d, r]) => (cx + r * Math.cos(i * a + d * a - Math.PI / 2 - .2)).toFixed(1) + ',' + (cy + r * Math.sin(i * a + d * a - Math.PI / 2 - .2)).toFixed(1)).join(' ')).join(' ');
+  return SV.wrap('0 0 320 190',
+    `<polygon points="${pts}" ${SV.fill} ${SV.ink}/><circle cx="${cx}" cy="${cy}" r="5" fill="var(--ink)"/>` +
+    `<path d="M${cx + 46} ${cy - ro - 14}L${cx + 4} ${cy - ri - 2}" ${SV.key} style="stroke-width:4" fill="none"/><circle cx="${cx + 50}" cy="${cy - ro - 16}" r="5" fill="var(--bg)" ${SV.key}/>` +
+    `<path d="M${cx - 66} ${cy - 18}A68 68 0 0 0 ${cx - 40} ${cy + 54}" fill="none" ${SV.ink}/><path d="M${cx - 46} ${cy + 58}L${cx - 40} ${cy + 54}L${cx - 40} ${cy + 46}" fill="none" ${SV.ink}/>` +
+    SV.txt(cx - 78, cy + 32, '↺ gira libre', 11, 'end') + SV.txt(cx + 80, cy + 60, '↻ bloqueado', 11, 'start') + SV.txt(cx + 52, cy - ro - 28, 'uña', 12) + SV.txt(160, 184, 'rueda de trinquete', 12),
+    'Rueda de trinquete con su uña: gira libre en un sentido y se bloquea en el otro');
+}
+
+// ---- Lección 1 · Tipos de movimiento ----
+T('rotativo', 'Movimiento rotativo', 'El de una pieza que da vueltas alrededor de un eje, como una rueda o una manivela.', 'm1', 'Gira sin cambiar de sitio.', 'Da vueltas alrededor de un eje');
+T('lineal', 'Movimiento lineal', 'El de una pieza que avanza en línea recta y en un solo sentido, como un tren por una vía recta.', 'm1', 'Va de A a B sin volver.', 'Avanza recto, sin volver');
+T('alternativo', 'Movimiento alternativo', 'El de una pieza que va y viene en línea recta, como la aguja de una máquina de coser.', 'm1', 'Ida y vuelta por el mismo camino recto.', 'Ida y vuelta en línea recta');
+T('oscilante', 'Movimiento oscilante', 'El de una pieza que se balancea en arco de ida y vuelta sin dar la vuelta entera, como un columpio.', 'm1', 'Se balancea como un péndulo.', 'Balanceo en arco');
+T('mecanismo', 'Mecanismo', 'Conjunto de piezas que transforma un movimiento o una fuerza en otro distinto.', 'm1', 'Es el «traductor» entre un movimiento y otro.', 'Transforma movimientos');
+F('mov_limpia', 'El brazo de un limpiaparabrisas barre el cristal yendo y viniendo en arco, sin dar la vuelta entera. ¿Qué movimiento hace?', 'Oscilante', ['Rotativo (da vueltas completas)', 'Lineal (avanza recto en un solo sentido)', 'Alternativo (ida y vuelta en línea recta)'], 'Se balancea en arco: ese es el movimiento oscilante. Si diera vueltas completas sería rotativo, y si fuera y viniera en línea recta, alternativo.', 'm1');
+F('mov_aguja', 'La aguja de una máquina de coser sube y baja en línea recta, una y otra vez. ¿Qué movimiento hace?', 'Alternativo', ['Rotativo (da vueltas completas)', 'Oscilante (se balancea en arco)', 'Lineal (avanza recto en un solo sentido)'], 'Va y viene por el mismo camino recto: movimiento alternativo. Lo mueve un motor que gira, así que hay un mecanismo en medio que traduce giro en vaivén.', 'm1');
+
+// ---- Lección 2 · Biela-manivela ----
+T('manivela', 'Manivela', 'Brazo que gira alrededor de un eje y al que se une la biela; su longitud es el radio de giro.', 'm2', 'Como el pedal de una bicicleta.', 'Brazo que gira');
+T('biela', 'Biela', 'Barra que une la manivela con la pieza que va y viene (el pistón).', 'm2', 'Es el puente entre el giro y el vaivén.', 'Une giro y vaivén');
+T('carrera', 'Carrera', 'Distancia total que recorre la pieza que va y viene, de un extremo al otro.', 'm2', 'Se mide de punta a punta.', 'Recorrido de punta a punta');
+C('carrera', 'Una manivela de 20 mm de radio mueve un pistón con una biela. ¿Qué carrera tiene el pistón?', '40 mm', ['20 mm', '80 mm', '10 mm'], 'El pistón recorre de un extremo al otro el diámetro del círculo de la manivela: carrera = 2 × radio = 2 × 20 = 40 mm.', 'm2', () => {
+  const r = pick([10, 12, 15, 20, 25, 30, 40]);
+  return { q: `Una manivela de ${r} mm de radio mueve un pistón con una biela. ¿Qué carrera tiene el pistón?`, a: 2 * r + ' mm', wrong: uniq([r + ' mm', 4 * r + ' mm', fmt(r / 2) + ' mm'], 2 * r + ' mm'),
+    explain: `El pistón recorre de un extremo al otro el diámetro del círculo de la manivela: carrera = 2 × radio = 2 × ${r} = ${2 * r} mm.`, fig: crankSVG() };
+}, crankSVG());
+F('bm_conv', '¿Qué transforma un mecanismo de biela-manivela?', 'Giro en vaivén en línea recta (y al revés)', ['Vaivén en un giro más lento por reducción', 'Giro en otro giro más rápido', 'Fuerza en calor'], 'La manivela gira, la biela empuja y tira, y el pistón va y viene en línea recta. Funciona también al revés: el vaivén de un pistón de motor hace girar el cigüeñal.', 'm2', crankSVG());
+F('bm_volante', 'En los dos extremos del recorrido (los puntos muertos) el pistón no puede hacer girar la manivela. ¿Qué ayuda a pasarlos?', 'Un volante de inercia: una rueda pesada que sigue girando por inercia', ['Que la biela sea más corta', 'Frenar un poco la manivela', 'Aumentar la carrera'], 'En un punto muerto la biela y la manivela están alineadas y el empuje no produce giro. El volante almacena movimiento y «tira» de la manivela para pasar ese punto.', 'm2');
+F('bm_predice', 'Predice: si duplicas el radio de la manivela, ¿qué le pasa a la carrera?', 'Se duplica', ['Se reduce a la mitad', 'No cambia', 'Se multiplica por cuatro'], 'carrera = 2 × radio. Si el radio se duplica, la carrera también. Puedes comprobarlo en la animación: el círculo de la manivela crece y el pistón recorre más.', 'm2');
+
+// ---- Lección 3 · Levas ----
+T('leva', 'Leva', 'Pieza giratoria cuya forma empuja a otra pieza (el seguidor) y la hace subir y bajar a su paso.', 'm3', 'Un huevo girando empujaría hacia arriba.', 'Pieza giratoria que empuja');
+T('seguidor', 'Seguidor', 'Pieza que se apoya en la leva y sube y baja siguiendo su forma.', 'm3', 'Es el que «sigue» a la leva.', 'Pieza que sigue a la leva');
+T('arbol_levas', 'Árbol de levas', 'Eje con varias levas que abren y cierran piezas, como las válvulas de un motor, en el momento justo.', 'm3', 'Varias levas en un mismo eje.', 'Eje con varias levas');
+C('leva_lev', 'Una leva excéntrica tiene su eje desplazado 8 mm del centro del disco. ¿Cuánto sube y baja el seguidor en total?', '16 mm', ['8 mm', '32 mm', '4 mm'], 'El disco gira alrededor de un punto descentrado. El punto más alto del disco sube 8 mm sobre el eje y el más bajo baja 8 mm: en total 2 × 8 = 16 mm.', 'm3', () => {
+  const e = pick([4, 5, 6, 8, 10, 12]);
+  return { q: `Una leva excéntrica tiene su eje desplazado ${e} mm del centro del disco. ¿Cuánto sube y baja el seguidor en total?`, a: 2 * e + ' mm', wrong: uniq([e + ' mm', 4 * e + ' mm', fmt(e / 2) + ' mm'], 2 * e + ' mm'),
+    explain: `El disco gira alrededor de un punto descentrado. Su punto más alto queda ${e} mm por encima del eje y el más bajo ${e} mm por debajo: en total 2 × ${e} = ${2 * e} mm.`, fig: camSVG() };
+}, camSVG());
+F('leva_predice', 'Predice: en una leva excéntrica, ¿cuándo está el seguidor en su punto más alto?', 'Cuando la parte más alejada del eje de giro pasa bajo el seguidor', ['Cuando el centro del disco está justo a la izquierda del eje', 'Siempre está a la misma altura', 'Cuando la leva se para'], 'El seguidor sube cuanto más lejos del eje esté el borde que lo empuja. Mira la animación: está arriba cuando la línea punteada (eje → centro del disco) apunta hacia él.', 'm3', camSVG());
+F('leva_reposo', '¿Cómo se consigue que el seguidor se quede un rato quieto (en reposo) mientras la leva sigue girando?', 'Con un tramo de la leva a radio constante (un arco circular centrado en el eje)', ['Con una zona que sube más deprisa', 'Con una leva más grande', 'No se puede: siempre se mueve'], 'Si durante un tramo el borde está siempre a la misma distancia del eje, el seguidor no sube ni baja. Dando forma a la leva «programas» cuándo se mueve y cuándo descansa.', 'm3');
+F('leva_uso', 'En muchos motores de coche, ¿qué abre las válvulas en el momento justo?', 'Un árbol de levas', ['Un volante de inercia', 'Un tornillo sin fin', 'Una polea fija'], 'Cada leva del árbol empuja a su válvula con la forma justa: la forma de la leva decide cuándo se abre, cuánto y durante cuánto tiempo.', 'm3');
+
+// ---- Lección 4 · Cremallera y tornillo sin fin ----
+T('cremallera', 'Cremallera', 'Barra con dientes en línea recta que engrana con un piñón.', 'm4', 'Es un engranaje «estirado» en línea.', 'Barra dentada recta');
+T('sinfin', 'Tornillo sin fin', 'Tornillo que engrana con una rueda dentada y la hace avanzar un diente por cada vuelta.', 'm4', 'Reduce muchísimo la velocidad.', 'Tornillo que mueve una rueda');
+C('rack_avance', 'Un piñón de 12 dientes, con 5 mm entre dientes, mueve una cremallera. ¿Cuánto avanza la cremallera en una vuelta del piñón?', '60 mm', ['17 mm', '120 mm', '30 mm'], 'En una vuelta pasan 12 dientes por el contacto, y cada uno ocupa 5 mm: 12 × 5 = 60 mm.', 'm4', () => {
+  const z = pick([8, 10, 12, 16, 20]), p = pick([4, 5, 6, 8]);
+  return { q: `Un piñón de ${z} dientes, con ${p} mm entre dientes, mueve una cremallera. ¿Cuánto avanza la cremallera en una vuelta del piñón?`, a: z * p + ' mm', wrong: uniq([(z + p) + ' mm', 2 * z * p + ' mm', (z * p / 2) + ' mm'], z * p + ' mm'),
+    explain: `En una vuelta pasan ${z} dientes por el contacto, y cada uno ocupa ${p} mm: ${z} × ${p} = ${z * p} mm.`, fig: rackSVG() };
+}, rackSVG());
+C('sinfin_rel', 'Un tornillo sin fin con una sola entrada mueve una rueda de 24 dientes. ¿Cuántas vueltas da el tornillo por cada vuelta completa de la rueda?', '24 vueltas', ['12 vueltas', '48 vueltas', '1 vuelta'], 'Cada vuelta del tornillo hace avanzar la rueda un diente. Para que la rueda dé una vuelta completa hacen falta tantas vueltas del tornillo como dientes tiene: 24.', 'm4', () => {
+  const z = pick([10, 12, 16, 20, 24, 30, 40]);
+  return { q: `Un tornillo sin fin con una sola entrada mueve una rueda de ${z} dientes. ¿Cuántas vueltas da el tornillo por cada vuelta completa de la rueda?`, a: z + ' vueltas', wrong: uniq([(z / 2) + ' vueltas', 2 * z + ' vueltas', '1 vuelta'], z + ' vueltas'),
+    explain: `Cada vuelta del tornillo hace avanzar la rueda un diente. Para que la rueda dé una vuelta completa hacen falta tantas vueltas del tornillo como dientes tiene: ${z}.`, fig: wormSVG(z) };
+}, wormSVG(14));
+F('rack_uso', '¿Qué transforma una cremallera con su piñón?', 'Giro en movimiento en línea recta (y al revés)', ['Línea recta en otra línea recta', 'Giro en otro giro más rápido', 'Fuerza en velocidad sin mover nada'], 'Cuando el piñón gira, sus dientes empujan los de la cremallera, que avanza en línea recta. Si empujas la cremallera, también hace girar el piñón.', 'm4', rackSVG());
+F('sinfin_predice', 'Predice: ¿qué consigue un tornillo sin fin con una rueda de muchos dientes?', 'Una reducción enorme de velocidad (y mucha fuerza de giro) en poco espacio', ['Aumentar mucho la velocidad', 'Convertir el giro en vaivén', 'Nada: solo cambia el sentido de giro'], 'Con una entrada, la relación es igual al número de dientes de la rueda: con 40 dientes, 40 : 1 en un solo paso. Con engranajes rectos necesitarías varias etapas.', 'm4', wormSVG(14));
+F('sinfin_bloqueo', 'Con un tornillo sin fin de rosca poco inclinada, ¿qué suele pasar si empujas la rueda para hacer girar el tornillo?', 'Puede quedarse bloqueado (autobloqueo), pero no está garantizado', ['Gira más fácil que al revés, siempre', 'Gira libremente, siempre', 'Se rompe siempre'], 'El autobloqueo depende del rozamiento y del ángulo de la rosca: con poca inclinación y buen rozamiento la rueda no puede mover el tornillo. Pero el desgaste o las vibraciones pueden hacer que se pierda, así que no te fíes solo de él para sostener cargas peligrosas.', 'm4');
+
+// ---- Lección 5 · A saltos y en un solo sentido ----
+T('trinquete', 'Trinquete', 'Rueda con dientes inclinados y una uña que solo la deja girar en un sentido.', 'm5', 'Es lo que hace «clic-clic» en una llave de carraca.', 'Gira solo en un sentido');
+T('lengueta', 'Uña (lengüeta)', 'Pieza que se apoya en los dientes del trinquete y bloquea el giro hacia atrás.', 'm5', 'Se levanta al subir y cae al pasar el diente.', 'Bloquea el giro hacia atrás');
+T('ginebra', 'Cruz de Malta (mecanismo de Ginebra)', 'Rueda con ranuras que un pasador hace avanzar un paso cada vez, convirtiendo un giro continuo en giro a saltos.', 'm5', 'Gira, para, avanza un paso, para...', 'Giro continuo → giro a saltos');
+F('trinq_uso', '¿Para qué sirve la uña de un trinquete?', 'Para impedir que la rueda gire hacia atrás', ['Para que la rueda gire más deprisa', 'Para convertir el giro en vaivén', 'Para frenar la rueda en los dos sentidos'], 'En el sentido libre la uña sube por la rampa del diente y cae detrás; al intentar volver, choca con la cara vertical del diente y bloquea.', 'm5', ratchetSVG());
+F('trinq_predice', 'Predice: giras la rueda de un trinquete en su sentido libre y sueltas. ¿Qué ocurre?', 'La uña cae tras un diente y evita que la rueda vuelva atrás', ['La rueda vuelve sola a su sitio', 'La rueda sigue girando sin parar', 'La uña se rompe'], 'Al girar en el sentido libre, cada diente levanta la uña y esta cae detrás (el «clic»). Al soltar, la cara vertical del diente se apoya en la uña y la rueda no retrocede.', 'm5');
+F('ginebra_cine', 'En un proyector de cine antiguo, ¿para qué se usa una cruz de Malta?', 'Para que la película avance un fotograma y se pare un instante delante de la lente', ['Para girar el carrete más deprisa', 'Para enfocar la imagen', 'Para rebobinar la película'], 'La imagen solo se ve bien si el fotograma está quieto mientras se proyecta. El mecanismo repite «avanzar y parar» unas 24 veces por segundo, y el ojo ve movimiento continuo.', 'm5');
+F('ginebra_reloj', '¿De dónde viene el nombre «Ginebra» de este mecanismo?', 'De la relojería suiza, donde se usó como tope para que el muelle no se tensara ni se destensara del todo', ['De un inventor llamado Ginebra', 'De los primeros cines de esa ciudad', 'De la forma de una cruz suiza'], 'Su primera aplicación fue en relojes mecánicos suizos, como tope del muelle. Después se usó en proyectores de cine, y por eso se conoce también como cruz de Malta.', 'm5');
+
+// =====================================================================
+// UNIDAD «FUERZA, PESO Y MOVIMIENTO»  (la base que explica el porqué de palancas, poleas y engranajes)
+// =====================================================================
+// Rozamiento (animada): hace falta más tirón para arrancar que para mantener el movimiento
+ANIMS.friction = (s, t) => {
+  const c = t % 7, Fs = 100, Fk = 60, k = 0.95, x0 = 118, y = 92; let F, dx = 0, msg;
+  if (c < 3.5) { F = Fs * c / 3.5; msg = 'Aún no se mueve: el rozamiento iguala tu tirón'; }
+  else if (c < 6) { F = Fk; dx = (c - 3.5) * 26; msg = 'Ya se mueve: ¡cuesta menos mantenerlo!'; }
+  else { F = 0; dx = 65; msg = 'Sueltas: el rozamiento lo frena'; }
+  const bx = x0 + dx, arrow = (xa, xb) => Math.abs(xb - xa) < 3 ? 'M0 0' : `M${xa.toFixed(1)} ${y}H${xb.toFixed(1)}M${xb.toFixed(1)} ${y}l${xb > xa ? -7 : 7} -5M${xb.toFixed(1)} ${y}l${xb > xa ? -7 : 7} 5`;
+  _a(_q(s, 'block'), { x: bx });
+  _q(s, 'farrow').setAttribute('d', arrow(bx + 70, bx + 70 + F * k));
+  _q(s, 'rarrow').setAttribute('d', arrow(bx, bx - (F || (c < 6 ? 0 : 20)) * k));
+  _q(s, 'msg').textContent = msg;
+};
+function frictionSVG() {
+  return SV.wrap('0 0 320 156',
+    `<path d="M10 112H310" ${SV.ink} fill="none"/><path d="M20 116l-8 8M60 116l-8 8M100 116l-8 8M140 116l-8 8M180 116l-8 8M220 116l-8 8M260 116l-8 8M300 116l-8 8" stroke="var(--muted)" stroke-width="1" fill="none"/>` +
+    `<rect data-r="block" x="118" y="72" width="70" height="40" rx="5" ${SV.fill} ${SV.ink}/>` +
+    `<path data-r="farrow" d="M0 0" fill="none" ${SV.key} style="stroke-width:4"/><path data-r="rarrow" d="M0 0" fill="none" stroke="var(--teal)" stroke-width="4" stroke-linecap="round"/>` +
+    `<path d="M12 14h18" ${SV.key} fill="none"/>` + SV.txt(36, 18, 'tu tirón', 11, 'start') + `<path d="M120 14h18" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" fill="none"/>` + SV.txt(144, 18, 'rozamiento', 11, 'start') +
+    `<text data-r="msg" x="160" y="148" font-size="11.5" font-weight="600" text-anchor="middle" fill="var(--ink)" font-family="ui-monospace,Consolas,monospace">Aún no se mueve</text>`,
+    'Rozamiento animado: hace falta más tirón para arrancar que para mantener el movimiento', ' data-anim="friction"');
+}
+// Dos fuerzas en sentidos opuestos sobre una caja: F1 a la izquierda, F2 a la derecha
+function forcesSVG(F1, F2) {
+  const k = 1.7, y = 62, head = (x, d) => `M${x} ${y}l${d * 8} -6M${x} ${y}l${d * 8} 6`;
+  return SV.wrap('0 0 320 120',
+    `<rect x="124" y="${y - 22}" width="72" height="44" rx="6" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M124 ${y}H${124 - F1 * k}${head(124 - F1 * k, 1)}" fill="none" ${SV.key} style="stroke-width:4"/>` + SV.txt(124 - F1 * k / 2, y - 12, F1 + ' N', 13) +
+    `<path d="M196 ${y}H${196 + F2 * k}${head(196 + F2 * k, -1)}" fill="none" ${SV.key} style="stroke-width:4"/>` + SV.txt(196 + F2 * k / 2, y - 12, F2 + ' N', 13) +
+    SV.txt(160, y + 4, 'caja', 11) + SV.txt(160, 108, 'dos fuerzas en sentidos opuestos', 11, 'middle', 500),
+    `Una caja con una fuerza de ${F1} newtons hacia la izquierda y otra de ${F2} newtons hacia la derecha`);
+}
+// Masa y peso: un objeto colgado de un muelle
+function pesoSVG() {
+  return SV.wrap('0 0 320 190',
+    `<rect x="50" y="10" width="110" height="8" rx="3" ${SV.fill} ${SV.ink}/><path d="M105 18V34l-14 7 28 12-28 12 28 12-28 12 14 7V132" fill="none" ${SV.ink}/>` +
+    `<rect x="78" y="132" width="54" height="36" rx="6" ${SV.fill} ${SV.key}/>` + SV.txt(105, 155, 'masa', 12) + SV.arrowDown(168, 100, 176) + SV.txt(178, 150, 'peso', 12, 'start') +
+    SV.txt(204, 36, 'masa: kg', 12, 'start') + SV.txt(204, 52, 'no cambia', 11, 'start', 500) + SV.txt(204, 84, 'peso: N', 12, 'start') + SV.txt(204, 100, '= masa × 9,8', 11, 'start', 500) + SV.txt(204, 116, 'depende de la', 11, 'start', 500) + SV.txt(204, 130, 'gravedad', 11, 'start', 500),
+    'Un objeto colgado de un muelle: su masa se mide en kilogramos y su peso, la fuerza hacia abajo, en newtons');
+}
+
+// ---- Lección 1 · Fuerza y peso ----
+T('fuerza', 'Fuerza', 'Lo que cambia el movimiento de algo o lo deforma: un empuje, un tirón o una atracción. Se mide en newtons (N).', 'f1', 'Si algo cambia su movimiento, hay una fuerza.', 'Empuje o tirón (N)');
+T('masa', 'Masa', 'Cantidad de materia de un objeto. Se mide en kilogramos (kg) y no cambia de un lugar a otro.', 'f1', 'Es «cuánto hay», no «cuánto pesa».', 'Cantidad de materia (kg)');
+T('peso', 'Peso', 'Atracción con la que la Tierra tira de un objeto hacia abajo: peso = masa × 9,8. Se mide en newtons (N).', 'f1', 'Cambia con la gravedad: en la Luna pesas menos.', 'Atracción de la Tierra (N)');
+C('peso_calc', '¿Cuánto pesa, en newtons, un objeto de 3 kg de masa? Usa 9,8 N por cada kilogramo.', '29,4 N', ['3 N', '0,3 N', '294 N'], 'Peso = masa × 9,8 = 3 × 9,8 = 29,4 N.', 'f1', () => {
+  const m = pick([0.5, 1, 2, 3, 4, 5, 10]), w = m * 9.8;
+  return { q: `¿Cuánto pesa, en newtons, un objeto de ${fmt(m)} kg de masa? Usa 9,8 N por cada kilogramo.`, a: fmt(w) + ' N', wrong: uniq([fmt(m) + ' N', fmt(m / 9.8, 2) + ' N', fmt(w * 10) + ' N'], fmt(w) + ' N'), explain: `Peso = masa × 9,8 = ${fmt(m)} × 9,8 = ${fmt(w)} N.`, fig: pesoSVG() };
+}, pesoSVG());
+F('masa_luna', 'Un astronauta viaja a la Luna, donde la gravedad es unas 6 veces menor. ¿Qué les pasa a su masa y a su peso?', 'Su masa no cambia y su peso baja a casi la sexta parte', ['Su masa baja a la sexta parte y su peso no cambia', 'Las dos bajan a la sexta parte', 'Las dos se quedan igual'], 'La masa es la cantidad de materia: la misma en cualquier sitio. El peso es la fuerza de atracción, y en la Luna es unas 6 veces menor.', 'f1');
+F('kg_n', '¿Cuánto pesa aproximadamente, en la Tierra, un objeto de 1 kg de masa?', 'Unos 10 newtons (9,8 N)', ['1 newton', '100 newtons', '0,1 newtons'], 'Un kilogramo de masa pesa 9,8 N: por eso, para cálculos rápidos, se redondea a 10 N por cada kg. Sirve para pasar de «kilos» a newtons.', 'f1');
+
+// ---- Lección 2 · Fuerzas que se suman ----
+T('resultante', 'Resultante', 'El efecto único que equivale a todas las fuerzas que actúan sobre algo. Si van en la misma línea, se suman o se restan según su sentido.', 'f2', 'Es el «balance final» de empujes y tirones.', 'Suma de todas las fuerzas');
+T('equilibrio', 'Equilibrio', 'Situación en la que la fuerza resultante es cero: el objeto sigue quieto o sigue a velocidad constante.', 'f2', 'Las fuerzas se cancelan entre sí.', 'Resultante cero');
+T('inercia', 'Inercia', 'Tendencia de un objeto a seguir como está (quieto o en movimiento) mientras no actúe una fuerza. Cuanta más masa, más inercia.', 'f2', 'Por eso cuesta empujar un coche parado.', 'Se resiste a cambiar');
+C('resultante_calc', 'Dos personas tiran de una caja en sentidos opuestos: una con 40 N hacia la izquierda y otra con 25 N hacia la derecha. ¿Cuál es la fuerza resultante?', '15 N hacia la izquierda', ['65 N hacia la izquierda', '15 N hacia la derecha', '0 N (equilibrio)'], 'Van en sentidos opuestos, así que se restan: 40 − 25 = 15 N. Gana la mayor, así que la caja tiende a ir hacia la izquierda.', 'f2', () => {
+  let f1, f2; do { f1 = pick([10, 15, 20, 25, 30, 40, 50, 60]); f2 = pick([10, 15, 20, 25, 30, 40, 50, 60]); } while (f1 === f2);
+  const d = Math.abs(f1 - f2), lado = f1 > f2 ? 'izquierda' : 'derecha', otro = f1 > f2 ? 'derecha' : 'izquierda', a = `${d} N hacia la ${lado}`;
+  return { q: `Dos personas tiran de una caja en sentidos opuestos: una con ${f1} N hacia la izquierda y otra con ${f2} N hacia la derecha. ¿Cuál es la fuerza resultante?`, a, wrong: uniq([`${f1 + f2} N hacia la ${lado}`, `${d} N hacia la ${otro}`, '0 N (equilibrio)'], a),
+    explain: `Van en sentidos opuestos, así que se restan: ${Math.max(f1, f2)} − ${Math.min(f1, f2)} = ${d} N. Gana la mayor, así que la caja tiende a ir hacia la ${lado}.`, fig: forcesSVG(f1, f2) };
+}, forcesSVG(40, 25));
+F('equil_cuerda', 'Dos equipos tiran de una cuerda con 500 N cada uno y la cuerda no se mueve. ¿Qué podemos decir?', 'Está en equilibrio: la fuerza resultante es cero', ['Gana el equipo de la izquierda', 'No hay fuerzas actuando', 'La cuerda tiene que romperse'], 'Hay fuerzas, y grandes, pero son iguales y opuestas: se cancelan y la resultante es 0 N. Estar en equilibrio no es «no haber fuerzas», es que se compensan.', 'f2');
+F('inercia_bus', 'Un autobús frena de golpe y los pasajeros de pie se «van hacia delante». ¿Por qué?', 'Por inercia: su cuerpo tiende a seguir moviéndose a la velocidad que llevaba', ['Porque una fuerza los empuja hacia delante', 'Porque el aire los empuja', 'Porque pesan más al frenar'], 'Nadie los empuja hacia delante: es el autobús el que se frena, y sus cuerpos siguen como iban, por inercia. Por eso se usa el cinturón.', 'f2');
+F('inercia_bola', 'Predice: ¿qué cuesta más poner en marcha de un empujón, una bola de bolos o una pelota de tenis?', 'La bola de bolos: tiene más masa y, por tanto, más inercia', ['La pelota de tenis: es más pequeña', 'Cuestan lo mismo', 'Depende del color'], 'Cuanta más masa, más inercia: la bola de bolos se resiste más a cambiar su estado de reposo. Mismo empujón, menos cambio de velocidad.', 'f2');
+
+// ---- Lección 3 · Rozamiento ----
+T('rozamiento', 'Rozamiento', 'Resistencia que aparece entre dos superficies en contacto y se opone a que se deslicen una sobre otra.', 'f3', 'Es el «freno» natural de todo lo que roza.', 'Se opone a deslizar');
+T('normal', 'Reacción normal', 'Lo que hace el suelo (o cualquier apoyo) hacia arriba sobre un objeto apoyado; sobre un suelo horizontal vale lo mismo que el peso.', 'f3', 'Cuanto más aprietas, más rozamiento.', 'Empuje de la superficie');
+T('mu', 'Coeficiente de rozamiento (μ)', 'Número sin unidades que indica cuánto «agarran» dos materiales: rozamiento = μ × reacción normal.', 'f3', 'Hielo sobre hielo: μ muy pequeño. Goma sobre asfalto: grande.', 'Cuánto agarran dos materiales');
+C('roz_calc', 'Una caja de 50 N de peso está sobre un suelo horizontal. El coeficiente de rozamiento es 0,4. ¿Qué fuerza de rozamiento hay que vencer?', '20 N', ['50 N', '125 N', '10 N'], 'Rozamiento = μ × reacción normal. En suelo horizontal la normal es igual al peso: 0,4 × 50 = 20 N.', 'f3', () => {
+  const n = pick([20, 30, 40, 50, 60, 80, 100]), mu = pick([0.2, 0.3, 0.4, 0.5]), r = n * mu;
+  return { q: `Una caja de ${n} N de peso está sobre un suelo horizontal. El coeficiente de rozamiento es ${fmt(mu)}. ¿Qué fuerza de rozamiento hay que vencer?`, a: fmt(r) + ' N', wrong: uniq([n + ' N', fmt(n / mu) + ' N', fmt(r / 2) + ' N'], fmt(r) + ' N'), explain: `Rozamiento = μ × reacción normal. En suelo horizontal la normal es igual al peso: ${fmt(mu)} × ${n} = ${fmt(r)} N.`, fig: frictionSVG() };
+}, frictionSVG());
+F('roz_arranque', 'Para empezar a mover un armario pesado hace falta más fuerza que para mantenerlo en movimiento. ¿Por qué?', 'Porque el rozamiento al arrancar suele ser mayor que el que hay una vez deslizando', ['Porque el armario pesa menos cuando se mueve', 'Porque el suelo se vuelve más duro', 'Porque el rozamiento desaparece al moverse'], 'Antes de moverse, las superficies «se agarran» más (rozamiento estático); una vez deslizando el rozamiento es algo menor. Mira la animación: el tirón sube hasta soltarse y luego baja.', 'f3', frictionSVG());
+F('roz_area', 'Predice: arrastras un ladrillo apoyado de plano o de canto. En el modelo básico del rozamiento, ¿qué cambia?', 'Casi nada: depende sobre todo de los materiales y de cuánto aprietan, no del área', ['Es el doble si está de plano', 'Es el doble si está de canto', 'El rozamiento desaparece de canto'], 'En el modelo básico, el rozamiento depende de μ y de la reacción normal, no del área de contacto. (En casos reales, como neumáticos o superficies pegajosas, pueden aparecer diferencias.)', 'f3');
+F('roz_engranajes', 'En un tren de engranajes real, el esfuerzo es algo mayor que el que calculaste. ¿Por qué?', 'Porque parte del esfuerzo se pierde en rozamiento, en los dientes y en los ejes', ['Porque los engranajes pesan', 'Porque la relación de transmisión cambia al girar', 'Porque la fuerza se crea sola'], 'Los cálculos de «caso ideal» no cuentan el rozamiento. En la realidad se pierde algo en forma de calor, y por eso se lubrican los engranajes.', 'f3');
+
+// ---- Lección 4 · Trabajo y energía ----
+T('trabajo', 'Trabajo', 'Lo que se hace al aplicar una fuerza a lo largo de una distancia en su dirección: trabajo = fuerza × distancia. Se mide en julios (J).', 'f4', 'Empujar una pared sin moverla no es «trabajo» para la física.', 'Fuerza × distancia (J)');
+T('energia', 'Energía', 'Capacidad de realizar trabajo. No se crea ni se destruye, solo se transforma. Se mide en julios (J).', 'f4', 'Es la «moneda» con la que se paga el trabajo.', 'Capacidad de hacer trabajo');
+T('potencia', 'Potencia', 'Rapidez con que se hace trabajo: potencia = trabajo ÷ tiempo. Se mide en vatios (W).', 'f4', 'Mismo trabajo en menos tiempo = más potencia.', 'Trabajo por segundo (W)');
+C('trabajo_calc', 'Levantas una caja con una fuerza de 20 N a lo largo de 3 m. ¿Qué trabajo haces?', '60 J', ['23 J', '30 J', '120 J'], 'Trabajo = fuerza × distancia = 20 N × 3 m = 60 J.', 'f4', () => {
+  const f = pick([5, 10, 15, 20, 25, 30, 40]), d = pick([1, 2, 3, 4, 5]), w = f * d;
+  return { q: `Levantas una caja con una fuerza de ${f} N a lo largo de ${d} m. ¿Qué trabajo haces?`, a: w + ' J', wrong: uniq([(f + d) + ' J', fmt(w / 2) + ' J', (w * 2) + ' J'], w + ' J'), explain: `Trabajo = fuerza × distancia = ${f} N × ${d} m = ${w} J.` };
+});
+C('potencia_calc', 'Un motor hace 600 J de trabajo en 5 s. ¿Qué potencia tiene?', '120 W', ['3000 W', '605 W', '240 W'], 'Potencia = trabajo ÷ tiempo = 600 J ÷ 5 s = 120 W.', 'f4', () => {
+  const w = pick([200, 300, 400, 600, 800, 1200]), t = pick([2, 4, 5, 10]), p = w / t;
+  return { q: `Un motor hace ${w} J de trabajo en ${t} s. ¿Qué potencia tiene?`, a: fmt(p) + ' W', wrong: uniq([(w * t) + ' W', (w + t) + ' W', fmt(p * 2) + ' W'], fmt(p) + ' W'), explain: `Potencia = trabajo ÷ tiempo = ${w} J ÷ ${t} s = ${fmt(p)} W.` };
+});
+F('palanca_energia', 'Con una palanca levantas una carga de 100 N a 0,2 m de altura (20 J) empujando con 25 N. ¿Cuánto tiene que bajar tu mano?', '0,8 m', ['0,2 m', '0,05 m', '4 m'], 'El trabajo que haces es el mismo (20 J, sin rozamiento): 25 N × 0,8 m = 20 J. Cuatro veces menos fuerza, cuatro veces más recorrido. Así se explica con números el «nada es gratis» de las palancas.', 'f4');
+F('conserv', '¿Qué significa que la energía «se conserva»?', 'Que no se crea ni se destruye: solo se transforma (por ejemplo, en movimiento o en calor)', ['Que siempre se guarda en una pila', 'Que una máquina puede dar más energía de la que recibe', 'Que la energía solo existe en los motores'], 'Una máquina nunca entrega más energía de la que recibe; parte se «pierde» como calor por rozamiento. Por eso no existen las máquinas que se mueven solas sin parar.', 'f4');
+
+// =====================================================================
+// UNIDAD «ESTRUCTURAS Y RIGIDEZ»  (por qué un brazo se dobla y cómo evitarlo)
+// =====================================================================
+// Marco cuadrado (se tumba) frente a marco con diagonal (aguanta). La izquierda se deforma con las barras de longitud constante.
+ANIMS.frame = (s, t) => {
+  const g = 0.5 + 0.5 * Math.sin(t * 1.3), dx = 28 * g, hh = Math.sqrt(70 * 70 - dx * dx), ty = 128 - hh, len = 10 + 14 * g;
+  const P = (x, y) => x.toFixed(1) + ' ' + y.toFixed(1), ar = (x2, y) => `M${P(x2 - len, y)}H${x2.toFixed(1)}M${P(x2 - 7, y - 5)}L${P(x2, y)}L${P(x2 - 7, y + 5)}`;
+  _q(s, 'sq').setAttribute('d', `M60 128H130L${P(130 + dx, ty)}L${P(60 + dx, ty)}Z`);
+  _a(_q(s, 'pc'), { cx: 130 + dx, cy: ty }); _a(_q(s, 'pd'), { cx: 60 + dx, cy: ty });
+  _q(s, 'ar1').setAttribute('d', ar(54 + dx, ty)); _q(s, 'ar2').setAttribute('d', ar(194, 58));
+};
+function frameSVG() {
+  const pin = (x, y, r = '') => `<circle ${r ? `data-r="${r}" ` : ''}cx="${x}" cy="${y}" r="4.5" ${SV.fill} ${SV.key}/>`;
+  return SV.wrap('0 0 320 166',
+    `<path d="M10 128H310" stroke="var(--muted)" stroke-width="1" fill="none"/>` +
+    `<path data-r="sq" d="M60 128H130V58H60Z" ${SV.fill} ${SV.ink}/>` + pin(60, 128) + pin(130, 128) + pin(130, 58, 'pc') + pin(60, 58, 'pd') +
+    `<path d="M200 128H270V58H200Z" ${SV.fill} ${SV.ink}/><path d="M200 128L270 58" fill="none" ${SV.key} style="stroke-width:3.4"/>` + pin(200, 128) + pin(270, 128) + pin(270, 58) + pin(200, 58) +
+    `<path data-r="ar1" d="M0 0" fill="none" ${SV.key} style="stroke-width:3.4"/><path data-r="ar2" d="M0 0" fill="none" ${SV.key} style="stroke-width:3.4"/>` +
+    SV.txt(95, 150, 'sin diagonal: cede', 10.5) + SV.txt(235, 150, 'con diagonal: firme', 10.5) + SV.txt(160, 14, 'empujas la esquina de arriba →', 11, 'middle', 500),
+    'Dos marcos cuadrados con pines en las esquinas: el de la izquierda se tumba al empujarlo; el de la derecha, con una diagonal, no se deforma', ' data-anim="frame"');
+}
+// Tracción, compresión y flexión
+function cargasSVG() {
+  const ar = (x1, x2, y) => { const d = x2 > x1 ? -1 : 1; return `<path d="M${x1} ${y}H${x2}M${x2 + d * 8} ${y - 6}L${x2} ${y}L${x2 + d * 8} ${y + 6}" fill="none" ${SV.key}/>`; };
+  const P = (i, inner, a, b) => `<g transform="translate(${i * 107} 0)">${inner}${SV.txt(53, 104, a, 12)}${SV.txt(53, 120, b, 11, 'middle', 500)}</g>`;
+  return SV.wrap('0 0 320 128',
+    P(0, `<rect x="30" y="44" width="48" height="16" rx="3" ${SV.fill} ${SV.ink}/>` + ar(30, 6, 52) + ar(78, 102, 52), 'tracción', 'estira') +
+    P(1, `<rect x="32" y="44" width="44" height="16" rx="3" ${SV.fill} ${SV.ink}/>` + ar(4, 32, 52) + ar(104, 76, 52), 'compresión', 'aprieta') +
+    P(2, `<path d="M14 54Q54 74 94 54" fill="none" ${SV.ink} style="stroke-width:9"/><path d="M14 66l-8 14h16zM94 66l-8 14h16z" ${SV.fill} ${SV.key}/>` + SV.arrowDown(54, 8, 48), 'flexión', 'dobla'),
+    'Tres esfuerzos: tracción (estira), compresión (aprieta) y flexión (dobla)');
+}
+// Dos voladizos con la misma carga: el doble de largo se dobla unas 8 veces más
+ANIMS.cantilever = (s, t) => {
+  const g = 0.5 + 0.5 * Math.sin(t * 1.2);
+  [['1', 135, 6, 48], ['2', 270, 48, 92]].forEach(([k, L, dmax, y0]) => {
+    const d = dmax * g, pts = []; for (let i = 0; i <= 12; i++) { const u = i / 12; pts.push((20 + L * u).toFixed(1) + ',' + (y0 + d * (3 * u * u - u ** 3) / 2).toFixed(1)); }
+    _q(s, 'b' + k).setAttribute('points', pts.join(' '));
+    const tx = 20 + L, ty = y0 + d;
+    _q(s, 'a' + k).setAttribute('d', `M${tx} ${(ty - 32).toFixed(1)}V${(ty - 4).toFixed(1)}M${tx - 6} ${(ty - 13).toFixed(1)}L${tx} ${(ty - 4).toFixed(1)}L${tx + 6} ${(ty - 13).toFixed(1)}`);
+  });
+};
+function cantileverSVG() {
+  return SV.wrap('0 0 320 168',
+    `<rect x="12" y="28" width="8" height="118" rx="2" ${SV.fill} ${SV.ink}/>` +
+    `<polyline data-r="b1" points="20,48 155,48" fill="none" ${SV.ink} style="stroke-width:7"/><path data-r="a1" d="M0 0" fill="none" ${SV.key} style="stroke-width:3.2"/>` +
+    `<polyline data-r="b2" points="20,92 290,92" fill="none" ${SV.ink} style="stroke-width:7"/><path data-r="a2" d="M0 0" fill="none" ${SV.key} style="stroke-width:3.2"/>` +
+    SV.txt(168, 52, 'viga corta', 11, 'start') + SV.txt(160, 80, 'viga el doble de larga', 11) + SV.txt(300, 18, 'misma carga', 11, 'end', 500) + SV.txt(160, 162, 'el doble de larga → baja ~8× más', 11, 'middle', 500),
+    'Dos vigas sujetas por un extremo con la misma carga en la punta: la que es el doble de larga se dobla unas ocho veces más', ' data-anim="cantilever"');
+}
+// Marco Technic de cuatro vigas reforzado con una diagonal
+function refuerzoSVG() {
+  const hole = (x, y) => `<circle cx="${x}" cy="${y}" r="4.5" ${SV.fill} ${SV.key}/>`;
+  return SV.wrap('0 0 320 160',
+    `<rect x="70" y="24" width="140" height="14" rx="7" ${SV.fill} ${SV.ink}/><rect x="70" y="122" width="140" height="14" rx="7" ${SV.fill} ${SV.ink}/>` +
+    `<rect x="70" y="24" width="14" height="112" rx="7" ${SV.fill} ${SV.ink}/><rect x="196" y="24" width="14" height="112" rx="7" ${SV.fill} ${SV.ink}/>` +
+    `<path d="M77 129L203 31" fill="none" ${SV.key} style="stroke-width:10"/>` + hole(77, 31) + hole(203, 31) + hole(77, 129) + hole(203, 129) +
+    SV.txt(224, 76, 'riostra', 12, 'start') + SV.txt(224, 92, '(diagonal)', 11, 'start', 500), 'Marco de cuatro vigas Technic con un pin en cada esquina, reforzado con una viga en diagonal que forma dos triángulos');
+}
+
+// ---- Lección 1 · Triángulos que no ceden ----
+T('rigidez', 'Rigidez', 'Capacidad de una pieza o estructura de no deformarse al recibir una fuerza.', 'e1', 'Una regla de acero es rígida; una de goma, no.', 'No se deforma');
+T('triangulacion', 'Triangulación', 'Reforzar una estructura dividiéndola en triángulos, que no pueden cambiar de forma sin cambiar la longitud de un lado.', 'e1', 'Con tres lados de longitud fija solo existe un triángulo posible.', 'Dividir en triángulos');
+T('riostra', 'Riostra (diagonal)', 'Barra que se añade en diagonal a un marco para convertirlo en triángulos y evitar que se deforme.', 'e1', 'Como la barra diagonal de una cancela de madera.', 'Barra diagonal de refuerzo');
+F('tri_predice', 'Predice: un marco de cuatro barras unidas con un pin en cada esquina. Lo empujas por una esquina de arriba. ¿Qué le ocurre?', 'Se deforma como un paralelogramo: los lados no cambian, pero los ángulos sí', ['No le pasa nada: un cuadrado nunca se deforma', 'Se encoge hasta hacerse más pequeño', 'Se rompe siempre por la esquina'], 'Con las esquinas articuladas las barras pueden girar: los lados mantienen su longitud, pero los ángulos cambian y el cuadrado se «tumba». Míralo en la animación.', 'e1', frameSVG());
+F('tri_porque', '¿Por qué un triángulo hecho con barras y pines no se deforma?', 'Porque con tres lados de longitud fija solo existe una forma posible', ['Porque tiene menos esquinas que se pueden romper', 'Porque los triángulos pesan más', 'Porque los pines se bloquean solos'], 'Dados los tres lados, el triángulo queda determinado: para cambiar sus ángulos habría que estirar o aplastar un lado. Con cuatro lados no pasa lo mismo.', 'e1', frameSVG());
+C('diagonales', 'Un marco de 6 lados, con una articulación en cada esquina, se refuerza con diagonales que no se cruzan hasta dividirlo todo en triángulos. ¿Cuántas diagonales hacen falta?', '3', ['4', '5', '2'], 'Un polígono de n lados se divide en triángulos con n − 3 diagonales que no se cruzan: 6 − 3 = 3. (Y salen 4 triángulos, n − 2.)', 'e1', () => {
+  const n = pick([5, 6, 7, 8, 9]);
+  return { q: `Un marco de ${n} lados, con una articulación en cada esquina, se refuerza con diagonales que no se cruzan hasta dividirlo todo en triángulos. ¿Cuántas diagonales hacen falta?`, a: String(n - 3), wrong: [n - 1, n - 2, n - 4].map(String),
+    explain: `Un polígono de n lados se divide en triángulos con n − 3 diagonales que no se cruzan: ${n} − 3 = ${n - 3}. (Y salen ${n - 2} triángulos, n − 2.)` };
+});
+F('tri_ejemplos', '¿En cuál de estos objetos se aprovecha la triangulación?', 'En una grúa de torre o un puente de celosía, hechos de muchas barras que forman triángulos', ['En un ladrillo macizo', 'En una cuerda tensa', 'En un globo inflado'], 'Las celosías reparten el esfuerzo entre barras que solo se estiran o se aprietan, y usan poco material para lo rígidas que son.', 'e1');
+
+// ---- Lección 2 · Estirar, apretar y doblar ----
+T('traccion', 'Tracción', 'Esfuerzo que tiende a estirar una pieza: dos fuerzas que tiran hacia fuera.', 'e2', 'Una cuerda tirante trabaja a tracción.', 'Estira');
+T('compresion', 'Compresión', 'Esfuerzo que tiende a aplastar una pieza: dos fuerzas que empujan hacia dentro.', 'e2', 'Una columna que sostiene un techo trabaja a compresión.', 'Aprieta');
+T('flexion', 'Flexión', 'Esfuerzo que tiende a doblar una pieza: una cara se comprime y la opuesta se estira.', 'e2', 'Una regla apoyada en dos libros y empujada por el centro.', 'Dobla');
+F('cuerda_empuja', '¿Por qué una cuerda sirve para tirar de algo pero no para empujarlo?', 'Porque aguanta bien la tracción, pero a compresión se arruga y no transmite el empuje', ['Porque pesa demasiado', 'Porque siempre se estira hasta romperse', 'Porque el empuje no es una fuerza'], 'Una cuerda flexible no puede mantenerse recta cuando la aprietas. Por eso las estructuras usan cables solo donde hay tracción, y barras o columnas donde hay compresión.', 'e2', cargasSVG());
+F('flex_caras', 'Una regla apoyada por sus dos extremos y empujada hacia abajo por el centro. ¿Qué pasa en sus caras?', 'La cara de arriba se comprime y la de abajo se estira', ['La de arriba se estira y la de abajo se comprime', 'Las dos caras se estiran', 'Las dos caras se comprimen'], 'Al curvarse hacia abajo, el lado de arriba (el interior de la curva) se acorta y el de abajo (el exterior) se alarga. La zona central casi no se estira ni se comprime.', 'e2', cargasSVG());
+F('tubo_papel', 'Predice: una hoja plana de papel sobre dos libros se comba con unas monedas. ¿Qué pasa si con esa misma hoja haces un tubo y lo pones igual?', 'Aguanta bastante más: la forma importa más que la cantidad de papel', ['Aguanta lo mismo, porque es el mismo papel', 'Aguanta menos, porque está arrugado', 'Se rompe antes porque pesa más'], 'Con el mismo papel, el material queda más lejos del centro de la pieza y resiste mucho mejor la flexión. Por eso los tubos y los perfiles en doble T son más eficaces que una pletina plana.', 'e2');
+F('technic_flex', 'Una viga Technic larga y fina, apoyada solo en sus dos extremos, se dobla al cargarla. ¿Qué la hace doblarse menos?', 'Acortar la distancia entre los apoyos o unir dos vigas con varios pines', ['Quitarle pines', 'Apoyarla solo en un extremo', 'Alargarla'], 'Cuanto más corta es la distancia entre apoyos, menos se dobla (la flecha crece muy deprisa con la longitud). Dos vigas unidas con varios pines trabajan como una más gruesa.', 'e2');
+
+// ---- Lección 3 · Voladizos: brazos y vigas libres ----
+T('voladizo', 'Voladizo', 'Viga o brazo sujeto solo por un extremo, con el otro extremo libre en el aire.', 'e3', 'Un trampolín o tu brazo extendido.', 'Sujeto por un solo lado');
+T('momento', 'Momento de una fuerza', 'Efecto de giro o de doblado de una fuerza: momento = fuerza × distancia al punto que se considera. Se mide en N·m.', 'e3', 'Es la regla de la palanca aplicada a una viga.', 'Fuerza × distancia (N·m)');
+T('flecha', 'Flecha', 'Cuánto baja la punta de una viga o brazo cuando lo cargas.', 'e3', 'Si la punta baja mucho, la flecha es grande.', 'Cuánto baja la punta');
+C('momento_calc', 'Un brazo horizontal sostiene en su punta una pieza que pesa 4 N, a 0,5 m de la base. ¿Qué momento (esfuerzo de doblado) hay en la base?', '2 N·m', ['4,5 N·m', '8 N·m', '0,125 N·m'], 'Momento = fuerza × distancia = 4 N × 0,5 m = 2 N·m.', 'e3', () => {
+  const f = pick([2, 3, 4, 5, 6, 8, 10]), d = pick([0.2, 0.3, 0.4, 0.5, 0.6, 0.8]), m = f * d, a = fmt(m) + ' N·m';
+  return { q: `Un brazo horizontal sostiene en su punta una pieza que pesa ${f} N, a ${fmt(d)} m de la base. ¿Qué momento (esfuerzo de doblado) hay en la base?`, a, wrong: uniq([fmt(f + d), fmt(f / d), fmt(m * 2), fmt(m / 2), fmt(m * 10)].map(x => x + ' N·m'), a).slice(0, 3), explain: `Momento = fuerza × distancia = ${f} N × ${fmt(d)} m = ${fmt(m)} N·m.` };
+});
+F('vol_cubo', 'Duplicas el largo de un brazo en voladizo (misma carga en la punta y mismo material). ¿Cuánto más baja la punta, aproximadamente?', 'Unas 8 veces más: la flecha crece con el cubo de la longitud', ['El doble', 'Lo mismo', 'Unas 4 veces más'], 'En una viga en voladizo con la carga en la punta, la flecha es proporcional a L³: al duplicar L, 2³ = 8. Por eso acortar un brazo, aunque sea un poco, lo rigidiza mucho. Míralo en la animación.', 'e3', cantileverSVG());
+F('vol_base', 'En un brazo horizontal con una carga en la punta, ¿dónde es mayor el esfuerzo de doblado (el momento)?', 'En la base (el «hombro»), junto a donde está sujeto', ['En la punta, donde está la carga', 'En el medio, siempre', 'Es igual en todo el brazo'], 'El momento = fuerza × distancia al punto que miras. En la base, esa distancia es toda la longitud del brazo. Por eso los hombros y las bases son lo que más se refuerza.', 'e3');
+F('motor_base', 'Quieres que tu brazo se doble lo menos posible. ¿Dónde conviene colocar un motor pesado?', 'Lo más cerca posible de la base, moviendo el brazo con una correa, una cadena o varillas', ['En la punta del brazo, para empujar mejor', 'En la mitad del brazo, siempre', 'Da igual dónde esté'], 'Una masa lejos de la base multiplica el momento que debe aguantar el brazo (peso × distancia) y su inercia. Con el motor cerca de la base y una transmisión, el brazo es más ligero.', 'e3');
+
+// ---- Lección 4 · Refuerza tu montaje ----
+T('articulacion', 'Articulación', 'Unión que deja girar una pieza respecto a otra, como un pin en un solo agujero.', 'e4', 'Un solo pin = una bisagra.', 'Unión que deja girar');
+T('juego', 'Juego (holgura)', 'Pequeño margen de movimiento que queda entre dos piezas unidas, por ejemplo un pin dentro de un agujero.', 'e4', 'Si algo «baila» un poco, tiene juego.', 'Margen de movimiento');
+F('tech_cuadro', 'Montas un marco cuadrado con cuatro vigas Technic y un pin en cada esquina, y se «tumba» al empujarlo. ¿Cuál es el arreglo más eficaz?', 'Añadir una viga en diagonal: convierte el cuadrado en dos triángulos', ['Usar vigas más largas', 'Apretar más los pines', 'Añadir peso en las esquinas'], 'Cada esquina con un solo pin es una articulación. Una diagonal, con un pin en cada extremo, forma triángulos que no pueden cambiar de ángulo.', 'e4', refuerzoSVG());
+F('tech_dos_pines', 'Unes dos vigas Technic con un solo pin y giran una respecto a la otra. ¿Cómo evitas que giren?', 'Uniéndolas con dos pines en dos agujeros distintos', ['Con un pin más largo', 'Apretando el pin con más fuerza', 'Poniendo un tope en el pin'], 'Un pin en un agujero es una bisagra. Con dos pines separados, la pieza ya no puede girar alrededor de ninguno: la unión es rígida.', 'e4');
+F('tech_juego', 'Tu estructura Technic, bien triangulada, todavía «baila» un poco. ¿Qué lo explica?', 'El juego: los pines entran con holgura en los agujeros y se suma en cada unión', ['Que los triángulos no sirven en Technic', 'Que las vigas son de goma', 'Que la gravedad cambia'], 'Ningún montaje es perfectamente rígido: cada unión tiene algo de juego y esos pequeños márgenes se acumulan a lo largo de una cadena de piezas. Menos uniones, y más cortas, reducen el bailoteo.', 'e4');
+O('refuerzo', 'Ordena los pasos para reforzar un montaje que se tambalea', ['Empuja el montaje con suavidad y observa dónde se deforma', 'Busca el cuadrilátero (cuatro lados) que cambia de forma', 'Añade una diagonal con un pin en cada extremo', 'Vuelve a empujar para comprobar que ya no se deforma'], 'Primero hay que ver el problema, luego localizar la parte que cede, reforzarla y por último comprobar que el arreglo ha funcionado.', 'e4');
+X('brazo_tembloroso', 'El brazo que tiembla', [
+  'Has montado un brazo de varias vigas Technic en voladizo, con un pin en cada unión y el motor en la punta.',
+  'Al levantar una pieza ligera, el brazo se dobla hacia abajo y vibra al parar.',
+  'Las vigas no están torcidas ni dañadas.'], [
+  ['¿Qué dos cambios mejorarían más la rigidez?', ['Acortar el brazo y pasar el motor cerca de la base', 'Añadir una pegatina en cada viga', 'Alargar el brazo para ganar alcance'], 0, 'Acortar el brazo baja mucho la flecha (crece con el cubo de la longitud) y quitar peso de la punta reduce el momento en la base.'],
+  ['Las uniones de un solo pin forman cuadriláteros que se tumban. ¿Qué los arregla?', ['Diagonales que formen triángulos', 'Más pines iguales sin cambiar la forma', 'Un tope en cada pin'], 0, 'Un triángulo no puede cambiar de ángulos sin cambiar de lados: la diagonal convierte el cuadrilátero articulado en una estructura rígida.']], 'e4');
+
+// Unidades y lecciones (≤ 7 items por lección, ≈ 2-4 min)
+const UNITS = [
+  { id: 'u_fuerza', title: 'Fuerza, peso y movimiento', sub: 'La base que explica por qué funcionan las máquinas', lessons: [
+    { id: 'l_fuerza', title: 'Fuerza y peso', sub: 'Newtons, kilos y la Luna', icon: '💪', items: ['t_fuerza', 't_masa', 't_peso', 'c_peso_calc', 'f_masa_luna', 'f_kg_n'],
+      note: { title: 'Masa y peso no son lo mismo', fig: pesoSVG(), body: 'La **masa** es cuánta materia hay (en **kg**) y no cambia de sitio. El **peso** es la **fuerza** con que la Tierra atrae esa masa (en **newtons**) y depende de la gravedad.\n\nEn la Tierra: **peso = masa × 9,8**. Un objeto de 1 kg pesa unos 10 N.' } },
+    { id: 'l_suma', title: 'Fuerzas que se suman', sub: 'Resultante, equilibrio e inercia', icon: '↔️', items: ['t_resultante', 't_equilibrio', 't_inercia', 'c_resultante_calc', 'f_equil_cuerda', 'f_inercia_bus', 'f_inercia_bola'],
+      note: { title: 'El balance de fuerzas', fig: forcesSVG(40, 25), body: 'Si varias fuerzas van en la **misma línea**: las que van en el mismo sentido se **suman** y las que van en sentidos opuestos se **restan**. Lo que queda es la **resultante**.\n\nSi la resultante es cero hay **equilibrio**: no hay cambio de movimiento. Y cuanto más masa, más **inercia**.' } },
+    { id: 'l_roz', title: 'Rozamiento', sub: 'El freno que está en todas partes', icon: '❄️', items: ['t_rozamiento', 't_normal', 't_mu', 'c_roz_calc', 'f_roz_arranque', 'f_roz_area', 'f_roz_engranajes'],
+      note: { title: 'Cuesta más empezar que seguir', fig: frictionSVG(), body: 'El **rozamiento** se opone a que dos superficies deslicen. Vale **μ × reacción normal**.\n\nMira la animación: el tirón sube hasta que el objeto «se suelta» y, una vez moviéndose, hace falta **menos** fuerza.\n\nEs la razón de que en la vida real los mecanismos pierdan algo de fuerza respecto al caso ideal.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_trabajo', title: 'Trabajo y energía', sub: 'Por qué nada es gratis', icon: '🔋', items: ['t_trabajo', 't_energia', 't_potencia', 'c_trabajo_calc', 'c_potencia_calc', 'f_palanca_energia', 'f_conserv'],
+      note: { title: 'La moneda de las máquinas', body: '**Trabajo** = fuerza × distancia (en **julios**). **Potencia** = trabajo ÷ tiempo (en **vatios**).\n\nLa **energía** no se crea ni se destruye. Una máquina no puede darte más trabajo del que recibe: solo cambia **fuerza** por **recorrido**, justo lo que viste en las palancas y los engranajes.' } }
+  ]},
+  { id: 'u_vm', title: 'Ventaja mecánica', sub: 'Palancas, poleas y engranajes: ganar fuerza', lessons: [
+    { id: 'l_palanca', title: 'La palanca', sub: 'Apoyo, brazo y ventaja', icon: '⚖️', items: ['t_palanca', 't_apoyo', 't_brazo', 't_ventaja', 'f_balancin', 'f_gratis'],
+      note: { title: 'Nada es gratis', body: 'Una palanca **no crea fuerza**: la cambia por recorrido.\n\nSi empujas con la mitad de fuerza, tu mano tiene que moverse el doble.\n\nMira el balancín: el que está lejos del centro sube y baja mucho; el que está cerca, poco.' } },
+    { id: 'l_palanca_calc', title: 'Calcular palancas', sub: 'Fuerza × distancia', icon: '🧮', items: ['c_palanca_f', 'c_palanca_v', 'f_equilibrio', 'f_colocar'],
+      note: { title: 'La regla de la palanca', body: 'En equilibrio: **fuerza × distancia al apoyo** es igual en los dos lados.\n\nEjemplo: 30 N a 2 m → 30 × 2 = 60. Al otro lado, a 1 m, hace falta 60 N.\n\n**Ventaja mecánica** = brazo de tu mano ÷ brazo de la carga. Es una simple regla de tres. Usa la misma unidad (cm o m) en todo.' } },
+    { id: 'l_poleas', title: 'Poleas', sub: 'Cuerda, rueda y reparto', icon: '⛓️', items: ['t_polipasto', 't_polea_fija', 't_polea_movil', 'f_polea_fija', 'f_polea_cuerda', 'c_polea_f'],
+      note: { title: 'Repartir el peso', body: 'Una **polea fija** solo cambia hacia dónde tiras.\n\nUna **polea móvil** reparte el peso entre los tramos de cuerda que sujetan la carga:\n\n• fuerza = peso ÷ nº de tramos (sin rozamiento)\n• recoges tantos metros de cuerda como tramos, por cada metro que sube la carga\n\nOtra vez: ganas fuerza, pagas con cuerda.' } },
+    { id: 'l_engranajes', title: 'Engranajes', sub: 'Dientes y relación', icon: '⚙️', items: ['t_pinon', 't_conducida', 't_relacion', 'f_sentido', 'c_relacion', 'c_velocidad'],
+      note: { title: 'Contar dientes', body: 'Dos engranajes engranan sus dientes. Para saber qué hacen basta **contar dientes**:\n\n• relación = dientes de la conducida ÷ dientes del piñón\n• pequeño mueve a grande → **lento y fuerte**\n• grande mueve a pequeño → **rápido y flojo**' } },
+    { id: 'l_tren', title: 'Engranajes en acción', sub: 'Par, trenes y diagnóstico', icon: '🔧', items: ['t_par', 'f_par_vel', 'c_tren', 'o_tren', 'x_atasco'],
+      note: { title: '⚠️ Seguridad primero', body: 'Los engranajes en marcha **pellizcan** dedos, pelo y ropa.\n\n• Para el motor o suelta la manivela antes de tocar nada.\n• Empieza siempre con poca carga.\n• Con piezas pequeñas, trabaja en una bandeja para que no se pierdan.' } }
+  ]},
+  { id: 'u_compras', icon: '🛒', title: 'Guía de compras Technic', sub: 'Qué piezas necesitas y cómo comprar poco y bien', lessons: [
+    { id: 'l_piezas', title: 'Las piezas Technic', sub: 'Viga, pin, eje y tope', icon: '🧩', items: ['t_viga', 't_pin', 't_eje', 't_tope', 'f_ident_eje', 'f_ident_pin'],
+      note: { title: 'El alfabeto del Technic', body: 'Casi todo lo que montarás con Technic sale de pocas piezas:\n\n• **vigas**: el esqueleto\n• **pines**: unen las vigas\n• **ejes**: transmiten el giro\n• **topes**: sujetan los ejes\n• **engranajes**: ya los conoces\n\nCon eso ya puedes hacer palancas y trenes de engranajes.' } },
+    { id: 'l_medir', title: 'Medir en Technic', sub: 'Todo va de 8 en 8 mm', icon: '📏', items: ['f_paso', 'c_dist_huecos', 'c_palanca_viga', 'c_engr_technic', 'f_pin_agarre'],
+      note: { title: 'Contar agujeros es medir', body: 'La distancia entre agujeros contiguos es de **8 mm**.\n\nAsí puedes calcular una palanca **contando agujeros** (saltos) en vez de medir con regla. Es la misma regla de tres de antes.\n\nLos engranajes rectos más habituales tienen **8, 16, 24 y 40 dientes**.' } },
+    { id: 'l_donde', title: 'Dónde comprar', sub: 'Sets, lotes y piezas sueltas', icon: '🛒', items: ['f_comprar_sets', 'f_comprar_suelta', 'f_comprar_lote', 'f_comprar_compat', 'o_compra', 'x_primera_compra'],
+      note: { title: 'Orientativo, no oficial', body: 'Esto resume foros de aficionados, tiendas de piezas sueltas y reseñas de marcas compatibles (consultado en octubre de 2026).\n\n**No hay precios** porque cambian: compruébalos tú el día de comprar.\n\nCompra poco al principio y prueba el encaje antes de pedir más.' } },
+    { id: 'l_kit30', title: 'Tu kit de unos 30 €', sub: 'Qué comprar primero', icon: '🧰', items: ['c_precio_kg', 'f_prioridad', 'f_manivela', 'f_bateria', 'x_kit30'],
+      note: { title: 'Primero la mano, luego el motor', body: 'Para las lecciones de ventaja mecánica no necesitas motor: te basta una **manivela** para girar los ejes con la mano.\n\nLista mínima útil: vigas largas, pines, ejes, topes y engranajes de 8, 16, 24 y 40 dientes.\n\n⚠️ Más adelante, con baterías: nada de cargar baterías hinchadas, calientes o dañadas.' } }
+  ]},
+  { id: 'u_mec', title: 'Mecanismos que mueven', sub: 'Biela-manivela, levas, cremallera, tornillo sin fin y trinquete', lessons: [
+    { id: 'l_mov', title: 'Tipos de movimiento', sub: 'Giro, recta, vaivén y balanceo', icon: '🔄', items: ['t_rotativo', 't_lineal', 't_alternativo', 't_oscilante', 't_mecanismo', 'f_mov_limpia', 'f_mov_aguja'],
+      note: { title: 'Traductores de movimiento', fig: movimientosSVG(), body: 'Hay **cuatro** movimientos básicos: **rotativo** (da vueltas), **lineal** (avanza recto), **alternativo** (va y viene en recta) y **oscilante** (se balancea en arco).\n\nUn **mecanismo** convierte uno en otro. Casi todo en una máquina es eso: traducir movimientos.' } },
+    { id: 'l_biela', title: 'Biela-manivela', sub: 'De girar a ir y venir', icon: '🚂', items: ['t_manivela', 't_biela', 't_carrera', 'c_carrera', 'f_bm_conv', 'f_bm_volante', 'f_bm_predice'],
+      note: { title: 'Mira cómo se mueve', fig: crankSVG(), body: 'La **manivela** gira, la **biela** empuja y tira, y el **pistón** va y viene.\n\n• **carrera = 2 × radio** de la manivela\n• en los extremos (puntos muertos) el pistón no puede mover la manivela: ahí ayuda un **volante de inercia**\n\n👆 Toca el dibujo para pausarlo y mirarlo con calma.' } },
+    { id: 'l_leva', title: 'Levas', sub: 'La forma decide el movimiento', icon: '🥚', items: ['t_leva', 't_seguidor', 't_arbol_levas', 'c_leva_lev', 'f_leva_predice', 'f_leva_reposo', 'f_leva_uso'],
+      note: { title: 'La forma lo programa todo', fig: camSVG(), body: 'Una **leva** empuja a su **seguidor** según su forma.\n\nEn una **leva excéntrica** (disco con el eje descentrado) el seguidor sube y baja **2 × la excentricidad**.\n\nCambiando la forma de la leva cambias cuándo sube, cuánto y cuándo descansa.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_sinfin', title: 'Cremallera y tornillo sin fin', sub: 'Giro en recta y reducción enorme', icon: '🔩', items: ['t_cremallera', 't_sinfin', 'c_rack_avance', 'c_sinfin_rel', 'f_rack_uso', 'f_sinfin_predice', 'f_sinfin_bloqueo'],
+      note: { title: 'Dos formas de engranar', fig: rackSVG(), body: 'Un **piñón** con una **cremallera** convierte giro en línea recta: avance por vuelta = nº de dientes × paso.\n\nUn **tornillo sin fin** mueve una rueda **un diente por vuelta**: una reducción enorme en poco espacio.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_trinquete', title: 'Un sentido y a saltos', sub: 'Trinquete y cruz de Malta', icon: '🎞️', items: ['t_trinquete', 't_lengueta', 't_ginebra', 'f_trinq_uso', 'f_trinq_predice', 'f_ginebra_cine', 'f_ginebra_reloj'],
+      note: { title: 'Control del movimiento', fig: ratchetSVG(), body: 'Un **trinquete** deja girar en un sentido y bloquea el otro, gracias a su **uña**.\n\nUna **cruz de Malta** (mecanismo de Ginebra) convierte un giro continuo en giro **a saltos**: avanza un paso, para, avanza otro...' } }
+  ]},
+  { id: 'u_estr', title: 'Estructuras y rigidez', sub: 'Triángulos, esfuerzos y brazos que no se doblan', lessons: [
+    { id: 'l_triangulo', title: 'Triángulos que no ceden', sub: 'Por qué la diagonal lo cambia todo', icon: '🔺', items: ['t_rigidez', 't_triangulacion', 't_riostra', 'f_tri_predice', 'f_tri_porque', 'c_diagonales', 'f_tri_ejemplos'],
+      note: { title: 'El cuadrado cede, el triángulo no', fig: frameSVG(), body: 'Un marco de cuatro barras con un pin en cada esquina **se tumba**: los lados no cambian, pero los ángulos sí.\n\nUn **triángulo** no puede: si los tres lados no cambian de longitud, tampoco cambian los ángulos.\n\nPor eso se añaden **diagonales**: convierten cuadrados en triángulos.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_cargas', title: 'Estirar, apretar y doblar', sub: 'Tracción, compresión y flexión', icon: '🪢', items: ['t_traccion', 't_compresion', 't_flexion', 'f_cuerda_empuja', 'f_flex_caras', 'f_tubo_papel', 'f_technic_flex'],
+      note: { title: 'Tres formas de cargar una pieza', fig: cargasSVG(), body: '• **Tracción**: dos fuerzas tiran hacia fuera y **estiran**.\n• **Compresión**: dos fuerzas empujan hacia dentro y **aprietan**.\n• **Flexión**: una carga **dobla** la pieza; una cara se comprime y la contraria se estira.\n\nUna misma estructura puede tener piezas en cada situación a la vez.' } },
+    { id: 'l_voladizo', title: 'Voladizos: brazos y vigas libres', sub: 'Por qué el hombro sufre', icon: '🏗️', items: ['t_voladizo', 't_momento', 't_flecha', 'c_momento_calc', 'f_vol_cubo', 'f_vol_base', 'f_motor_base'],
+      note: { title: 'Un brazo es un voladizo', fig: cantileverSVG(), body: 'Un brazo sujeto por un solo extremo es un **voladizo**. El **momento** en la base es **fuerza × distancia**: la regla de la palanca otra vez.\n\nY la **flecha** (cuánto baja la punta) crece con el **cubo** de la longitud: al doble de largo, unas **8 veces** más.\n\n👆 Toca el dibujo para pausarlo.' } },
+    { id: 'l_refuerzo', title: 'Refuerza tu montaje', sub: 'Diagonales, dos pines y juego', icon: '🛡️', items: ['t_articulacion', 't_juego', 'f_tech_cuadro', 'f_tech_dos_pines', 'f_tech_juego', 'o_refuerzo', 'x_brazo_tembloroso'],
+      note: { title: 'Receta antitambaleo', fig: refuerzoSVG(), body: '1. Un solo pin es una **bisagra**: usa **dos pines** para que no gire.\n2. Busca los **cuadriláteros** y añade una **diagonal**.\n3. Acorta los voladizos y pon el peso **cerca de la base**.\n4. Un poco de **juego** siempre queda: menos uniones y más cortas.' } }
+  ]}
+];
+const LESSON_BY_ID = {};
+UNITS.forEach(u => u.lessons.forEach(l => { l.unit = u.id; LESSON_BY_ID[l.id] = l; }));
+
+// =====================================================================
+// CURIOSIDADES («Sabías que…») Y MISIONES PRÁCTICAS
+// Todo lo que afirman se ha comprobado en fuentes (oct. 2026); lo dudoso se dice como dudoso.
+// =====================================================================
+const CURIOS = {
+  l_palanca: { title: 'Sabías que… la frase de Arquímedes', body: 'Se atribuye a Arquímedes la frase «dadme un punto de apoyo y moveré el mundo».\n\nLa recogen autores posteriores (como Pappus, en el siglo IV), así que **no se sabe si la dijo con esas palabras**. Lo real es la idea: con un brazo larguísimo, una fuerza pequeña puede equilibrar una carga enorme... a cambio de recorrer una distancia enorme.' },
+  l_palanca_calc: { title: 'Sabías que… la romana', body: 'La **romana** es una balanza antigua que pesa con una palanca: cuelgas lo que quieres pesar en un lado y deslizas un contrapeso por el brazo graduado hasta equilibrar.\n\nCuanto más lejos del apoyo está el contrapeso, más peso equilibra: es **fuerza × distancia**, justo lo que acabas de calcular.' },
+  l_poleas: { title: 'Sabías que… no hay ventaja gratis', body: 'Un **polipasto** combina poleas fijas y móviles con una sola cuerda. Cuantos más tramos sujetan la carga, menos fuerza haces... pero más cuerda tienes que recoger.\n\nEs la misma regla de la palanca: la ventaja no se crea, **se cambia por recorrido**.' },
+  l_engranajes: { title: 'Sabías que… el mecanismo de Anticitera', body: 'En un naufragio cerca de la isla griega de Anticitera se recuperó un mecanismo de bronce con engranajes de hace unos 2.000 años (se data entre el 150 y el 100 a. C.; algunos investigadores proponen una fecha más antigua).\n\nSe calcula que tenía **más de 30 engranajes** y servía para calcular posiciones del Sol, la Luna y otros astros. Es un tren de engranajes como los que estás aprendiendo.' },
+  l_tren: { title: 'Sabías que… el tren de un reloj', body: 'En un reloj de agujas, el segundero da **60 vueltas por cada vuelta del minutero**, y el minutero **12 por cada vuelta de la horaria**.\n\nSon dos reducciones, 60 : 1 y 12 : 1. Encadenadas se multiplican: **720 : 1**. Por eso el tren de engranajes de un reloj mecánico es largo.' },
+  l_mov: { title: 'Sabías que… casi todo es traducir giros', body: 'Un motor eléctrico corriente solo sabe **girar**. Para que algo suba y baje, avance o se balancee, hace falta un mecanismo en medio.\n\nPor eso gran parte de la mecánica es el arte de traducir un movimiento en otro. ¡Y tú vas a aprender los traductores clásicos!' },
+  l_biela: { title: 'Sabías que… el mecanismo de los motores', body: 'Los motores de pistón de los coches y las máquinas de vapor usan una **biela-manivela**: el pistón empuja y tira, y la manivela (el cigüeñal) convierte ese vaivén en el giro que mueve las ruedas.\n\nEs el mismo dibujo que acabas de ver, pero en grande y con fuego dentro.' },
+  l_leva: { title: 'Sabías que… la forma de la leva es un «programa»', body: 'En muchos motores de coche, un **árbol de levas** abre cada válvula con la forma justa: la forma de cada leva decide **cuándo** se abre, **cuánto** y **durante cuánto tiempo**.\n\nNo hay electrónica: la «instrucción» está tallada en el metal.' },
+  l_sinfin: { title: 'Sabías que… una etapa vale por varias', body: 'Con un tornillo sin fin de una entrada, una rueda de 40 dientes da una reducción de **40 : 1 en un solo paso**. Con engranajes rectos necesitarías varias etapas.\n\nEso sí: que el tornillo se **autobloquee** (que la rueda no pueda moverlo) depende del rozamiento y del ángulo de la rosca; no lo des por seguro.' },
+  l_fuerza: { title: 'Sabías que… en la Luna pesarías un sexto', body: 'La gravedad de la Luna es unas **6 veces menor** que la de la Tierra. Un objeto de 60 kg de masa pesa allí lo que pesaría un objeto de unos 10 kg en la Tierra.\n\nSu **masa** (la cantidad de materia) es exactamente la misma. Lo único que cambia es la atracción: el **peso**.' },
+  l_suma: { title: 'Sabías que… el truco del mantel', body: 'Hay un truco clásico de física: tirar de un mantel **muy rápido y seco** y dejar casi inmóviles los objetos que había encima. Los objetos, por **inercia**, tienden a quedarse donde estaban.\n\nFunciona mejor con mantel liso, objetos pesados y un tirón rápido. ¡No lo pruebes con tu vajilla buena!' },
+  l_roz: { title: 'Sabías que… rodar roza mucho menos', body: 'Los **rodamientos de bolas** (en patines, ruedas de bici o ejes de máquinas) cambian el deslizamiento por **rodadura**, que roza mucho menos. Por eso es mucho más fácil rodar un objeto que arrastrarlo.\n\nTambién se usa aceite o grasa en engranajes y ejes: reduce el rozamiento y la pérdida de fuerza que viste en la lección.' },
+  l_trabajo: { title: 'Sabías que… el «caballo de vapor»', body: 'James Watt inventó el **caballo de vapor** (horsepower) para explicar a sus clientes cuánto trabajo hacían sus máquinas de vapor comparadas con los caballos. Un caballo de vapor equivale a unos **746 vatios**.\n\nCómo calculó exactamente ese valor se cuenta de formas distintas, y no hay una fuente histórica clara: es un buen ejemplo de que una unidad puede nacer de una necesidad práctica.' },
+  l_triangulo: { title: 'Sabías que… los triángulos están por todas partes', body: 'Los **puentes de celosía**, las **grúas de torre** y las torres de alta tensión están hechos de barras que forman **triángulos**. La **Torre Eiffel** también es una celosía de hierro, con miles de piezas.\n\nCon poco material consiguen mucha rigidez: justo lo que viste en la animación.' },
+  l_cargas: { title: 'Sabías que… las vigas tienen forma de I', body: 'Las vigas de acero en **doble T** (I o H) tienen el material en las alas de arriba y de abajo, que son las que más trabajan a flexión, y un alma fina en medio: así pesan poco y aguantan mucho.\n\nGalileo ya escribió en 1638 que un tubo hueco resiste mejor que una barra maciza con el mismo material, y lo relacionó con los huesos y los tallos.' },
+  l_voladizo: { title: 'Sabías que… la grúa se equilibra con un contrapeso', body: 'Una **grúa torre** lleva bloques de hormigón como contrapeso al otro lado de la pluma. Trabajan como una palanca: el **momento** de la carga (peso × distancia) se compensa con el del contrapeso.\n\nPor eso su límite de carga baja cuando la carga se aleja de la torre: más distancia, más momento.' },
+  l_refuerzo: { title: 'Sabías que… un cuadro de bici son dos triángulos', body: 'El cuadro clásico de una bicicleta (el «cuadro de diamante») está formado por **dos triángulos** unidos, uno delantero y otro trasero. Es el mismo truco de la diagonal, con tubos huecos y ligeros.\n\nSe usa desde hace más de un siglo.' },
+  l_trinquete: { title: 'Sabías que… el «clic-clic» de la carraca', body: 'El «clic-clic» de una llave de carraca es la **uña** de un trinquete saltando de diente en diente.\n\nGracias a él puedes apretar un tornillo moviendo la llave de ida y vuelta, sin sacarla cada vez.' }
+};
+Object.entries(CURIOS).forEach(([id, c]) => { LESSON_BY_ID[id].curio = c; });
+
+const MISIONES = {
+  u_fuerza: { id: 'm_fuerza', icon: '🧪', title: 'Mide el rozamiento con una goma elástica',
+    why: 'Con una **goma elástica** puedes hacer un «medidor de fuerza» casero: cuanto más se estira, más fuerza haces. Vas a **ver** que cuesta más arrancar que seguir, y que más peso significa más rozamiento.',
+    think: 'Antes de cada prueba, **predice** si la goma se estirará más o menos. Fíjate sobre todo en el instante en que el objeto «se suelta»: la goma se estira al máximo y luego se encoge un poco. Esa diferencia es la que viste en la animación.',
+    safety: 'Usa gomas en buen estado y no las estires cerca de la cara: si se sueltan, pueden dar un latigazo. Tira despacio.',
+    versions: {
+      goma: { label: 'Con goma elástica', intro: 'Una goma elástica, un libro, una regla y una mesa lisa (valen objetos de casa).', steps: [
+        'Ata o engancha la goma a un libro apoyado en la mesa.',
+        'Tira muy despacio y apunta cuánto se estira la goma (con la regla) justo antes de que el libro empiece a moverse.',
+        'Sigue tirando con el libro ya en movimiento a velocidad constante y apunta cuánto se estira ahora: debería ser menos.',
+        'Pon otro libro encima y repite: ¿se estira más? (el peso aumenta, y con él el rozamiento).',
+        'Pon unos lápices redondos debajo del libro como rodillos y repite: ¿cuánto se estira ahora?',
+        'Apunta qué has visto y qué predecías: ¿coincide?'] },
+      papel: { label: 'Sin material', intro: 'Un experimento mental con papel y lápiz.', steps: [
+        'Dibuja un bloque sobre una mesa y las fuerzas: tu tirón, el rozamiento, el peso y la reacción normal.',
+        'Dibuja cómo cambian las flechas del tirón y del rozamiento al arrancar y cuando ya se mueve.',
+        'Dibuja el mismo bloque con el doble de peso y predice si el rozamiento cambia.',
+        'Dibuja el bloque sobre rodillos y predice qué ocurre con el rozamiento.'] } } },
+  u_vm: { id: 'm_vm', icon: '🛠️', title: 'Tren de engranajes con manivela',
+    why: 'Hasta ahora lo has **calculado**. Ahora lo vas a **sentir**: montar un tren de engranajes y girar la manivela te enseña, con los dedos, lo que significa una relación 3 : 1.',
+    think: 'Antes de girar, **predice**. Después compara con lo que ves. Si no coincide: ¿hay un eje flojo y el engrane salta, o has contado mal las vueltas? Ese es el mejor momento para aprender.',
+    safety: 'Mantén los dedos lejos de los dientes mientras giran. Si cortas cartón, usa tijeras sobre una superficie protegida.',
+    versions: {
+      piezas: { label: 'Con piezas', intro: 'Si ya tienes un piñón y una rueda de Technic (o compatibles).', steps: [
+        'Elige un piñón de 8 dientes y una rueda de 24 dientes.',
+        'Móntalos en dos ejes paralelos, a la distancia justa para que los dientes engranen sin forzar.',
+        'Pon una manivela (una viga corta) en el eje del piñón y un tope en cada eje.',
+        'Marca la rueda con un trozo de cinta y cuenta cuántas vueltas das al piñón por cada vuelta de la rueda: debería salir 3.',
+        'Cambia a la rueda de 40 dientes y, ANTES de girar, predice cuántas vueltas saldrán. Luego compruébalo.',
+        'Anota qué has notado: ¿qué pasa con la velocidad y con el esfuerzo al girar?'] },
+      papel: { label: 'En papel y cartón', intro: 'Sin piezas: dos discos con marcas, mismo tamaño de diente.', steps: [
+        'Dibuja en cartón dos círculos con marcas (dientes) alrededor: uno con 8 marcas y otro con 24. Con el mismo tamaño de diente, el de 24 debe tener un radio 3 veces mayor.',
+        'Recórtalos y pon un punto de color en un diente de cada uno.',
+        'Colócalos tocándose por el borde y «gíralos» con la mano, contando los dientes que pasan por el punto de contacto.',
+        'Cuenta cuántas vueltas del pequeño por cada vuelta del grande: debería salir 3.',
+        'Haz otro par con 8 y 16 dientes y predice el resultado antes de girarlo.'] } } },
+  u_compras: { id: 'm_compras', icon: '📝', title: 'Tu lista de compra (sin comprar)',
+    why: 'Planificar una compra pequeña es una habilidad de inventor: sabes qué necesitas, comparas y compras poco. Esta misión es **solo mirar y anotar**: no hace falta gastar nada.',
+    think: '¿Qué piezas se repiten en todos tus montajes (pines, ejes, topes)? Esas son las que más compensa comprar en cantidad.',
+    safety: 'No compres con prisa. Usa webs que conozcas, mira la opinión del vendedor y las condiciones de devolución.',
+    versions: { lista: { label: 'Lista y comparación', intro: 'Sin gastar nada.', steps: [
+      'Escribe qué quieres montar primero (por ejemplo: una palanca con viga y un tren de engranajes con manivela).',
+      'Haz la lista de piezas que necesita (vigas, pines, ejes, topes, engranajes) con cantidades.',
+      'Busca esas piezas en dos webs distintas y anota el precio de cada una HOY.',
+      'Calcula el coste total de la lista en cada web (precio × cantidad, más el envío).',
+      'Mira si un lote usado con fotos y lista te sale mejor: compara por kilo y por piezas útiles.',
+      'Decide una compra pequeña (o ninguna) y anota por qué.'] } } },
+  u_mec: { id: 'm_mec', icon: '🔁', title: 'Convierte un giro en un vaivén',
+    why: 'Vas a construir tu primer **traductor de movimiento**: una manivela que hace ir y venir una pieza. Medir la carrera y compararla con tu predicción es la mejor forma de entender de verdad la biela-manivela.',
+    think: 'Antes de girar, predice: ¿qué carrera tendrá? Luego mídela. ¿Coincide con 2 × el radio? Si no, ¿qué la cambia: el juego en las uniones, una guía floja, medir mal?',
+    safety: 'Cuidado con los dedos en las uniones que se mueven. Si usas cartón, corta con tijeras sobre una superficie protegida y lejos de ti.',
+    versions: {
+      piezas: { label: 'Con piezas', intro: 'Con vigas, pines, ejes y topes (te vale la lista de unos 30 €).', steps: [
+        'Monta una manivela: una viga corta unida a un eje con un tope.',
+        'Une una viga larga (la biela) con un pin a la punta de la manivela.',
+        'Haz que el otro extremo de la biela se mueva entre dos vigas paralelas (la guía).',
+        'Gira la manivela con la mano y mide cuánto recorre el extremo de la biela: esa es la carrera.',
+        'Compárala con 2 × el radio de la manivela (cuenta saltos de agujero × 8 mm).',
+        'Cambia el radio de la manivela y repite: ¿se cumple la predicción?'] },
+      papel: { label: 'En papel y cartón', intro: 'Sin piezas: cartón, un encuadernador (o un clip) y un lápiz.', steps: [
+        'Recorta un disco de cartón (la manivela) y marca un punto cerca del borde: ese es el pin.',
+        'Une al punto una tira de cartón (la biela) con un encuadernador o un clip.',
+        'Haz que el otro extremo de la tira se mueva entre dos reglas o lápices paralelos (la guía).',
+        'Gira el disco con el dedo y marca los dos extremos del recorrido de la tira.',
+        'Mide la distancia entre las marcas (la carrera) y compárala con 2 × la distancia del punto al centro.',
+        'Muévelo más cerca del centro y repite: ¿cambia la carrera como predijiste?'] } } },
+  u_estr: { id: 'm_estr', icon: '📐', title: 'Triángulos contra cuadrados',
+    why: 'Vas a **sentir** en las manos que un cuadrado articulado se tumba y que una sola diagonal lo arregla. Y vas a medir cómo un voladizo se dobla muchísimo más cuando lo alargas.',
+    think: 'Antes de cada empujón, **predice** qué hará la estructura. En el voladizo, antes de medir, predice cuántas veces más baja la punta al duplicar el largo. No hace falta que salga exacto: las medidas caseras tienen error.',
+    safety: 'Corta el cartón con tijeras sobre una superficie protegida y lejos de ti. Haz los agujeros con un lápiz sobre un material blando, sin poner la mano debajo. Sujeta bien el libro para que no caiga sobre tus dedos ni tus pies.',
+    versions: {
+      carton: { label: 'Con cartón', intro: 'Tiras de cartón, encuadernadores de latón (o clips), un lápiz, una regla de plástico, un libro pesado y unas monedas con cinta.', steps: [
+        'Recorta cuatro tiras de cartón iguales (por ejemplo, 2 cm × 15 cm) y haz un agujero cerca de cada extremo.',
+        'Únelas en cuadrado con un encuadernador (o un clip) en cada esquina, de modo que las uniones puedan girar.',
+        'Predice y empuja una esquina de arriba: ¿se queda cuadrado o se tumba?',
+        'Recorta una quinta tira para la diagonal, haz los agujeros a la distancia justa y únela a dos esquinas opuestas.',
+        'Empuja otra vez: ¿se deforma? Anota qué ha cambiado.',
+        'Voladizo: sujeta una regla de plástico con un libro pesado en el borde de la mesa, con 10 cm fuera. Pega unas monedas en la punta y mide cuánto baja.',
+        'Repite con 20 cm fuera y las mismas monedas. Antes de medir, predice si baja el doble o mucho más, y compara.'] },
+      papel: { label: 'En papel', intro: 'Hojas de papel, dos libros y monedas o clips.', steps: [
+        'Separa dos libros unos 15 cm y apoya una hoja de papel plana como puente.',
+        'Pon monedas encima, una a una, hasta que se hunda. Anota cuántas aguantó.',
+        'Haz otro puente con otra hoja doblada en acordeón, con los pliegues en la misma dirección que el puente (de un libro al otro). Predice cuántas monedas aguantará.',
+        'Haz un tercer puente con otra hoja enrollada en tubo y pegada con cinta. Predice de nuevo.',
+        'Compara los tres: misma cantidad de papel, distinta forma. ¿Cuál aguantó más?'] } } }
+};
+UNITS.forEach(u => { if (MISIONES[u.id]) u.mission = MISIONES[u.id]; });
+
+// Para las unidades que viven en otros ficheros (content2.js…): las registra con sus curiosidades y misiones.
+// Las unidades cuyo id esté en `frontIds` van al principio del camino; el resto, al final.
+function addUnits(units, curios = {}, misiones = {}, frontIds = []) {
+  units.forEach(u => { u.lessons.forEach(l => { l.unit = u.id; LESSON_BY_ID[l.id] = l; }); if (misiones[u.id]) u.mission = misiones[u.id]; });
+  Object.entries(curios).forEach(([id, c]) => { LESSON_BY_ID[id].curio = c; });
+  UNITS.unshift(...units.filter(u => frontIds.includes(u.id))); UNITS.push(...units.filter(u => !frontIds.includes(u.id)));
+}
