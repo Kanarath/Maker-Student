@@ -9,6 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "node --test tests/",
+    "deploy": "node tools/deploy.mjs",
     "validate": "node tools/validate.mjs",
     "check": "npm test && npm run validate"
   },
