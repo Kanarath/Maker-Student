@@ -31,5 +31,11 @@ import { url } from "../lib/url";
   .xp b { color: var(--accent); }
   [hidden] { display: none !important; }
   @media (max-width: 760px) { .xp { display: none; } }
-  @media (max-width: 560px) { .bar { gap: 12px; padding-block: 6px; } nav { gap: 12px; font-size: .9rem; } .logo span:last-child { font-size: .9rem; } }
+  @media (max-width: 560px) {
+    .top { position: static; }
+    .bar { flex-wrap: wrap; gap: 4px 12px; padding-block: 8px; }
+    .logo { font-size: .95rem; }
+    nav { order: 3; width: 100%; margin: 0; gap: 16px; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; font-size: .92rem; padding-bottom: 4px; scrollbar-width: none; }
+    nav a { padding: 6px 0; }
+  }
 </style>
